@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HackMate — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── CSS VARIABLES / THEME ─── */
+    :root {
+      /* Earthen Muted Base */
+      --bg:           #3a3532;
+      --bg2:          #4e4844;
+      --surface:      #5e5751;
+      --border:       rgba(201, 160, 115, 0.25);
+      --border-hi:    rgba(201, 160, 115, 0.7);
+      --text:         #e6ded7;
+      --text-muted:   #b0a8a1;
+      --accent:       #c9a073;
+      --accent2:      #e0bfa0;
+      --accent-glow:  rgba(201, 160, 115, 0.35);
+      --card-shadow:  0 0 40px rgba(201,160,115,0.08), 0 4px 24px rgba(0,0,0,0.4);
+      --hud-line:     rgba(201, 160, 115, 0.2);
+
+      /* Status Colors */
+      --danger:         #d47d7d;
+      --danger-bg:      rgba(212, 125, 125, 0.08);
+      --danger-border:  rgba(212, 125, 125, 0.35);
+      
+      --success:        #94b594;
+      --success-bg:     rgba(148, 181, 148, 0.08);
+      --success-border: rgba(148, 181, 148, 0.35);
+      
+      --warn:           #d9b87a;
+      --warn-bg:        rgba(217, 184, 122, 0.08);
+      --warn-border:    rgba(217, 184, 122, 0.35);
+    }
+
+    [data-theme="light"] {
+      /* Light Mode Earthen Muted */
+      --bg:           #f4f1ed;
+      --bg2:          #e6e2de;
+      --surface:      #ffffff;
+      --border:       rgba(170, 130, 90, 0.2);
+      --border-hi:    rgba(170, 130, 90, 0.6);
+      --text:         #3a3532;
+      --text-muted:   #7a726d;
+      --accent:       #a67c52;
+      --accent2:      #c9a073;
+      --accent-glow:  rgba(170, 130, 90, 0.15);
+      --card-shadow:  0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0,0,0,0.05);
+      --hud-line:     rgba(170, 130, 90, 0.18);
+      
+      /* Light Mode Status Colors */
+      --danger:         #c15a5a;
+      --danger-bg:      rgba(193, 90, 90, 0.08);
+      --danger-border:  rgba(193, 90, 90, 0.35);
+      
+      --success:        #6b946b;
+      --success-bg:     rgba(107, 148, 107, 0.08);
+      --success-border: rgba(107, 148, 107, 0.35);
+      
+      --warn:           #c49a4a;
+      --warn-bg:        rgba(196, 154, 74, 0.08);
+      --warn-border:    rgba(196, 154, 74, 0.35);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── FIXED GLOBAL PNG CURSOR OVERRIDE ─── */
+    * {
+      cursor: url('images/anchor-point.png') 0 0, auto !important;
+    }
+
+    /* ─── BASE ─── */
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'Share Tech Mono', monospace; }
+
+    /* ─── BACKGROUND TOPOGRAPHY ─── */
+    .topo-bg {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background-image:
+        repeating-radial-gradient(circle at 50% 50%,
+          transparent 0, transparent 38px,
+          var(--hud-line) 39px, transparent 40px),
+        repeating-radial-gradient(circle at 80% 20%,
+          transparent 0, transparent 58px,
+          var(--hud-line) 59px, transparent 60px);
+      transition: opacity 0.4s;
+    }
+
+    /* ─── SCAN LINE OVERLAY ─── */
+    .scanlines {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 1;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.04) 3px,
+        rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem; height: 64px;
+    }
+    .logo {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--accent); border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.6); opacity: 0.6; }
+    }
+
+    /* ─── THEME TOGGLE ─── */
+    .theme-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border-hi); border-radius: 4px;
+      background: transparent; color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      transition: all 0.2s ease;
+    }
+    .theme-btn:hover {
+      background: var(--accent-glow);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .theme-icon { font-size: 1rem; transition: transform 0.4s ease; }
+    .theme-btn:hover .theme-icon { transform: rotate(30deg); }
+
+    /* ─── PAGE BODY ─── */
+    .page-body {
+      position: relative; z-index: 2;
+      flex: 1; display: flex;
+      align-items: center; justify-content: center;
+      padding: 3rem 1.5rem;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ─── AUTH CONTAINER ─── */
+    .auth-container {
+      width: 100%; max-width: 440px;
+      animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes cardEntrance {
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97);
+        filter: blur(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.6;
+    }
+
+    /* ─── SECTION TAG ─── */
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--accent); text-transform: uppercase;
+      margin-bottom: 0.5rem; opacity: 0.8;
+    }
+
+    /* ─── AUTH HEADER ─── */
+    .auth-title {
+      font-size: 1.6rem; font-weight: 900;
+      color: var(--accent2); letter-spacing: 0.03em;
+      margin-bottom: 0.3rem;
+    }
+    .auth-subtitle {
+      font-size: 0.82rem; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 1.5rem;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 1.25rem 0;
+    }
+
+    /* ─── FORM FIELDS ─── */
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em;
+      color: var(--text-muted); text-transform: uppercase;
+    }
+    .form-input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem; opacity: 0.5;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .scan-input {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.65rem 0.75rem 0.65rem 2.2rem;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.4s, box-shadow 0.2s;
+    }
+    .scan-input:focus {
+      border-color: var(--border-hi);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .scan-input:focus + .input-icon,
+    .form-input-wrap:focus-within .input-icon { opacity: 1; }
+    .scan-input::placeholder { color: var(--text-muted); }
+
+    /* password toggle */
+    .pwd-toggle {
+      position: absolute; right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--text-muted); font-size: 0.8rem;
+      padding: 0; transition: color 0.2s;
+    }
+    .pwd-toggle:hover { color: var(--accent); }
+
+    /* ─── SUBMIT BUTTON ─── */
+    .scan-btn {
+      width: 100%;
+      padding: 0.75rem 1.25rem;
+      background: var(--accent);
+      border: none; border-radius: 4px;
+      color: #042b1c;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.12em;
+      position: relative; overflow: hidden;
+      transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    }
+    .scan-btn:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(16,185,129,0.12);
+      transform: translateY(-1px);
+    }
+    .scan-btn:active { transform: translateY(0); filter: brightness(1.05); }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; transform: none; box-shadow: none; }
+
+    /* shimmer sweep on hover */
+    .scan-btn::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.4s ease;
+    }
+    .scan-btn:hover::after { left: 160%; }
+
+    /* ─── REMEMBER / FORGOT ROW ─── */
+    .form-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .checkbox-label {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--text-muted);
+    }
+    .checkbox-label input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 13px; height: 13px;
+    }
+    .link-muted {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--accent);
+      text-decoration: none; letter-spacing: 0.08em;
+      opacity: 0.8;
+      transition: opacity 0.2s, text-shadow 0.2s;
+    }
+    .link-muted:hover {
+      opacity: 1;
+      text-shadow: 0 0 8px var(--accent);
+    }
+
+    /* ─── MESSAGE AREA ─── */
+    .msg-box {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 4px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.06em;
+      border: 1px solid;
+      animation: msgFade 0.3s ease;
+    }
+    @keyframes msgFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .msg-box.error   { background: var(--danger-bg);  border-color: var(--danger-border);  color: var(--danger); }
+    .msg-box.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+    .msg-box.show    { display: block; }
+
+    /* ─── SIGNUP REDIRECT ─── */
+    .auth-redirect {
+      margin-top: 1.5rem; text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+    .auth-redirect a {
+      color: var(--accent); text-decoration: none;
+      transition: text-shadow 0.2s;
+    }
+    .auth-redirect a:hover { text-shadow: 0 0 8px var(--accent); }
+
+    /* ─── CORNER DECORATIONS ─── */
+    .corner-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.5rem; color: var(--accent);
+      opacity: 0.5; letter-spacing: 0.12em;
+      position: absolute;
+    }
+    .corner-tag.tl { top: 0.5rem; left: 0.75rem; }
+    .corner-tag.br { bottom: 0.5rem; right: 0.75rem; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 480px) {
+      .card { padding: 1.5rem; }
+      .auth-title { font-size: 1.3rem; }
+      .page-body { padding: 1.5rem 1rem; align-items: flex-start; padding-top: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topo-bg"></div>
+  <div class="scanlines"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="/index.html" class="logo"><div class="logo-dot"></div>HACKMATE</a>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="mono" style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;">AUTH PORTAL</span>
+        <button class="theme-btn" onclick="toggleTheme()">
+          <span class="theme-icon" id="themeIcon">☀️</span>
+          <span id="themeLabel">LIGHT MODE</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-body">
+    <div class="auth-container">
+
+      <div class="card">
+        <span class="corner-tag tl">AUTH-01</span>
+        <span class="corner-tag br" id="clock"></span>
+
+        <div class="section-tag">// OPERATOR AUTHENTICATION</div>
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to your HackMate account to discover teammates and join active missions.</p>
+
+        <div class="divider"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="username">USERNAME / EMAIL</label>
+            <div class="form-input-wrap">
+              <input
+                class="scan-input"
+                type="text"
+                id="username"
+                name="username"
+                placeholder="operator@hackmate.dev"
+                autocomplete="username"
+                required
+              />
+              <span class="input-icon">◈</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">PASSWORD</label>
+            <div class="form-input-wrap">
+              <input
+                class="scan-input"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••••••"
+                autocomplete="current-password"
+                required
+              />
+              <span class="input-icon">🔒</span>
+              <button type="button" class="pwd-toggle" id="pwdToggle" onclick="togglePassword('password','pwdToggle')" tabindex="-1">SHOW</button>
+            </div>
+          </div>
+
+          <div class="form-meta">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberMe" />
+              REMEMBER SESSION
+            </label>
+            <a href="#" class="link-muted">FORGOT PASSWORD?</a>
+          </div>
+
+          <button type="submit" class="scan-btn" id="loginBtn">▶ AUTHENTICATE</button>
+
+          <div class="msg-box" id="loginMsg" role="alert" aria-live="polite"></div>
+
+        </form>
+
+        <div class="divider"></div>
+
+        <div style="display:flex;gap:0.5rem;">
+          <button onclick="oauthLogin('github')" class="scan-btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);flex:1;font-size:0.7rem;">
+            ⌥ GITHUB SSO
+          </button>
+          <button onclick="oauthLogin('google')" class="scan-btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);flex:1;font-size:0.7rem;">
+            ⌥ GOOGLE SSO
+          </button>
+        </div>
+
+        <div class="auth-redirect">
+          NEW OPERATIVE? <a href="/signup.html">CREATE ACCOUNT →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ─── THEME ───────────────────────────────────────────
+    (function() {
+      applyTheme(localStorage.getItem('hackmate-theme') || 'dark');
+    })();
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeIcon').textContent  = t === 'dark' ? '☀️' : '🌙';
+      document.getElementById('themeLabel').textContent = t === 'dark' ? 'LIGHT MODE' : 'DARK MODE';
+      localStorage.setItem('hackmate-theme', t);
+    }
+    function toggleTheme() {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    // ─── CLOCK ───────────────────────────────────────────
+    function tickClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toTimeString().slice(0,8);
+    }
+    tickClock(); setInterval(tickClock, 1000);
+
+    // ─── PASSWORD TOGGLE ────────────────────────────────
+    function togglePassword(inputId, btnId) {
+      const inp = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.textContent = show ? 'HIDE' : 'SHOW';
+    }
+
+    // ─── MESSAGE BOX ────────────────────────────────────
+    function showMsg(id, type, text) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = `msg-box ${type} show`;
+    }
+    function clearMsg(id) {
+      const el = document.getElementById(id);
+      el.className = 'msg-box';
+    }
+
+    // ─── LOGIN HANDLER ──────────────────────────────
+    async function handleLogin(e) {
+      e.preventDefault();
+      clearMsg('loginMsg');
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+
+      if (!username || !password) {
+        showMsg('loginMsg', 'error', '⚠ AUTHENTICATION FAILED — MISSING CREDENTIALS');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '◌ AUTHENTICATING...';
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_name: username, password: password })
+        });
+        
+        const result = await response.text();
+        
+        if (response.ok) {
+          showMsg('loginMsg', 'success', '✓ ' + result);
+          setTimeout(() => { window.location.href = '/index.html'; }, 1200);
+        } else {
+          showMsg('loginMsg', 'error', '⚠ ' + result);
+          btn.disabled = false;
+          btn.textContent = '▶ AUTHENTICATE';
+        }
+      } catch (err) {
+        showMsg('loginMsg', 'error', '⚠ BACKEND UNREACHABLE — CHECK CONNECTION');
+        btn.disabled = false;
+        btn.textContent = '▶ AUTHENTICATE';
+      }
+    }
+
+    function oauthLogin(provider) {
+      window.location.href = `/auth/${provider}`;
+    }
+  </script>
+</body>
+</html>

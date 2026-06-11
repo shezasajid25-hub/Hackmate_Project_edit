@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HackMate — Find Your Team</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── CSS VARIABLES / THEME ─── */
+    :root {
+  /* Dark Mode: Earthen Muted */
+  --bg:           #3a3532;
+  --bg2:          #4e4844;
+  --surface:      #5e5751;
+  --border:       rgba(201, 160, 115, 0.25);
+  --border-hi:    rgba(201, 160, 115, 0.7);
+  --text:         #e6ded7;
+  --text-muted:   #b0a8a1;
+  --accent:       #c9a073;
+  --accent2:      #e0bfa0;
+  --accent-glow:  rgba(201, 160, 115, 0.35);
+  --card-shadow:  0 0 40px rgba(201,160,115,0.08), 0 4px 24px rgba(0,0,0,0.4);
+  --radar-bg:     rgba(45, 40, 37, 0.92);
+  --grid-line:    rgba(201, 160, 115, 0.12);
+  --sweep-color:  #c9a073;
+  --hud-line:     rgba(201, 160, 115, 0.2);
+}
+
+[data-theme="light"] {
+  /* Light Mode: Softer version of Earthen Muted */
+  --bg:           #f4f1ed;
+  --bg2:          #e6e2de;
+  --surface:      #ffffff;
+  --border:       rgba(170, 130, 90, 0.2);
+  --border-hi:    rgba(170, 130, 90, 0.6);
+  --text:         #3a3532;
+  --text-muted:   #7a726d;
+  --accent:       #a67c52;
+  --accent2:      #c9a073;
+  --accent-glow:  rgba(170, 130, 90, 0.15);
+  --card-shadow:  0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0,0,0,0.05);
+  --radar-bg:     rgba(240, 235, 230, 0.95);
+  --grid-line:    rgba(170, 130, 90, 0.15);
+  --sweep-color:  #a67c52;
+  --hud-line:     rgba(170, 130, 90, 0.18);
+}
+    /* ─── BASE ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'Share Tech Mono', monospace; }
+
+    /* ─── BACKGROUND TOPOGRAPHY ─── */
+    .topo-bg {
+      position: fixed;
+      inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        repeating-radial-gradient(circle at 50% 50%,
+          transparent 0, transparent 38px,
+          var(--hud-line) 39px, transparent 40px),
+        repeating-radial-gradient(circle at 20% 80%,
+          transparent 0, transparent 58px,
+          var(--hud-line) 59px, transparent 60px);
+      opacity: 1;
+      transition: opacity 0.4s;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0; z-index: 100;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem; height: 64px;
+    }
+    .logo {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.6; }
+    }
+
+    /* ─── THEME TOGGLE ─── */
+    .theme-btn {
+      display: flex;
+      align-items: center; gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .theme-btn:hover {
+      background: var(--accent-glow);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .theme-icon { font-size: 1rem; transition: transform 0.4s ease; }
+    .theme-btn:hover .theme-icon { transform: rotate(30deg); }
+
+    /* ─── MAIN LAYOUT ─── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* ─── SECTION LABELS ─── */
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0;
+      left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.6;
+    }
+    .card-title {
+      font-size: 1.05rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* ─── HACKATHON HEADER CARD ─── */
+    .hackathon-card { grid-column: 1 / -1; }
+    .hackathon-meta {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+    .hackathon-title-main {
+      font-size: 1.5rem; font-weight: 900;
+      color: var(--accent2);
+      letter-spacing: 0.02em;
+    }
+    .hackathon-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem; line-height: 1.6;
+      margin-top: 0.4rem;
+    }
+    .countdown-block {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;
+    }
+    .countdown-unit {
+      display: flex; flex-direction: column; align-items: center;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      min-width: 60px;
+      transition: background 0.4s;
+    }
+    .countdown-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .countdown-label {
+      font-size: 0.6rem; letter-spacing: 0.15em;
+      color: var(--text-muted); text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center; gap: 0.35rem;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.4);
+      border-radius: 4px;
+      padding: 0.2rem 0.6rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    /* ─── RADAR PANEL ─── */
+    .radar-panel {
+      display: flex;
+      flex-direction: column; align-items: center; gap: 1.25rem;
+    }
+    .radar-wrap {
+      position: relative;
+      width: 340px; height: 340px;
+      flex-shrink: 0;
+    }
+    #radarCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: block;
+    }
+    .radar-hud-corner {
+      position: absolute;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--accent);
+      opacity: 0.7;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+    }
+    .radar-hud-corner.tl { top: 6px; left: 12px; }
+    .radar-hud-corner.tr { top: 6px; right: 12px; text-align: right; }
+    .radar-hud-corner.bl { bottom: 6px; left: 12px; }
+    .radar-hud-corner.br { bottom: 6px; right: 12px; text-align: right; }
+
+    .scan-form { display: flex; gap: 0.5rem; width: 100%; }
+    .scan-input {
+      flex: 1;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.6rem 0.75rem;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.4s;
+    }
+    .scan-input:focus { border-color: var(--border-hi); }
+    .scan-input::placeholder { color: var(--text-muted); }
+    .scan-btn {
+      padding: 0.6rem 1.25rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      color: #042b1c;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .scan-btn:hover { filter: brightness(1.15); box-shadow: 0 0 16px var(--accent-glow); }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; box-shadow: none; }
+
+    .radar-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      height: 1rem;
+      transition: color 0.3s;
+      text-align: center;
+    }
+    .radar-status.active { color: var(--accent); }
+
+    /* ─── PROFILE RESULT CARD ─── */
+    #profileCard {
+      width: 100%;
+      display: none;
+      animation: slideUp 0.4s ease forwards;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .profile-name { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .match-score {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .match-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .progress-bar-wrap { height: 6px; background: var(--bg2); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .skills-section { margin-top: 1rem; }
+    .skills-heading {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em;
+      color: var(--text-muted); text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .skill-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      border: 1px solid;
+    }
+    .skill-tag.matched { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.5); color: var(--accent2); }
+    .skill-tag.missing { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.35); color: #f87171; }
+    .skill-tag.all-skill {
+      background: var(--bg2); border-color: var(--border); color: var(--text-muted);
+      transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+    .skill-tag.all-skill:hover {
+      background: rgba(16,185,129,0.08);
+      border-color: rgba(16,185,129,0.4);
+      color: var(--accent2); box-shadow: 0 0 8px rgba(16,185,129,0.15); cursor: default;
+    }
+    .all-skills-wrap { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+    .all-skills-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.15em; color: var(--text-muted); margin-left: 0.4rem; opacity: 0.7;
+    }
+
+    /* ─── COLUMN CONFIGS ─── */
+    .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
+    .right-col { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* ─── SCANNER RING DECORATIONS ─── */
+    .radar-outer-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%; border: 1px solid var(--border);
+      pointer-events: none;
+    }
+    .radar-outer-ring::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 50%;
+      border: 1px dashed var(--border); animation: spin-slow 30s linear infinite;
+    }
+    .radar-outer-ring::after {
+      content: ''; position: absolute; inset: 4px; border-radius: 50%;
+      border: 1px solid rgba(16,185,129,0.08);
+    }
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    /* ─── BLIP TOOLTIP ─── */
+    #blipTooltip {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border-hi); border-radius: 4px;
+      padding: 0.3rem 0.6rem; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--accent);
+      pointer-events: none;
+      display: none; white-space: nowrap; z-index: 10;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0.75rem 0; }
+    .loading-dots::after { content: ''; animation: dots 1.4s infinite; }
+    @keyframes dots {
+      0%   { content: '.'; }
+      33%  { content: '..'; }
+      66%  { content: '...'; }
+      100% { content: ''; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topo-bg"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="logo"><div class="logo-dot"></div>HACKMATE</div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="mono" style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;">SYSTEM ONLINE</span>
+        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
+          <span class="theme-icon" id="themeIcon">☀️</span>
+          <span id="themeLabel">LIGHT MODE</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="card hackathon-card" id="hackathonCard">
+      <div class="section-tag">// ACTIVE MISSION</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 class="hackathon-title-main" id="hackTitle">Loading mission data<span class="loading-dots"></span></h1>
+          <p class="hackathon-desc" id="hackDesc"></p>
+        </div>
+        <span class="status-badge"><span class="status-dot"></span>REGISTRATION OPEN</span>
+      </div>
+      <div class="divider"></div>
+      <div class="section-tag">// TIME TO LAUNCH</div>
+      <div class="countdown-block">
+        <div class="countdown-unit"><span class="countdown-num" id="cdDays">--</span><span class="countdown-label">DAYS</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdHours">--</span><span class="countdown-label">HRS</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdMins">--</span><span class="countdown-label">MIN</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdSecs">--</span><span class="countdown-label">SEC</span></div>
+      </div>
+    </div>
+
+    <div class="left-col">
+      <div class="card">
+        <div class="section-tag">// TALENT SCANNER v2.4</div>
+        <p class="card-title">Find Your Perfect Teammate</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;">
+          Enter the skills your team needs. The radar will scan active hackers and plot matches on the display. 
+          Higher compatibility = closer to the bullseye. Click any blip to view the full profile.
+        </p>
+        <div class="divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;font-size:0.78rem;">
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span style="width:10px;height:10px;background:var(--accent);border-radius:50%;display:inline-block;box-shadow:0 0 6px var(--accent);"></span>
+            <span style="color:var(--text-muted);">High match (&gt;75%)</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span style="width:10px;height:10px;background:#facc15;border-radius:50%;display:inline-block;box-shadow:0 0 6px #facc15;"></span>
+            <span style="color:var(--text-muted);">Mid match (40–75%)</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span style="width:10px;height:10px;background:#f87171;border-radius:50%;display:inline-block;box-shadow:0 0 6px #f87171;"></span>
+            <span style="color:var(--text-muted);">Low match (&lt;40%)</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span style="width:10px;height:10px;border:1.5px solid var(--accent);border-radius:50%;display:inline-block;animation:pulse-dot 1.4s infinite;"></span>
+            <span style="color:var(--text-muted);">Scanning…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="card">
+        <div class="section-tag">// RADAR DISPLAY</div>
+        <div class="radar-panel">
+          <div class="radar-wrap">
+            <div class="radar-outer-ring"></div>
+            <canvas id="radarCanvas" width="340" height="340"></canvas>
+            <div class="radar-hud-corner tl" id="hudTL">RNG: 50KM</div>
+            <div class="radar-hud-corner tr" id="hudTR">TGTS: 0</div>
+            <div class="radar-hud-corner bl" id="hudBL">MODE: STANDBY</div>
+            <div class="radar-hud-corner br" id="hudBR" style="font-size:0.5rem;"></div>
+            <div id="blipTooltip"></div>
+          </div>
+          <div class="radar-status mono" id="radarStatus">AWAITING TARGET PARAMETERS</div>
+          <div class="scan-form">
+            <input class="scan-input" id="skillsInput" type="text" placeholder="e.g. Python, React, ML..." onkeydown="if(event.key==='Enter') startScan()" />
+            <button class="scan-btn" id="scanBtn" onclick="startScan()">▶ SCAN</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="profileCard">
+        <div class="section-tag">// TARGET ACQUIRED</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+          <div>
+            <div class="profile-name" id="profileName">—</div>
+            <div class="match-label">COMPATIBILITY SCORE</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="match-score" id="profileScore">0%</div>
+            <div class="match-label">MATCH</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        <div class="skills-section">
+          <div class="skills-heading">✓ Skills Matched</div>
+          <div class="skill-tags" id="matchedSkills"></div>
+        </div>
+        <div class="skills-section" style="margin-top:0.75rem;">
+          <div class="skills-heading">✗ Skills Missing</div>
+          <div class="skill-tags" id="missingSkills"></div>
+        </div>
+        <div class="all-skills-wrap" id="allSkillsWrap" style="display:none;">
+          <div class="skills-heading" style="display:flex;align-items:baseline;gap:0;">
+            🧳 Full Skill Set<span class="all-skills-count" id="allSkillsCount"></span>
+          </div>
+          <div class="skill-tags" style="margin-top:0.4rem;" id="allSkillsTags"></div>
+        </div>
+        
+        <div class="all-skills-wrap" style="margin-top: 1.25rem; padding-top: 1rem; display: flex; gap: 0.5rem;">
+          <a id="linkedinBtn" href="#" target="_blank" class="scan-btn" style="background: #0077b5; color: white; display: flex; align-items: center; justify-content: center; width: 48px; padding: 0.6rem 0; border-radius: 4px;" title="View LinkedIn Profile">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/>
+            </svg>
+          </a>
+          <button class="scan-btn" style="flex: 1; text-align: center;" id="inviteBtn" onclick="sendInvitation()">✉ SEND TEAM INVITATION</button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ═══════════════════════════════════════════════════
+    // THEME TOGGLE
+    // ═══════════════════════════════════════════════════
+    (function initTheme() {
+      const saved = localStorage.getItem('hackmate-theme') || 'dark';
+      applyTheme(saved);
+    })();
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon  = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (theme === 'dark') {
+        icon.textContent  = '☀️';
+        label.textContent = 'LIGHT MODE';
+      } else {
+        icon.textContent  = '🌙';
+        label.textContent = 'DARK MODE';
+      }
+      localStorage.setItem('hackmate-theme', theme);
+      if (window._radarCtx) drawStaticRadar(window._radarCtx, window._radarBlips || []);
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme');
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+
+    // ═══════════════════════════════════════════════════
+    // HACKATHON DATA + COUNTDOWN
+    // ═══════════════════════════════════════════════════
+    async function loadHackathon() {
+      try {
+        const res  = await fetch('/hackathons/active');
+        const data = await res.json();
+        document.getElementById('hackTitle').textContent = data.title || 'Unnamed Hackathon';
+        document.getElementById('hackDesc').textContent  = data.description || '';
+        if (data.target_date) startCountdown(data.target_date);
+      } catch(e) {
+        document.getElementById('hackTitle').textContent = 'HackMate Invitational 2026';
+        document.getElementById('hackDesc').textContent  = 'Build the future. Find your team. Ship something legendary.';
+        startCountdown('2026-08-20');
+      }
+    }
+
+    function startCountdown(dateStr) {
+      const target = new Date(dateStr + 'T00:00:00');
+      function tick() {
+        const now  = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
+          return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000)  / 60000);
+        const s = Math.floor((diff % 60000)    / 1000);
+        document.getElementById('cdDays').textContent  = String(d).padStart(2,'0');
+        document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+        document.getElementById('cdMins').textContent  = String(m).padStart(2,'0');
+        document.getElementById('cdSecs').textContent  = String(s).padStart(2,'0');
+        document.getElementById('hudBR').textContent   = `T-${d}D ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    // ═══════════════════════════════════════════════════
+    // RADAR ENGINE 
+    // ═══════════════════════════════════════════════════
+    const canvas = document.getElementById('radarCanvas');
+    const ctx    = canvas.getContext('2d');
+    window._radarCtx = ctx;
+
+    const CX = canvas.width  / 2;
+    const CY = canvas.height / 2;
+    const R  = (canvas.width / 2) - 18;
+
+    let sweepAngle  = 0;
+    let isScanning  = false;
+    let blips       = [];
+    window._radarBlips = blips;
+
+    function cssVar(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function drawStaticRadar(c, currentBlips) {
+      const W = canvas.width, H = canvas.height;
+      c.clearRect(0, 0, W, H);
+      c.save();
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2); c.clip();
+
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      c.fillStyle = isDark ? 'rgba(5,20,14,0.97)' : 'rgba(224,245,236,0.97)';
+      c.fillRect(0, 0, W, H);
+
+      const ringColor = cssVar('--grid-line');
+      for (let i = 1; i <= 4; i++) {
+        c.beginPath();
+        c.arc(CX, CY, R * (i / 4), 0, Math.PI * 2);
+        c.strokeStyle = ringColor; c.lineWidth = 1; c.stroke();
+      }
+
+      c.strokeStyle = ringColor; c.lineWidth = 0.8; c.setLineDash([4, 6]);
+      c.beginPath(); c.moveTo(CX, CY - R);
+      c.lineTo(CX, CY + R); c.stroke();
+      c.beginPath(); c.moveTo(CX - R, CY); c.lineTo(CX + R, CY); c.stroke();
+      c.setLineDash([]);
+
+      const accentColor = cssVar('--sweep-color');
+      c.strokeStyle = accentColor; c.lineWidth = 1.5; c.globalAlpha = 0.5;
+      c.beginPath(); c.moveTo(CX - 10, CY); c.lineTo(CX + 10, CY); c.stroke();
+      c.beginPath();
+      c.moveTo(CX, CY - 10); c.lineTo(CX, CY + 10); c.stroke();
+      c.globalAlpha = 1;
+      c.beginPath(); c.arc(CX, CY, 3, 0, Math.PI * 2);
+      c.fillStyle = accentColor; c.fill();
+
+      if (currentBlips && currentBlips.length) {
+        currentBlips.forEach(b => { if (b.revealed) drawBlip(c, b); });
+      }
+      c.restore();
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2);
+      c.strokeStyle = cssVar('--border-hi');
+      c.lineWidth = 1.5; c.stroke();
+    }
+
+    function drawSweepFrame() {
+      const c = ctx;
+      const W = canvas.width, H = canvas.height;
+      const accentColor = cssVar('--sweep-color');
+      c.clearRect(0, 0, W, H);
+      c.save();
+      c.beginPath();
+      c.arc(CX, CY, R, 0, Math.PI * 2); c.clip();
+
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      c.fillStyle = isDark ? 'rgba(5,20,14,0.97)' : 'rgba(224,245,236,0.97)';
+      c.fillRect(0, 0, W, H);
+
+      const ringColor = cssVar('--grid-line');
+      for (let i = 1; i <= 4; i++) {
+        c.beginPath();
+        c.arc(CX, CY, R * (i/4), 0, Math.PI * 2);
+        c.strokeStyle = ringColor; c.lineWidth = 1; c.stroke();
+      }
+
+      c.save();
+      c.translate(CX, CY);
+      const precisionWedgeSteps = 40;
+      const sweepTrailArcAngle = (Math.PI * 2) / 4;
+      for (let i = 0; i < precisionWedgeSteps; i++) {
+        const frac = i / precisionWedgeSteps;
+        const angle = sweepAngle - sweepTrailArcAngle * (1 - frac);
+        c.beginPath(); c.moveTo(0, 0);
+        c.arc(0, 0, R, angle, angle + (sweepTrailArcAngle / precisionWedgeSteps));
+        c.closePath();
+        const alpha = isDark ? frac * 0.15 : frac * 0.10;
+        c.fillStyle = isDark ? `rgba(16,185,129,${alpha})` : `rgba(5,150,105,${alpha})`;
+        c.fill();
+      }
+
+      c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(sweepAngle) * R, Math.sin(sweepAngle) * R);
+      c.strokeStyle = accentColor;
+      c.lineWidth = 2; c.stroke();
+      c.restore();
+
+      c.strokeStyle = ringColor; c.lineWidth = 0.8; c.setLineDash([4, 6]);
+      c.beginPath(); c.moveTo(CX, CY - R);
+      c.lineTo(CX, CY + R); c.stroke();
+      c.beginPath(); c.moveTo(CX - R, CY); c.lineTo(CX + R, CY); c.stroke();
+      c.setLineDash([]);
+      blips.forEach(b => { if (b.revealed) drawBlip(c, b); });
+      c.restore();
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2);
+      c.strokeStyle = cssVar('--border-hi');
+      c.lineWidth = 1.5; c.stroke();
+    }
+
+    function drawBlip(c, b) {
+      const now = Date.now();
+      const age = (now - b.bornAt) / 1000;
+      const pulse = 0.7 + 0.3 * Math.abs(Math.sin(age * 3));
+      c.save();
+      c.beginPath();
+      c.arc(b.px, b.py, 5, 0, Math.PI * 2);
+      c.strokeStyle = b.color; c.lineWidth = 1.5; c.globalAlpha = 0.4 * pulse; c.stroke();
+      c.beginPath();
+      c.arc(b.px, b.py, 4, 0, Math.PI * 2);
+      c.fillStyle = b.color; c.globalAlpha = pulse; c.fill();
+      c.restore();
+    }
+
+    // INTERCEPT PULSE CLOCK RENDER LOOP
+    setInterval(() => {
+      if (isScanning) {
+        sweepAngle = (sweepAngle + 0.04) % (Math.PI * 2);
+        drawSweepFrame();
+        blips.forEach(b => {
+          if (!b.revealed) {
+            const bAngle = (b.angle + Math.PI * 2) % (Math.PI * 2);
+            const currentSweepNormalized = (sweepAngle + Math.PI * 2) % (Math.PI * 2);
+            if (Math.abs(currentSweepNormalized - bAngle) < 0.1) {
+              b.revealed = true;
+              b.bornAt = Date.now();
+            }
+          }
+        });
+      } else if (blips.length > 0) {
+        drawStaticRadar(ctx, blips);
+      }
+    }, 20);
+
+    function scoreToRadius(scoreNum) {
+      const pct = Math.max(0, Math.min(100, scoreNum)) / 100;
+      return R * (0.85 - pct * 0.7);
+    }
+
+    function blipColor(scoreNum) {
+      if (scoreNum >= 75) return '#10b981';
+      if (scoreNum >= 40) return '#facc15';
+      return '#f87171';
+    }
+
+    // ═══════════════════════════════════════════════════
+    // CORE ASYNC TALENT DISCOVERY CONTROLLER (MOCK INTERCEPT)
+    // ═══════════════════════════════════════════════════
+    async function startScan() {
+      const skills = document.getElementById('skillsInput').value.trim();
+      if (!skills) {
+        document.getElementById('skillsInput').focus();
+        return;
+      }
+      if (isScanning) return;
+
+      isScanning = true;
+      blips = [];
+      window._radarBlips = blips;
+
+      document.getElementById('scanBtn').disabled = true;
+      document.getElementById('profileCard').style.display = 'none';
+      document.getElementById('radarStatus').textContent = 'SCANNING';
+      document.getElementById('radarStatus').className = 'radar-status active loading-dots mono';
+      document.getElementById('hudBL').textContent = 'MODE: SCAN';
+
+      // Local sandbox payload simulation containing target social hyperlinks
+      const mockCandidates = [
+        { user_name: "Anya Malhotra", score_number: 94, linkedin: "https://www.linkedin.com/in/syeda-umme-habeeba-716b4b358", match_score: "94%", angle_offset: 45, skills_matched: ["Python", "ML"], skills_missing: ["React"], all_skills: ["Python", "ML", "Git", "Docker"] },
+        { user_name: "Sarah Jenkins", score_number: 28, linkedin: "https://linkedin.com", match_score: "28%", angle_offset: 135, skills_matched: ["Python"], skills_missing: ["TensorFlow", "FastAPI"], all_skills: ["Python", "HTML", "CSS"] },
+        { user_name: "Alex Rivera", score_number: 62, linkedin: "https://linkedin.com", match_score: "62%", angle_offset: 220, skills_matched: ["Java", "SQL"], skills_missing: ["Python"], all_skills: ["Java", "SQL", "Spring Boot"] },
+        { user_name: "David Chen", score_number: 81, linkedin: "https://linkedin.com", match_score: "81%", angle_offset: 310, skills_matched: ["Python", "Django"], skills_missing: ["Vue"], all_skills: ["Python", "Django", "Postgres"] }
+      ];
+
+      const query = skills.toLowerCase();
+      
+      mockCandidates.forEach(candidate => {
+        const matchesQuery = candidate.all_skills.some(s => s.toLowerCase().includes(query));
+        
+        if (matchesQuery || query === "" || query === "all") {
+          const angle = (candidate.angle_offset * Math.PI) / 180;
+          const rad = scoreToRadius(candidate.score_number);
+          blips.push({
+            px: CX + Math.cos(angle) * rad,
+            py: CY + Math.sin(angle) * rad,
+            angle,
+            color: blipColor(candidate.score_number),
+            revealed: false,
+            bornAt: 0,
+            data: candidate
+          });
+        }
+      });
+
+      document.getElementById('hudTR').textContent = `TGTS: ${blips.length}`;
+      setupCanvasInteraction();
+
+      // Clear layout processing states accurately at execution end
+      setTimeout(() => {
+        isScanning = false;
+        document.getElementById('scanBtn').disabled = false;
+        document.getElementById('radarStatus').textContent = `SCAN COMPLETE — ${blips.length} TARGETS ACQUIRED`;
+        document.getElementById('radarStatus').className = 'radar-status mono';
+        document.getElementById('hudBL').textContent = 'MODE: STANDBY';
+
+        // Explicitly lock all detected targets visible
+        blips.forEach(b => {
+          b.revealed = true;
+          b.bornAt = Date.now();
+        });
+
+        // Fast re-render boundary cycle update
+        drawStaticRadar(ctx, blips);
+      }, 3000);
+    }
+
+    // ═══════════════════════════════════════════════════
+    // INTERACTION MECHANICS (HOVER TOOLTIPS + CLICKS)
+    // ═══════════════════════════════════════════════════
+    function setupCanvasInteraction() {
+      const tooltip = document.getElementById('blipTooltip');
+      canvas.onmousemove = function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        let found = null;
+        blips.forEach(b => {
+          if (!b.revealed) return;
+          const dist = Math.hypot(b.px - mx, b.py - my);
+          if (dist < 10) found = b;
+        });
+        if (found) {
+          canvas.style.cursor = 'pointer';
+          tooltip.style.display = 'block';
+          tooltip.style.left = (found.px + 12) + 'px';
+          tooltip.style.top = (found.py - 12) + 'px';
+          tooltip.textContent = `${found.data.user_name} (${found.data.score_number}%)`;
+        } else {
+          canvas.style.cursor = 'default';
+          tooltip.style.display = 'none';
+        }
+      };
+
+      canvas.onclick = function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        blips.forEach(b => {
+          if (!b.revealed) return;
+          const dist = Math.hypot(b.px - mx, b.py - my);
+          if (dist < 10) displayProfileCard(b.data);
+        });
+      };
+    }
+
+    function displayProfileCard(data) {
+      const card = document.getElementById('profileCard');
+      card.style.display = 'block';
+      document.getElementById('profileName').textContent = data.user_name;
+      document.getElementById('profileScore').textContent = data.score_number + '%';
+      
+      const pBar = document.getElementById('progressBar');
+      pBar.style.width = '0%';
+      setTimeout(() => { pBar.style.width = data.score_number + '%'; }, 50);
+
+      const matched = document.getElementById('matchedSkills');
+      const missing = document.getElementById('missingSkills');
+      matched.innerHTML = '';
+      missing.innerHTML = '';
+
+      (data.skills_matched || []).forEach(s => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag matched';
+        span.textContent = s;
+        matched.appendChild(span);
+      });
+      (data.skills_missing || []).forEach(s => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag missing';
+        span.textContent = s;
+        missing.appendChild(span);
+      });
+      const allWrap = document.getElementById('allSkillsWrap');
+      const allTags = document.getElementById('allSkillsTags');
+      const allCount = document.getElementById('allSkillsCount');
+      allTags.innerHTML = '';
+      if (data.all_skills && data.all_skills.length) {
+        allWrap.style.display = 'block';
+        allCount.textContent = ` · ${data.all_skills.length} skill${data.all_skills.length !== 1 ? 's' : ''}`;
+        data.all_skills.forEach((skill, i) => {
+          const span = document.createElement('span');
+          span.className = 'skill-tag all-skill';
+          span.textContent = skill;
+          span.style.opacity = '0';
+          span.style.transform = 'translateY(4px)';
+          span.style.transition = `opacity 0.2s ease ${i * 40}ms, transform 0.2s ease ${i * 40}ms`;
+          allTags.appendChild(span);
+  
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            span.style.opacity = '1';
+            span.style.transform = 'translateY(0)';
+          }));
+        });
+      } else {
+        allWrap.style.display = 'none';
+      }
+
+      // Dynamically update the anchor target's URL link mapping
+      document.getElementById('linkedinBtn').href = data.linkedin || "https://linkedin.com";
+
+      window._selectedCandidateToken = data.user_name;
+    }
+
+    function sendInvitation() {
+      const target = window._selectedCandidateToken || "hacker";
+      const btn = document.getElementById('inviteBtn');
+      btn.disabled = true;
+      btn.textContent = "✓ INVITATION TRANSMITTED";
+      alert(`Team invitation routed cleanly to ${target}!`);
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = "✉ SEND TEAM INVITATION";
+      }, 3000);
+    }
+
+    window.onload = () => {
+      loadHackathon();
+      drawStaticRadar(ctx, []);
+    };
+    async function addHacker() {
+        const name = document.getElementById('name').value;
+        const response = await fetch('/add-hacker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_name: name, all_skills: ["Node.js"] })
+        });
+        const result = await response.text();
+        alert(result);
+    }
+  </script>
+</body>
+</html>

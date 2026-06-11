@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HackMate — Create Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ─── CSS VARIABLES / THEME ─── */
+    :root {
+      --bg:           #3a3532;
+      --bg2:          #4e4844;
+      --surface:      #5e5751;
+      --border:       rgba(201, 160, 115, 0.25);
+      --border-hi:    rgba(201, 160, 115, 0.7);
+      --text:         #e6ded7;
+      --text-muted:   #b0a8a1;
+      --accent:       #c9a073;
+      --accent2:      #e0bfa0;
+      --accent-glow:  rgba(201, 160, 115, 0.35);
+      --card-shadow:  0 0 40px rgba(201,160,115,0.08), 0 4px 24px rgba(0,0,0,0.4);
+      --hud-line:     rgba(201, 160, 115, 0.2);
+
+      --danger:         #d47d7d;
+      --danger-bg:      rgba(212, 125, 125, 0.08);
+      --danger-border:  rgba(212, 125, 125, 0.35);
+      
+      --success:        #94b594;
+      --success-bg:     rgba(148, 181, 148, 0.08);
+      --success-border: rgba(148, 181, 148, 0.35);
+      --warn:           #d9b87a;
+      --warn-bg:        rgba(217, 184, 122, 0.08);
+      --warn-border:    rgba(217, 184, 122, 0.35);
+    }
+
+    [data-theme="light"] {
+      --bg:           #f4f1ed;
+      --bg2:          #e6e2de;
+      --surface:      #ffffff;
+      --border:       rgba(170, 130, 90, 0.2);
+      --border-hi:    rgba(170, 130, 90, 0.6);
+      --text:         #3a3532;
+      --text-muted:   #7a726d;
+      --accent:       #a67c52;
+      --accent2:      #c9a073;
+      --accent-glow:  rgba(170, 130, 90, 0.15);
+      --card-shadow:  0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0,0,0,0.05);
+      --hud-line:     rgba(170, 130, 90, 0.18);
+      
+      --danger:         #c15a5a;
+      --danger-bg:      rgba(193, 90, 90, 0.08);
+      --danger-border:  rgba(193, 90, 90, 0.35);
+      --success:        #6b946b;
+      --success-bg:     rgba(107, 148, 107, 0.08);
+      --success-border: rgba(107, 148, 107, 0.35);
+      --warn:           #c49a4a;
+      --warn-bg:        rgba(196, 154, 74, 0.08);
+      --warn-border:    rgba(196, 154, 74, 0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'Share Tech Mono', monospace; }
+
+    /* ─── TOPOGRAPHY background grid ─── */
+    .topo-bg {
+      position: fixed;
+      inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        repeating-radial-gradient(circle at 30% 70%,
+          transparent 0, transparent 38px,
+          var(--hud-line) 39px, transparent 40px),
+        repeating-radial-gradient(circle at 70% 30%,
+          transparent 0, transparent 58px,
+          var(--hud-line) 59px, transparent 60px);
+    }
+    .scanlines {
+      position: fixed; inset: 0; pointer-events: none; z-index: 1;
+      background: repeating-linear-gradient(
+        to bottom, transparent 0, transparent 3px,
+        rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem; height: 64px;
+    }
+    .logo {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem; font-weight: 700; color: var(--accent);
+      letter-spacing: 0.08em; display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .logo-dot {
+      width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.6); opacity: 0.6; }
+    }
+    .theme-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 1rem; border: 1px solid var(--border-hi); border-radius: 4px;
+      background: transparent; color: var(--accent);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s ease;
+    }
+    .theme-btn:hover { background: var(--accent-glow); box-shadow: 0 0 12px var(--accent-glow); }
+    .theme-icon { font-size: 1rem; transition: transform 0.4s ease; }
+    .theme-btn:hover .theme-icon { transform: rotate(30deg); }
+
+    /* ─── PAGE BODY ─── */
+    .page-body {
+      position: relative; z-index: 2; flex: 1;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .auth-container {
+      width: 100%; max-width: 480px;
+      animation: cardEntrance 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); filter: blur(6px); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); filter: blur(0);   }
+    }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 2rem; box-shadow: var(--card-shadow);
+      transition: background 0.4s, border-color 0.4s; position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.6;
+    }
+
+    /* ─── PROGRESS HEADER ─── */
+    .progress-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .step-pip { height: 3px; border-radius: 2px; flex: 1; background: var(--bg2); transition: background 0.4s ease; }
+    .step-pip.active   { background: var(--accent); }
+    .step-pip.complete { background: var(--accent2); }
+    .step-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--text-muted);
+      letter-spacing: 0.15em; white-space: nowrap;
+    }
+
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 0.5rem; opacity: 0.8;
+    }
+    .auth-title { font-size: 1.55rem; font-weight: 900; color: var(--accent2); letter-spacing: 0.03em; margin-bottom: 0.3rem; }
+    .auth-subtitle { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+
+    /* ─── FORM CONTROLS ─── */
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0; }
+    .form-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+      color: var(--text-muted); text-transform: uppercase;
+    }
+    .form-input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem;
+      opacity: 0.5; pointer-events: none; transition: opacity 0.2s;
+    }
+    .form-input-wrap:focus-within .input-icon { opacity: 1; }
+
+    .scan-input {
+      width: 100%; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.65rem 0.75rem 0.65rem 2.2rem;
+      color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; outline: none;
+      transition: border-color 0.2s, background 0.4s, box-shadow 0.2s;
+    }
+    .scan-input:focus { border-color: var(--border-hi); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .scan-input::placeholder { color: var(--text-muted); }
+    .scan-input.invalid { border-color: var(--danger-border) !important; box-shadow: 0 0 0 3px var(--danger-bg); }
+    .scan-input.valid   { border-color: rgba(52,211,153,0.5); }
+
+    .field-hint { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--text-muted); letter-spacing: 0.06em; margin-top: 0.2rem; min-height: 1rem; transition: color 0.2s; }
+    .field-hint.err { color: var(--danger); }
+    .field-hint.ok  { color: var(--success); }
+
+    .pwd-toggle {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0; transition: color 0.2s;
+    }
+    .pwd-toggle:hover { color: var(--accent); }
+
+    /* ─── PASSWORD STRENGTH METER ─── */
+    .strength-wrap { margin-top: 0.5rem; }
+    .strength-bars { display: flex; gap: 3px; height: 3px; }
+    .strength-bar  { flex: 1; border-radius: 2px; background: var(--bg2); transition: background 0.3s; }
+    .strength-bar.s1 { background: var(--danger); }
+    .strength-bar.s2 { background: var(--warn); }
+    .strength-bar.s3 { background: var(--accent2); }
+    .strength-bar.s4 { background: var(--accent); }
+    .strength-label { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; margin-top: 0.25rem; color: var(--text-muted); transition: color 0.3s; }
+
+    /* ─── ROLE SELECT CHIPS ─── */
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    
+    .role-chip {
+      position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.5rem 0.6rem; display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted);
+      letter-spacing: 0.06em; cursor: pointer; user-select: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .role-chip:hover { border-color: var(--border-hi); color: var(--text); }
+    .role-chip:focus-within { border-color: var(--border-hi); box-shadow: 0 0 0 3px var(--accent-glow); }
+    
+    .role-chip:has(input:checked) {
+      background: rgba(16,185,129,0.08);
+      border-color: rgba(16,185,129,0.5);
+      color: var(--accent2);
+      box-shadow: 0 0 10px rgba(16,185,129,0.08);
+    }
+    .role-icon { font-size: 1rem; }
+
+    /* ─── TERMS CHECKBOX ─── */
+    .terms-label {
+      display: flex; align-items: flex-start; gap: 0.5rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+      color: var(--text-muted); cursor: pointer; line-height: 1.5;
+    }
+    .terms-label input { accent-color: var(--accent); margin-top: 2px; cursor: pointer; }
+    .terms-label a { color: var(--accent); text-decoration: none; }
+    .terms-label a:hover { text-shadow: 0 0 6px var(--accent); }
+
+    /* ─── INTERACTIVE BUTTONS ─── */
+    .scan-btn {
+      width: 100%; padding: 0.75rem 1.25rem; background: var(--accent); border: none; border-radius: 4px;
+      color: #042b1c; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.12em; cursor: pointer; position: relative; overflow: hidden;
+      transition: filter 0.2s, box-shadow 0.2s, transform 0.15s; margin-top: 1.25rem;
+    }
+    .scan-btn:hover { filter: brightness(1.15); box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(16,185,129,0.1); transform: translateY(-1px); }
+    .scan-btn:active { transform: translateY(0); filter: brightness(1.05); }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; transform: none; box-shadow: none; }
+    .scan-btn::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transform: skewX(-20deg); transition: left 0.4s ease;
+    }
+    .scan-btn:hover::after { left: 160%; }
+
+    /* ─── FEEDBACK ALERTS ─── */
+    .msg-box {
+      display: none; margin-top: 1rem; padding: 0.6rem 0.9rem; border-radius: 4px;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em;
+      border: 1px solid; animation: msgFade 0.3s ease;
+    }
+    @keyframes msgFade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .msg-box.error   { background: var(--danger-bg);  border-color: var(--danger-border);  color: var(--danger); }
+    .msg-box.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+    .msg-box.warn    { background: var(--warn-bg);    border-color: var(--warn-border);    color: var(--warn); }
+    .msg-box.show    { display: block; }
+
+    .auth-redirect { margin-top: 1.5rem; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.06em; }
+    .auth-redirect a { color: var(--accent); text-decoration: none; transition: text-shadow 0.2s; }
+    .auth-redirect a:hover { text-shadow: 0 0 8px var(--accent); }
+
+    .corner-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--accent); opacity: 0.5; letter-spacing: 0.12em; position: absolute; }
+    .corner-tag.tl { top: 0.5rem; left: 0.75rem; }
+    .corner-tag.br { bottom: 0.5rem; right: 0.75rem; }
+
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+      .card { padding: 1.5rem; }
+      .auth-title { font-size: 1.25rem; }
+      .page-body { padding: 1.5rem 1rem 3rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topo-bg"></div>
+  <div class="scanlines"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="/index.html" class="logo"><div class="logo-dot"></div>HACKMATE</a>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="mono" style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;">NEW OPERATIVE</span>
+        <button type="button" class="theme-btn" onclick="toggleTheme()">
+          <span class="theme-icon" id="themeIcon">☀️</span>
+          <span id="themeLabel">LIGHT MODE</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-body">
+    <div class="auth-container">
+      <div class="card">
+        <span class="corner-tag tl">REG-02</span>
+        <span class="corner-tag br" id="clock"></span>
+
+        <div class="progress-header">
+          <div class="step-pip active" id="pip1"></div>
+          <div class="step-pip"        id="pip2"></div>
+          <div class="step-pip"        id="pip3"></div>
+          <span class="step-label"     id="stepLabel">STEP 1 OF 3</span>
+        </div>
+
+        <div class="section-tag">// OPERATIVE ENROLLMENT</div>
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join HackMate to find teammates, discover hackathons, and ship legendary projects.</p>
+
+        <form id="signupForm" onsubmit="handleSignup(event)" novalidate>
+
+          <div id="step1">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="firstName">FIRST NAME</label>
+                <div class="form-input-wrap">
+                  <input class="scan-input" type="text" id="firstName" placeholder="Ada" required />
+                  <span class="input-icon">◈</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="lastName">LAST NAME</label>
+                <div class="form-input-wrap">
+                  <input class="scan-input" type="text" id="lastName" placeholder="Lovelace" required />
+                  <span class="input-icon">◈</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:0.75rem;">
+              <label class="form-label" for="email">EMAIL ADDRESS</label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="email" id="email" placeholder="ada@hackmate.dev" autocomplete="email" required />
+                <span class="input-icon">@</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="username">USERNAME</label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="text" id="username" placeholder="ada_lovelace_01" autocomplete="username" oninput="validateUsername(this)" required />
+                <span class="input-icon">⌘</span>
+              </div>
+              <div class="field-hint" id="usernameHint">3–20 chars, letters, numbers, underscores only</div>
+            </div>
+
+            <button type="button" class="scan-btn" onclick="goStep(2)">CONTINUE →</button>
+          </div>
+
+          <div id="step2" style="display:none;">
+            <div class="form-group">
+              <label class="form-label" for="password">PASSWORD</label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="password" id="password" placeholder="••••••••••••" autocomplete="new-password" oninput="checkStrength(this.value)" required />
+                <span class="input-icon">🔒</span>
+                <button type="button" class="pwd-toggle" id="pwdToggle1" onclick="togglePassword('password','pwdToggle1')">SHOW</button>
+              </div>
+              <div class="strength-wrap">
+                <div class="strength-bars">
+                  <div class="strength-bar" id="sb1"></div>
+                  <div class="strength-bar" id="sb2"></div>
+                  <div class="strength-bar" id="sb3"></div>
+                  <div class="strength-bar" id="sb4"></div>
+                </div>
+                <div class="strength-label" id="strengthLabel">ENTER PASSWORD</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="confirmPwd">CONFIRM PASSWORD</label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="password" id="confirmPwd" placeholder="••••••••••••" autocomplete="new-password" oninput="validateConfirm()" required />
+                <span class="input-icon">🔒</span>
+                <button type="button" class="pwd-toggle" id="pwdToggle2" onclick="togglePassword('confirmPwd','pwdToggle2')">SHOW</button>
+              </div>
+              <div class="field-hint" id="confirmHint"></div>
+            </div>
+
+            <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+              <button type="button" class="scan-btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);flex:0 0 auto;width:auto;padding:0.75rem 1rem;" onclick="goStep(1)">← BACK</button>
+              <button type="button" class="scan-btn" style="flex:1;" onclick="goStep(3)">CONTINUE →</button>
+            </div>
+          </div>
+
+          <div id="step3" style="display:none;">
+            <div class="form-group">
+              <label class="form-label">YOUR OPERATIVE ROLE</label>
+              <div class="role-grid">
+                <label class="role-chip">
+                  <input type="radio" name="role" value="developer" class="sr-only" required />
+                  <span class="role-icon">💻</span> DEVELOPER
+                </label>
+                <label class="role-chip">
+                  <input type="radio" name="role" value="designer" class="sr-only" />
+                  <span class="role-icon">🎨</span> DESIGNER
+                </label>
+                <label class="role-chip">
+                  <input type="radio" name="role" value="ml_engineer" class="sr-only" />
+                  <span class="role-icon">🤖</span> ML ENGINEER
+                </label>
+                <label class="role-chip">
+                  <input type="radio" name="role" value="pm" class="sr-only" />
+                  <span class="role-icon">📊</span> PRODUCT MGR
+                </label>
+                <label class="role-chip">
+                  <input type="radio" name="role" value="data" class="sr-only" />
+                  <span class="role-icon">📈</span> DATA ANALYST
+                </label>
+                <label class="role-chip">
+                  <input type="radio" name="role" value="other" class="sr-only" />
+                  <span class="role-icon">⚡</span> OTHER
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="skills">TOP SKILLS <span style="opacity:0.5;">(comma-separated)</span></label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="text" id="skills" placeholder="Python, React, Machine Learning..." />
+                <span class="input-icon">⚙</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="linkedin">LINKEDIN PROFILE URL <span style="color:var(--danger);">*IMPORTANT</span></label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="url" id="linkedin" placeholder="https://www.linkedin.com/in/username" oninput="validateLinkedInInput(this)" required />
+                <span class="input-icon">🔗</span>
+              </div>
+              <div class="field-hint" id="linkedinHint">Mandatory profile clearance vector</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="github">GITHUB HANDLE <span style="opacity:0.5;">(optional)</span></label>
+              <div class="form-input-wrap">
+                <input class="scan-input" type="text" id="github" placeholder="github.com/ada-codes" />
+                <span class="input-icon">⌥</span>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:0.5rem;">
+              <label class="terms-label">
+                <input type="checkbox" id="terms" required />
+                <span>I agree to the HackMate <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. Data is strictly processed for team composition optimization.</span>
+              </label>
+            </div>
+
+            <div style="display:flex;gap:0.5rem;">
+              <button type="button" class="scan-btn" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);flex:0 0 auto;width:auto;padding:0.75rem 1rem;margin-top:1.25rem;" onclick="goStep(2)">← BACK</button>
+              <button type="submit" class="scan-btn" id="signupBtn" style="flex:1;">▶ ENROLL OPERATIVE</button>
+            </div>
+          </div>
+
+          <div class="msg-box" id="signupMsg" role="alert" aria-live="polite"></div>
+        </form>
+
+        <div class="auth-redirect">
+          ALREADY HAVE ACCESS? <a href="/login.html">SIGN IN →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // ─── THEME SUBSYSTEM CONTROL ───
+    (function initTheme() {
+      applyTheme(localStorage.getItem('hackmate-theme') || 'dark');
+    })();
+
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeIcon').textContent  = t === 'dark' ? '☀️' : '🌙';
+      document.getElementById('themeLabel').textContent = t === 'dark' ? 'LIGHT MODE' : 'DARK MODE';
+      localStorage.setItem('hackmate-theme', t);
+    }
+
+    function toggleTheme() {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    // ─── HARDWARE REAL-TIME CLOCK MATRIX ───
+    function tickClock() {
+      document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8);
+    }
+    tickClock(); setInterval(tickClock, 1000);
+
+    // ─── STATE NAVIGATION CONTROL ENGINE ───
+    function goStep(n) {
+      if (n > currentStep) {
+        if (currentStep === 1 && !validateStep1()) return;
+        if (currentStep === 2 && !validateStep2()) return;
+      }
+      document.getElementById('step' + currentStep).style.display = 'none';
+      currentStep = n;
+      document.getElementById('step' + currentStep).style.display = 'block';
+      updatePips();
+    }
+
+    function updatePips() {
+      for (let i = 1; i <= totalSteps; i++) {
+        const pip = document.getElementById('pip' + i);
+        pip.className = 'step-pip' + (i < currentStep ? ' complete' : i === currentStep ? ' active' : '');
+      }
+      document.getElementById('stepLabel').textContent = `STEP ${currentStep} OF ${totalSteps}`;
+    }
+
+    // ─── RIGID FORM DATA VALIDATOR MODULES ───
+    function validateStep1() {
+      const first    = document.getElementById('firstName').value.trim();
+      const last     = document.getElementById('lastName').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const username = document.getElementById('username').value.trim();
+
+      if (!first || !last) { showMsg('signupMsg','error','⚠ ENTER YOUR FIRST AND LAST NAME'); return false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('signupMsg','error','⚠ INVALID EMAIL FORMAT'); return false; }
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username))    { showMsg('signupMsg','error','⚠ USERNAME CONFIGURATION FAULT (3-20 ALPHANUMERIC/UNDERSCORE)'); return false; }
+      
+      clearMsg('signupMsg');
+      return true;
+    }
+
+    function validateStep2() {
+      const pwd  = document.getElementById('password').value;
+      const conf = document.getElementById('confirmPwd').value;
+      if (pwd.length < 8)  { showMsg('signupMsg','error','⚠ PASSWORD DEPTH DEFICIT (MINIMUM 8 CHARACTERS)'); return false; }
+      if (pwd !== conf)    { showMsg('signupMsg','error','⚠ TOKEN CORRELATION MISMATCH: PASSWORDS REJECTED'); return false; }
+      
+      clearMsg('signupMsg');
+      return true;
+    }
+
+    function validateUsername(el) {
+      const val  = el.value;
+      const hint = document.getElementById('usernameHint');
+      if (!val) { hint.textContent = '3–20 chars, letters, numbers, underscores only'; hint.className = 'field-hint'; el.className = 'scan-input'; return; }
+      
+      if (/^[a-zA-Z0-9_]{3,20}$/.test(val)) {
+        hint.textContent = '✓ AVATAR IDENTIFIER VERIFIED';
+        hint.className = 'field-hint ok'; el.classList.add('valid'); el.classList.remove('invalid');
+      } else {
+        hint.textContent = '✗ ARCHITECTURE REJECTED — USE ALPHANUMERIC & UNDERSCORES (3–20)';
+        hint.className = 'field-hint err'; el.classList.add('invalid'); el.classList.remove('valid');
+      }
+    }
+
+    // REAL-TIME LINKEDIN URL VERIFIER (Rejects shortcut and dummy string bypass attempts)
+    function validateLinkedInInput(el) {
+      const val = el.value.trim();
+      const hint = document.getElementById('linkedinHint');
+      const regex = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/;
+
+      if (!val) {
+        hint.textContent = 'Mandatory profile clearance vector';
+        hint.className = 'field-hint err';
+        el.className = 'scan-input invalid';
+        return false;
+      }
+
+      if (regex.test(val)) {
+        hint.textContent = '✓ SECURE PROFILE IDENTITY COUPLING CONFIRMED';
+        hint.className = 'field-hint ok';
+        el.className = 'scan-input valid';
+        return true;
+      } else {
+        hint.textContent = '✗ INVALID FORMAT — MUST BE FULL PATH (https://www.linkedin.com/in/username)';
+        hint.className = 'field-hint err';
+        el.className = 'scan-input invalid';
+        return false;
+      }
+    }
+
+    function checkStrength(pwd) {
+      const bars = [1,2,3,4].map(i => document.getElementById('sb' + i));
+      const lbl  = document.getElementById('strengthLabel');
+      let score  = 0;
+      
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+      if (/\d/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+      const tiers  = ['', 's1', 's2', 's3', 's4'];
+      const labels = ['ENTER PASSWORD','CRITICAL VULNERABILITY','COMPROMISED DEFENSES','SECURE SYSTEM','REINFORCED ENCRYPTION'];
+      const colors = ['var(--text-muted)','var(--danger)','var(--warn)','var(--accent2)','var(--accent)'];
+
+      bars.forEach((b, i) => { b.className = 'strength-bar' + (i < score ? ' ' + tiers[score] : ''); });
+      lbl.textContent = labels[score];
+      lbl.style.color = colors[score];
+    }
+
+    function validateConfirm() {
+      const pwd  = document.getElementById('password').value;
+      const conf = document.getElementById('confirmPwd').value;
+      const hint = document.getElementById('confirmHint');
+      const el   = document.getElementById('confirmPwd');
+      
+      if (!conf) { hint.textContent = ''; hint.className = 'field-hint'; el.className = 'scan-input'; return; }
+      if (conf === pwd) {
+        hint.textContent = '✓ SECURITY CHANNELS SYNCED'; hint.className = 'field-hint ok';
+        el.classList.add('valid'); el.classList.remove('invalid');
+      } else {
+        hint.textContent = '✗ VERIFICATION CODE MISMATCH'; hint.className = 'field-hint err';
+        el.classList.add('invalid'); el.classList.remove('valid');
+      }
+    }
+
+    function togglePassword(inputId, btnId) {
+      const inp  = document.getElementById(inputId);
+      const btn  = document.getElementById(btnId);
+      const show = inp.type === 'password';
+      inp.type   = show ? 'text' : 'password';
+      btn.textContent = show ? 'HIDE' : 'SHOW';
+    }
+
+    function showMsg(id, type, text) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = `msg-box ${type} show`;
+    }
+    
+    function clearMsg(id) { document.getElementById(id).className = 'msg-box'; }
+
+    // ─── NETWORK TRANSACTION HANDLER ───
+    async function handleSignup(e) {
+      e.preventDefault();
+      
+      // Enforce early failure checks before clearing payloads
+      if (!validateStep1() || !validateStep2()) return;
+      
+      const linkedinEl = document.getElementById('linkedin');
+      if (!validateLinkedInInput(linkedinEl)) {
+        showMsg('signupMsg', 'error', '⚠ VALIDATION ERROR: VERIFIABLE LINKEDIN IDENTITY DOMAIN REQUIRED');
+        return;
+      }
+
+      if (!document.getElementById('terms').checked) { showMsg('signupMsg', 'warn', '⚠ COMPLIANCE MANDATORY: RATIFY PRIVACY MANDATES'); return; }
+
+      const role = document.querySelector('input[name="role"]:checked');
+      if (!role) { showMsg('signupMsg', 'warn', '⚠ SYSTEM REQUIRES OPERATIVE ROLE SELECTION'); return; }
+
+      const btn = document.getElementById('signupBtn');
+      btn.disabled = true; btn.textContent = '◌ ENROLLING SYSTEM NODE...';
+
+      const rawSkills = document.getElementById('skills').value;
+      const parsedSkills = rawSkills ? rawSkills.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+      const payload = {
+        first_name:   document.getElementById('firstName').value.trim(),
+        last_name:    document.getElementById('lastName').value.trim(),
+        email:        document.getElementById('email').value.trim(),
+        user_name:    document.getElementById('username').value.trim(),
+        password:     document.getElementById('password').value,
+        role:         role.value,
+        skills:       parsedSkills,
+        linkedin_url: linkedinEl.value.trim(),
+        github:       document.getElementById('github').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/signup', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          showMsg('signupMsg', 'success', '✓ OPERATIVE ENROLLED — REDIRECTING TO MISSION HQ...');
+          setTimeout(() => { window.location.href = '/index.html'; }, 1400);
+        } else {
+          showMsg('signupMsg', 'error', `⚠ ARCHITECTURAL REJECTION: ${data.message || 'ENROLLMENT FAULT'}`);
+          btn.disabled = false; btn.textContent = '▶ ENROLL OPERATIVE';
+        }
+      } catch (err) {
+        console.error("Transact Error: ", err);
+        showMsg('signupMsg', 'error', '⚠ BACKEND AIRLOCK BREACHED — CORE SYSTEM UNREACHABLE');
+        btn.disabled = false; btn.textContent = '▶ ENROLL OPERATIVE';
+      }
+    }
+  </script>
+</body>
+</html>

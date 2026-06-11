@@ -1,0 +1,41 @@
+/* Hide the default system cursor */
+body {
+    cursor: url('images/anchor-point.png') 5 5, auto !important;
+}
+
+/* The custom cursor element */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #c9a073; 
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none; /* Crucial: lets you click through to buttons */
+    transition: transform 0.1s ease;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Keeps the cursor centered on the mouse position */
+    margin-left: -10px; 
+    margin-top: -10px;
+}
+
+/* The targeting dot inside */
+.custom-cursor::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #c9a073; 
+    border-radius: 50%;
+}
+
+/* Animation when hovering over interactable elements */
+.cursor-hover {
+    transform: scale(2);
+    border-color: #e0bfa0; 
+    /* Force your custom cursor on all buttons, links, and inputs */
+button, a, .btn, input, textarea, select {
+    cursor: url('images/anchor-point.png') 0 0, auto !important;
+}
+}
