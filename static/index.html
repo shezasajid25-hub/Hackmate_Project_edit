@@ -129,6 +129,11 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.75rem;
       cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      background: rgba(201, 160, 115, 0.1);
     }
 
     main {
@@ -426,6 +431,19 @@
       background: linear-gradient(90deg, transparent, var(--border), transparent);
       margin: 0.75rem 0;
     }
+
+    /* Modal Overlay Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 20, 14, 0.96);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      padding: 2rem 1rem;
+    }
   </style>
 </head>
 
@@ -438,7 +456,15 @@
         <div class="logo-dot"></div>HACKMATE
       </div>
       <div style="display:flex;align-items:center;gap:1rem;">
-        <span class="mono" style="font-size:0.65rem;color:var(--text-muted);">SYSTEM ONLINE</span>
+        <span class="mono"
+          style="font-size:0.65rem;color:var(--text-muted); display: none; md:display: inline-block;">SYSTEM
+          ONLINE</span>
+
+        <button class="theme-btn" id="profileBtn" onclick="openProfileModal()">
+          <span class="theme-icon">👤</span>
+          <span>MY PROFILE</span>
+        </button>
+
         <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
           <span class="theme-icon" id="themeIcon">☀️</span>
           <span id="themeLabel">LIGHT MODE</span>
@@ -450,7 +476,8 @@
   <main>
     <div class="card welcome-card" id="welcomeCard"
       style="grid-column: 1 / -1; display: none; margin-bottom: 0.5rem; background: var(--bg2);">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem;">
         <div>
           <div class="section-tag">// IDENTITY VERIFIED</div>
           <h2 class="welcome-message" id="welcomeMessage"
@@ -565,8 +592,7 @@
     </div>
   </main>
 
-  <div id="onboardingOverlay"
-    style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); padding: 2rem 1rem;">
+  <div id="onboardingOverlay" class="modal-overlay">
     <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem;">
       <div class="section-tag">// CORE ONBOARDING PORTAL</div>
       <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem;">INITIALIZE PROFILE
@@ -604,9 +630,113 @@
     </div>
   </div>
 
+  <div id="profileModalOverlay" class="modal-overlay">
+    <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem; position: relative;">
+      <button type="button" onclick="closeProfileModal()"
+        style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+        ✕
+      </button>
+
+      <div id="profileViewPanel">
+        <div class="section-tag">// HACKER ACCOUNT DEPLOYMENT</div>
+        <h2 id="viewIdentityTitle"
+          style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.25rem;">---</h2>
+        <div class="mono text-xs text-[var(--text-muted)] mb-4">SYSTEM HANDLE: @<span id="viewHandle">---</span></div>
+        <div class="divider"></div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+          <div>
+            <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-0.5">CURRENT SECTOR</span>
+            <span id="viewLocationText" class="font-semibold">---</span>
+          </div>
+          <div>
+            <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1">SKILLS MATRIX</span>
+            <div id="viewSkillsContainer" class="flex flex-wrap gap-1"></div>
+          </div>
+        </div>
+
+        <div class="mb-4 text-sm">
+          <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1">ACHIEVEMENTS FIELD LOG</span>
+          <p id="viewAchievementsText"
+            class="p-3 bg-[var(--bg2)] rounded border border-[var(--border)] text-xs text-[var(--text-muted)] whitespace-pre-wrap max-h-24 overflow-y-auto">
+            ---</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6 text-xs mono">
+          <div>
+            <span class="text-[var(--text-muted)]">GITHUB NODE:</span>
+            <a id="viewGithubAnchor" href="#" target="_blank"
+              class="text-[var(--accent)] hover:underline block truncate">---</a>
+          </div>
+          <div>
+            <span class="text-[var(--text-muted)]">LINKEDIN LINK:</span>
+            <a id="viewLinkedinAnchor" href="#" target="_blank"
+              class="text-[var(--accent)] hover:underline block truncate">---</a>
+          </div>
+        </div>
+
+        <button type="button" class="scan-btn w-full text-center" onclick="switchToEditMode()">[ 📝 EDIT IDENTITY LOGS
+          ]</button>
+      </div>
+
+      <div id="profileEditPanel" style="display: none;">
+        <div class="section-tag">// MODIFY REGISTERED CREDENTIALS</div>
+        <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem;">UPDATE PROTOCOLS
+        </h2>
+        <div class="divider"></div>
+
+        <form id="editProfileForm" onsubmit="submitProfileUpdate(event)">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">First Name</label>
+              <input type="text" id="editFirstName" class="scan-input" required />
+            </div>
+            <div>
+              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">Last Name</label>
+              <input type="text" id="editLastName" class="scan-input" required />
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">City Location</label>
+            <input type="text" id="editLocation" class="scan-input" required />
+          </div>
+          <div class="mb-4">
+            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">Achievements Log</label>
+            <textarea id="editAchievements" class="scan-input h-16 resize-none" required></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">GitHub URL</label>
+              <input type="url" id="editGithub" class="scan-input" required />
+            </div>
+            <div>
+              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">LinkedIn URL</label>
+              <input type="url" id="editLinkedin" class="scan-input" />
+            </div>
+          </div>
+
+          <div class="mb-6 p-3 border border-dashed border-[var(--border)] rounded">
+            <label class="mono text-[0.65rem] block mb-2" style="color:var(--text-muted)">⚡ Modify Skill Badges (Min
+              3)</label>
+            <div id="editSkillsWrapper" class="flex flex-wrap gap-2 mb-2"></div>
+            <div id="editSkillsCountAlert" class="mono text-xs text-emerald-400">✅ 0 Badges Active</div>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="submit" class="scan-btn flex-1" id="editSubmitBtn">▶ COMMIT CHANGES</button>
+            <button type="button"
+              class="scan-btn !bg-transparent border border-[var(--border)] text-[var(--text-muted)] px-4"
+              onclick="switchToViewMode()">CANCEL</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     const DEFAULT_SUGGESTED_SKILLS = ["Python", "React", "TypeScript", "Solidity", "UI Design", "Figma", "Node.js", "Go"];
     let INTERACTIVE_SKILLS_POOL = new Set();
+    let EDIT_SKILLS_POOL = new Set();
     let currentUser = null;
 
     window.onload = function () {
@@ -616,7 +746,7 @@
         return;
       }
       currentUser = JSON.parse(userCached);
-      document.getElementById('welcomeMessage').textContent = `WELCOME TO THE GRID, ${currentUser.first_name.toUpperCase()}`;
+      updateWelcomeMessage();
       document.getElementById('welcomeCard').style.display = 'block';
 
       if (!currentUser.has_onboarded) {
@@ -628,6 +758,11 @@
       runRadarSystem();
     };
 
+    function updateWelcomeMessage() {
+      document.getElementById('welcomeMessage').textContent = `WELCOME TO THE GRID, ${(currentUser.first_name || '').toUpperCase()}`;
+    }
+
+    /* ─── ONBOARDING SYSTEM ─── */
     function initOnboardingUI() {
       const wrapper = document.getElementById('quickSkillsWrapper');
       DEFAULT_SUGGESTED_SKILLS.forEach(skill => {
@@ -669,10 +804,13 @@
       e.preventDefault();
       const payload = {
         user_name: currentUser.user_name,
+        first_name: currentUser.first_name,
+        last_name: currentUser.last_name,
         location: document.getElementById('onboardLocation').value.trim(),
         skills: Array.from(INTERACTIVE_SKILLS_POOL),
         github: document.getElementById('onboardGithub').value.trim(),
-        linkedin: document.getElementById('onboardLinkedin').value.trim()
+        linkedin: document.getElementById('onboardLinkedin').value.trim(),
+        achievements: document.getElementById('onboardAchievements').value.trim()
       };
 
       try {
@@ -683,24 +821,218 @@
         });
         if (res.ok) {
           currentUser.has_onboarded = true;
+          Object.assign(currentUser, payload);
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
           document.getElementById('onboardingOverlay').style.display = 'none';
           loadHackathonEngine();
         }
       } catch (err) { alert('Failed updating core synchronization.'); }
     }
 
-    // ─── UPDATED: PERSONAL REGISTRATION STATE ENGINE ───
+    /* ─── DUAL-MODE PROFILE WINDOW LOGIC ─── */
+    function openProfileModal() {
+      renderProfileViewData();
+      document.getElementById('profileViewPanel').style.display = 'block';
+      document.getElementById('profileEditPanel').style.display = 'none';
+      document.getElementById('profileModalOverlay').style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModalOverlay').style.display = 'none';
+    }
+
+    function renderProfileViewData() {
+      // Hydrate text nodes from our synchronized memory cache
+      document.getElementById('viewIdentityTitle').textContent = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.toUpperCase();
+      document.getElementById('viewHandle').textContent = currentUser.user_name || 'unknown';
+      document.getElementById('viewLocationText').textContent = currentUser.location || 'Not Specified';
+      document.getElementById('viewAchievementsText').textContent = currentUser.achievements || 'No logged field deployments.';
+
+      // Update interactive hyperlink networks
+      const ghAnchor = document.getElementById('viewGithubAnchor');
+      ghAnchor.textContent = currentUser.github || 'No Link Connected';
+      ghAnchor.href = currentUser.github || '#';
+
+      const liAnchor = document.getElementById('viewLinkedinAnchor');
+      liAnchor.textContent = currentUser.linkedin || 'No Link Connected';
+      liAnchor.href = currentUser.linkedin || '#';
+
+      // Render Active Skill Badges
+      const container = document.getElementById('viewSkillsContainer');
+      container.innerHTML = '';
+      const skillsArray = currentUser.skills || [];
+      if (skillsArray.length === 0) {
+        container.innerHTML = '<span class="text-xs text-[var(--text-muted)] italic">None selected</span>';
+      } else {
+        skillsArray.forEach(skill => {
+          const badge = document.createElement('span');
+          badge.className = 'skill-tag matched mono text-[10px]';
+          badge.textContent = skill;
+          container.appendChild(badge);
+        });
+      }
+    }
+
+    function switchToEditMode() {
+      // Prepare form content fields
+      document.getElementById('editFirstName').value = currentUser.first_name || '';
+      document.getElementById('editLastName').value = currentUser.last_name || '';
+      document.getElementById('editLocation').value = currentUser.location || '';
+      document.getElementById('editGithub').value = currentUser.github || '';
+      document.getElementById('editLinkedin').value = currentUser.linkedin || '';
+      document.getElementById('editAchievements').value = currentUser.achievements || '';
+
+      // Mirror active skills into the modifier working stack
+      EDIT_SKILLS_POOL = new Set(currentUser.skills || []);
+      buildEditSkillsPickerUI();
+
+      document.getElementById('profileViewPanel').style.display = 'none';
+      document.getElementById('profileEditPanel').style.display = 'block';
+    }
+
+    function switchToViewMode() {
+      document.getElementById('profileEditPanel').style.display = 'none';
+      document.getElementById('profileViewPanel').style.display = 'block';
+    }
+
+    function buildEditSkillsPickerUI() {
+      const wrapper = document.getElementById('editSkillsWrapper');
+      wrapper.innerHTML = '';
+
+      DEFAULT_SUGGESTED_SKILLS.forEach(skill => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag all-skill mono text-xs';
+        span.textContent = `[ ${skill} ]`;
+
+        if (EDIT_SKILLS_POOL.has(skill)) {
+          span.classList.add('matched');
+        }
+
+        span.onclick = () => {
+          if (EDIT_SKILLS_POOL.has(skill)) {
+            EDIT_SKILLS_POOL.delete(skill);
+            span.classList.remove('matched');
+          } else {
+            EDIT_SKILLS_POOL.add(skill);
+            span.classList.add('matched');
+          }
+          validateEditSkillsCount();
+        };
+        wrapper.appendChild(span);
+      });
+      validateEditSkillsCount();
+    }
+
+    function validateEditSkillsCount() {
+      const count = EDIT_SKILLS_POOL.size;
+      const alertBox = document.getElementById('editSkillsCountAlert');
+      const submitBtn = document.getElementById('editSubmitBtn');
+
+      if (count >= 3) {
+        alertBox.textContent = `✅ ${count} Skills Verified`;
+        alertBox.className = "mono text-xs text-emerald-400";
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      } else {
+        alertBox.textContent = `❌ ${count} Active Badges (Minimum 3 Required)`;
+        alertBox.className = "mono text-xs text-red-400";
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+      }
+    }
+
+    async function submitProfileUpdate(e) {
+      e.preventDefault();
+
+      const payload = {
+        user_name: currentUser.user_name,
+        first_name: document.getElementById('editFirstName').value.trim(),
+        last_name: document.getElementById('editLastName').value.trim(),
+        location: document.getElementById('editLocation').value.trim(),
+        github: document.getElementById('editGithub').value.trim(),
+        linkedin: document.getElementById('editLinkedin').value.trim(),
+        achievements: document.getElementById('editAchievements').value.trim(),
+        skills: Array.from(EDIT_SKILLS_POOL)
+      };
+
+      const btn = document.getElementById('editSubmitBtn');
+      btn.textContent = "SYNCHRONIZING RECON...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/profile/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        ```
+let data = {};
+
+try {
+  data = await res.json();
+} catch {
+  data = {};
+}
+
+if (res.ok) {
+  Object.assign(currentUser, payload);
+
+  localStorage.setItem(
+    'currentUser',
+    JSON.stringify(currentUser)
+  );
+
+  updateWelcomeMessage();
+  renderProfileViewData();
+  switchToViewMode();
+
+  alert('✅ Profile updated successfully.');
+} else {
+  alert(
+    `System core rejected patch: ${
+          data.detail || 'Unknown Framework Exception'
+        } `
+  );
+
+  console.error(
+    'Profile update failed:',
+    data
+  );
+}
+```
+
+      } catch (err) {
+        console.error(
+          'Telemetry update drop fault:',
+          err
+        );
+
+        ```
+alert('Transmission link failure.');
+```
+
+      } finally {
+        btn.textContent = "▶ COMMIT CHANGES";
+        btn.disabled = false;
+      }
+    }
+
+
+    /* ─── HACKATHON DASHBOARD STATE ENGINE ─── */
     async function loadHackathonEngine() {
       try {
-        // FIXED: Updated target route endpoint and query configuration parameters to match backend layout
         const res = await fetch(`/api/hacker/my-registrations?username=${currentUser.user_name}`);
         if (res.ok) {
           const registeredHackathons = await res.json();
 
-          // Verify that user has an actual array of registrations length > 0
           if (Array.isArray(registeredHackathons) && registeredHackathons.length > 0) {
-            const data = registeredHackathons[0]; // Grab the active event
+            const data = registeredHackathons[0];
             document.getElementById('dashboardStateUnregistered').style.display = 'none';
             document.getElementById('dashboardStateRegistered').style.display = 'block';
             document.getElementById('hackTitle').textContent = data.title;
@@ -738,6 +1070,7 @@
       setInterval(update, 1000);
     }
 
+    /* ─── RADAR UI LOGIC ─── */
     let sweepAngle = 0;
     function runRadarSystem() {
       const canvas = document.getElementById('radarCanvas');
