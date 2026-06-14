@@ -433,6 +433,18 @@
   </nav>
 
   <main>
+    <div class="card welcome-card" id="welcomeCard" style="grid-column: 1 / -1; display: none; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--surface) 0%, var(--bg2) 100%); border: 1px solid var(--border-hi);">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+          <div class="section-tag">// IDENTITY VERIFIED // OPERATOR GREETING</div>
+          <h2 class="welcome-message" id="welcomeMessage" style="font-size: 1.4rem; font-weight: 900; color: var(--accent2); margin-top: 0.2rem; letter-spacing: 0.02em;"></h2>
+        </div>
+        <button onclick="handleLogout()" class="scan-btn" style="padding: 0.4rem 0.8rem; font-size: 0.7rem; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 4px; width: auto;">
+          ⎋ LOGOUT
+        </button>
+      </div>
+    </div>
+
     <div class="card hackathon-card" id="hackathonCard">
       <div class="section-tag">// ACTIVE MISSION</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
@@ -543,6 +555,50 @@
       </div>
     </div>
   </main>
+
+  <!-- ONBOARDING PORTAL OVERLAY -->
+  <div id="onboardingOverlay" style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem 1rem;">
+    <div class="card" style="width: 100%; max-width: 500px; padding: 2.5rem; position: relative; background: var(--surface); border: 1px solid var(--border-hi);">
+      <span class="corner-tag tl">SYS-INIT-09</span>
+      <div class="section-tag">// CORE ONBOARDING PORTAL</div>
+      <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.05em;">OPERATOR PROFILE INITIALIZATION</h2>
+      <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+        Welcome to the grid, operator. Before scanning or joining active missions, initialize your profile node.
+      </p>
+      
+      <div class="divider"></div>
+      
+      <form id="onboardingForm" onsubmit="submitOnboarding(event)">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
+          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">ROLE PREFERENCE</label>
+          <select id="onboardRole" class="scan-input" style="padding-left: 0.75rem;" required>
+            <option value="Backend Developer">Backend Developer</option>
+            <option value="Frontend UI Expert">Frontend UI Expert</option>
+            <option value="Fullstack Generalist">Fullstack Generalist</option>
+            <option value="ML/AI Engineer">ML/AI Engineer</option>
+            <option value="UI/UX Designer">UI/UX Designer</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
+          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">PRIMARY SKILLS (comma-separated)</label>
+          <input type="text" id="onboardSkills" class="scan-input" style="padding-left: 0.75rem;" placeholder="e.g. React, Python, Node.js, PyTorch" required />
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
+          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">LINKEDIN PROFILE URL</label>
+          <input type="url" id="onboardLinkedin" class="scan-input" style="padding-left: 0.75rem;" placeholder="https://www.linkedin.com/in/username" required />
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.5rem;">
+          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">GITHUB USERNAME (optional)</label>
+          <input type="text" id="onboardGithub" class="scan-input" style="padding-left: 0.75rem;" placeholder="e.g. octocat" />
+        </div>
+
+        <button type="submit" class="scan-btn" id="onboardSubmitBtn">▶ INITIALIZE CORE PROFILE</button>
+      </form>
+    </div>
+  </div>
 
   <script>
     // ═══════════════════════════════════════════════════
@@ -951,7 +1007,111 @@
       }, 3000);
     }
 
+    async function initUserSession() {
+      const userStr = localStorage.getItem('currentUser');
+      if (!userStr) {
+        window.location.href = '/login.html';
+        return;
+      }
+      
+      let currentUser = JSON.parse(userStr);
+      
+      try {
+        // Fetch fresh state from the database
+        const res = await fetch(`/api/profile/status?user_name=${encodeURIComponent(currentUser.user_name)}`);
+        if (res.ok) {
+          const data = await res.json();
+          currentUser.has_onboarded = data.has_onboarded;
+          currentUser.first_name = data.first_name;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+      } catch (err) {
+        console.warn("Failed to fetch fresh user status, using cached state.", err);
+      }
+      
+      // Update welcome banner visibility
+      document.getElementById('welcomeCard').style.display = 'block';
+      
+      if (!currentUser.has_onboarded) {
+        // Show onboarding portal
+        document.getElementById('onboardingOverlay').style.display = 'flex';
+      } else {
+        // Already onboarded - check if returning or just completed onboarding
+        if (currentUser.just_registered) {
+          document.getElementById('welcomeMessage').textContent = `Welcome to the grid, Hacker! 👋 Ready to ship something legendary?`;
+          // Clear just_registered flag so next time they load, they are returning
+          currentUser.just_registered = false;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        } else {
+          document.getElementById('welcomeMessage').textContent = `Welcome Back, Hacker 👋 Ready to build something amazing today?`;
+        }
+      }
+    }
+
+    async function submitOnboarding(e) {
+      e.preventDefault();
+      const userStr = localStorage.getItem('currentUser');
+      if (!userStr) return;
+      
+      const currentUser = JSON.parse(userStr);
+      const btn = document.getElementById('onboardSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = '◌ INITIALIZING NODE...';
+      
+      const role = document.getElementById('onboardRole').value;
+      const skillsInput = document.getElementById('onboardSkills').value;
+      const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const linkedin = document.getElementById('onboardLinkedin').value.trim();
+      const github = document.getElementById('onboardGithub').value.trim();
+      
+      try {
+        const response = await fetch('/api/profile/onboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_name: currentUser.user_name,
+            status: 'looking_for_team',
+            skills: skills,
+            linkedin_url: linkedin,
+            github: github
+          })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          // Update localStorage
+          currentUser.has_onboarded = true;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          // Hide overlay
+          document.getElementById('onboardingOverlay').style.display = 'none';
+          
+          // Show signup welcome greeting
+          document.getElementById('welcomeMessage').textContent = `Welcome to the grid, Hacker! 👋 Ready to ship something legendary?`;
+          
+          // Clear just_registered flag after greeting is displayed
+          currentUser.just_registered = false;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        } else {
+          alert('Onboarding failed: ' + (data.detail || 'Unknown error'));
+          btn.disabled = false;
+          btn.textContent = '▶ INITIALIZE CORE PROFILE';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to onboarding service');
+        btn.disabled = false;
+        btn.textContent = '▶ INITIALIZE CORE PROFILE';
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = '/login.html';
+    }
+
     window.onload = () => {
+      initUserSession();
       loadHackathon();
       drawStaticRadar(ctx, []);
     };

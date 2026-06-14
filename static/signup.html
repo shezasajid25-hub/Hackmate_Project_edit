@@ -692,6 +692,13 @@
 
         if (res.ok) {
           showMsg('signupMsg', 'success', '✓ OPERATIVE ENROLLED — REDIRECTING TO MISSION HQ...');
+          // Save user state in localStorage
+          localStorage.setItem('currentUser', JSON.stringify({
+            user_name: data.user.user_name,
+            first_name: data.user.first_name,
+            has_onboarded: data.user.has_onboarded,
+            just_registered: true
+          }));
           setTimeout(() => { window.location.href = '/index.html'; }, 1400);
         } else {
           showMsg('signupMsg', 'error', `⚠ ARCHITECTURAL REJECTION: ${data.message || 'ENROLLMENT FAULT'}`);

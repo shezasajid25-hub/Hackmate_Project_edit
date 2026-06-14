@@ -1,9 +1,9 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
 if (!uri) {
-  console.error('Missing MONGODB_URI');
+  console.error('Missing MONGODB_URI or MONGO_URI in .env');
   process.exit(1);
 }
 
@@ -14,7 +14,7 @@ if (!uri) {
     console.log('✅ Connected to MongoDB');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Connection error:', err.code, err.syscall, err.hostname);
+    console.error('❌ Connection error:', err);
     process.exit(1);
   } finally {
     try {

@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true }, // The hashed password
   role: { type: String, required: true },
   github: { type: String },
-  skills: [String]
+  skills: [String],
+  has_onboarded: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

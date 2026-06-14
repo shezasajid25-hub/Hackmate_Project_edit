@@ -21,9 +21,9 @@ app.use(express.json());
 app.use(express.static('static'));
 
 // Database Connection
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
 if (!uri) {
-  console.error('❌ Missing MONGODB_URI in .env');
+  console.error('❌ Missing MONGODB_URI or MONGO_URI in .env');
 } else {
   mongoose
     .connect(uri, { serverSelectionTimeoutMS: 10000 })
@@ -43,11 +43,14 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({ 
-      first_name, last_name, email, user_name, password: hashedPassword, role, skills, github 
+      first_name, last_name, email, user_name, password: hashedPassword, role, skills, github, has_onboarded: false
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ 
+      message: "User registered successfully", 
+      user: { user_name: newUser.user_name, first_name: newUser.first_name, has_onboarded: false } 
+    });
   } catch (error) {
     res.status(500).json({ detail: "Registration failed: " + error.message });
   }
@@ -59,14 +62,17 @@ app.post('/login', async (req, res) => {
     const { user_name, password } = req.body;
     const user = await User.findOne({ user_name });
     
-    if (!user) return res.status(401).send("User not found.");
+    if (!user) return res.status(401).json({ detail: "User not found." });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).send("Invalid password.");
+    if (!isMatch) return res.status(401).json({ detail: "Invalid password." });
 
-    res.status(200).send("Login successful!");
+    res.status(200).json({ 
+      message: "Login successful!", 
+      user: { user_name: user.user_name, first_name: user.first_name, has_onboarded: user.has_onboarded } 
+    });
   } catch (err) {
-    res.status(500).send("Login error: " + err.message);
+    res.status(500).json({ detail: "Login error: " + err.message });
   }
 });
 

@@ -550,13 +550,20 @@
           body: JSON.stringify({ user_name: username, password: password })
         });
         
-        const result = await response.text();
+        const data = await response.json();
         
         if (response.ok) {
-          showMsg('loginMsg', 'success', '✓ ' + result);
+          showMsg('loginMsg', 'success', '✓ ' + data.message);
+          // Save user state in localStorage
+          localStorage.setItem('currentUser', JSON.stringify({
+            user_name: data.user.user_name,
+            first_name: data.user.first_name,
+            has_onboarded: data.user.has_onboarded,
+            just_registered: false
+          }));
           setTimeout(() => { window.location.href = '/index.html'; }, 1200);
         } else {
-          showMsg('loginMsg', 'error', '⚠ ' + result);
+          showMsg('loginMsg', 'error', '⚠ ' + (data.detail || 'Authentication failed'));
           btn.disabled = false;
           btn.textContent = '▶ AUTHENTICATE';
         }
