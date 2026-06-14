@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HackMate — Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #3a3532;
+            --bg2: #4e4844;
+            --surface: #5e5751;
+            --border: rgba(201, 160, 115, 0.25);
+            --border-hi: rgba(201, 160, 115, 0.7);
+            --text: #e6ded7;
+            --text-muted: #b0a8a1;
+            --accent: #c9a073;
+            --accent2: #e0bfa0;
+            --accent-glow: rgba(201, 160, 115, 0.35);
+            --hud-line: rgba(201, 160, 115, 0.2);
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mono {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            inset-x: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .scan-input {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.6rem 0.75rem;
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            width: 100%;
+            outline: none;
+        }
+
+        .scan-input:focus {
+            border-color: var(--border-hi);
+        }
+
+        .scan-btn {
+            padding: 0.6rem 1.25rem;
+            background: var(--accent);
+            color: #042b1c;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .scan-btn:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+
+        /* Tracks multi-select pills layout styling */
+        .track-pill {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .track-pill.selected {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav style="background: var(--bg2); border-bottom: 1px solid var(--border);">
+        <div class="max-w-6xl mx-auto h-16 px-6 flex items-center justify-between">
+            <div class="logo font-bold tracking-wider text-xl mono" style="color: var(--accent);">⌗ MISSION CONTROL
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="orgNameBanner" class="mono text-xs uppercase" style="color: var(--text-muted);">// ORGANIZER
+                    WORKSPACE</span>
+                <button onclick="adminLogout()" class="scan-btn !py-1.5 !px-3 !font-normal text-xs">⎋ LOGOUT</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-10 relative z-10">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <div class="section-tag">// MANAGEMENT CONTROL OPERATIONS</div>
+                <h1 class="text-3xl font-black tracking-tight">Active Deployments</h1>
+            </div>
+            <button id="topDeployBtn" class="scan-btn uppercase tracking-wider" style="display: none;"
+                onclick="openDeployModal()">[ ➕ Deploy New Event ]</button>
+        </div>
+
+        <div id="stateEmptyGrid" class="card text-center py-16 px-4" style="display: none;">
+            <div class="mono text-3xl mb-4 text-[var(--accent)]">📡</div>
+            <h3 class="mono text-sm uppercase tracking-widest mb-2" style="color: var(--text-muted);">State A: Empty
+                Grid (No Active Events Deployed)</h3>
+            <p class="text-sm max-w-md mx-auto mb-8" style="color: var(--text-muted);">
+                Your operating account has zero active or published hackathons registered in the database core.
+                Initialize the control matrix to map structural parameters.
+            </p>
+            <button class="scan-btn uppercase tracking-wider text-sm py-3 px-6" onclick="openDeployModal()">[ ➕ Deploy
+                New Event ]</button>
+        </div>
+
+        <div id="stateLiveControlGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6" style="display: none;">
+        </div>
+    </main>
+
+    <div id="deploymentModal"
+        style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 2rem 1rem; overflow-y: auto;">
+        <div class="card w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div class="section-tag">// EVENT CREATION MATRIX</div>
+            <h2 class="text-xl font-bold uppercase tracking-wider mb-4" style="color: var(--accent);">Deploy New Event
+            </h2>
+            <div class="divider mb-4 h-[1px]"
+                style="background: linear-gradient(90deg, transparent, var(--border), transparent);"></div>
+
+            <form id="deploymentForm" onsubmit="handleLaunchEvent(event)">
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">*
+                        Hackathon Name</label>
+                    <input type="text" id="eventTitle" class="scan-input" placeholder="e.g. HackMate Invitational 2026"
+                        required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* Event
+                        Timeline (Launch Deadline Date Anchor)</label>
+                    <input type="date" id="eventTargetDate" class="scan-input" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">*
+                        Description / Rules</label>
+                    <textarea id="eventDescription" class="scan-input h-20 resize-none"
+                        placeholder="Build the future. Find your team. Ship something legendary." required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* Hosting
+                        Area / Geographic Location (City Coordinate Input)</label>
+                    <input type="text" id="eventLocation" class="scan-input" placeholder="e.g. Hyderabad" required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* External
+                        Organization Registration Link (Typeform / Portal URL)</label>
+                    <input type="url" id="eventRegLink" class="scan-input"
+                        placeholder="https://external-registration-form.com/id" required />
+                </div>
+
+                <div class="mb-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* Cost
+                            Parameter Toggle</label>
+                        <select id="eventCostType" class="scan-input" onchange="toggleFeeField(this.value)">
+                            <option value="FREE">Free Entry</option>
+                            <option value="PAID">Paid Entry</option>
+                        </select>
+                    </div>
+                    <div id="feeFieldContainer" style="display: none;">
+                        <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">*
+                            Entry Fee Amount (INR)</label>
+                        <input type="number" id="eventEntryFee" class="scan-input" placeholder="500" value="0"
+                            min="0" />
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="mono text-[0.65rem] uppercase block mb-2" style="color:var(--text-muted)">*
+                        Operational Track Selection Badges</label>
+                    <div id="tracksWrapper" class="flex flex-wrap gap-2">
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button"
+                        class="scan-btn !bg-transparent !text-[var(--text-muted)] border border-[var(--border)] uppercase"
+                        onclick="closeDeployModal()">[ Cancel ]</button>
+                    <button type="submit" class="scan-btn flex-1 uppercase tracking-wider">[ 🚀 Launch Event Globally
+                        ]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const STRUCTURAL_TRACK_OPTIONS = ["AI/ML", "Web3", "Mobile App", "UI/UX Design", "Fintech", "Cybersecurity"];
+        let SELECTED_TRACKS_SET = new Set();
+        let loggedAdmin = null;
+
+        // Direct dashboard identity status evaluation execution loops
+        window.onload = function () {
+            const cacheAdminString = localStorage.getItem('currentAdmin');
+            if (!cacheAdminString) {
+                window.location.href = '/admin-auth.html';
+                return;
+            }
+            loggedAdmin = JSON.parse(cacheAdminString);
+            document.getElementById('orgNameBanner').textContent = `// ${loggedAdmin.organization_name.toUpperCase()} HUB`;
+
+            generateTrackPillBadges();
+            fetchAdminMissionsFeed();
+        };
+
+        function generateTrackPillBadges() {
+            const wrapper = document.getElementById('tracksWrapper');
+            wrapper.innerHTML = '';
+            STRUCTURAL_TRACK_OPTIONS.forEach(track => {
+                const button = document.createElement('span');
+                button.className = 'track-pill mono';
+                button.textContent = `[ ${track} ]`;
+                button.onclick = () => {
+                    if (SELECTED_TRACKS_SET.has(track)) {
+                        SELECTED_TRACKS_SET.delete(track);
+                        button.classList.remove('selected');
+                    } else {
+                        SELECTED_TRACKS_SET.add(track);
+                        button.classList.add('selected');
+                    }
+                };
+                wrapper.appendChild(button);
+            });
+        }
+
+        function toggleFeeField(val) {
+            document.getElementById('feeFieldContainer').style.display = (val === 'PAID') ? 'block' : 'none';
+        }
+
+        function openDeployModal() {
+            document.getElementById('deploymentModal').style.display = 'flex';
+        }
+
+        function closeDeployModal() {
+            document.getElementById('deploymentModal').style.display = 'none';
+            document.getElementById('deploymentForm').reset();
+            SELECTED_TRACKS_SET.clear();
+            generateTrackPillBadges();
+            toggleFeeField('FREE');
+        }
+
+        async function fetchAdminMissionsFeed() {
+            try {
+                const res = await fetch(`/api/admin/missions/${loggedAdmin.id}`);
+                const data = await res.json();
+
+                const stateEmpty = document.getElementById('stateEmptyGrid');
+                const stateLive = document.getElementById('stateLiveControlGrid');
+                const topBtn = document.getElementById('topDeployBtn');
+
+                if (data.length === 0) {
+                    stateEmpty.style.display = 'block';
+                    stateLive.style.display = 'none';
+                    topBtn.style.display = 'none';
+                } else {
+                    stateEmpty.style.display = 'none';
+                    stateLive.style.display = 'grid';
+                    topBtn.style.display = 'block';
+
+                    stateLive.innerHTML = '';
+                    data.forEach(event => {
+                        const trackChipsHTML = event.tracks.map(t => `<span class="skill-tag matched !bg-transparent text-[var(--accent)] border-none font-bold p-0 mr-2 text-[0.7rem] mono">[ ${t} ]</span>`).join('');
+                        const card = document.createElement('div');
+                        card.className = 'card border border-[var(--border)] flex flex-col justify-between';
+                        card.innerHTML = `
+              <div>
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="mono text-lg font-bold text-[var(--accent2)]">${event.title}</h3>
+                  <span class="status-badge !bg-emerald-950/20 text-emerald-400 border border-emerald-700/50 text-[0.55rem] uppercase tracking-widest py-0.5 px-1.5 font-bold">● LIVE ON GUEST BOARD</span>
+                </div>
+                <p class="text-xs text-[var(--text-muted)] line-height[1.6] mb-4">${event.description}</p>
+                <div class="mb-4 flex flex-wrap">${trackChipsHTML}</div>
+              </div>
+              <div class="divider border-b border-[var(--border)] border-dashed my-3"></div>
+              <div class="flex justify-between items-center text-[0.7rem] mono text-[var(--text-muted)]">
+                <div>📍 Location: <span class="text-[var(--text)] font-bold">${event.location_name}</span></div>
+                <div>📅 Target: <span class="text-[var(--text)] font-bold">${event.target_date}</span></div>
+              </div>
+            `;
+                        stateLive.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                console.error("Error reading mission control databases:", err);
+            }
+        }
+
+        async function handleLaunchEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('eventTitle').value.trim();
+            const target_date = document.getElementById('eventTargetDate').value;
+            const description = document.getElementById('eventDescription').value.trim();
+            const location_name = document.getElementById('eventLocation').value.trim();
+            const registration_link = document.getElementById('eventRegLink').value.trim();
+            const costType = document.getElementById('eventCostType').value;
+            const entry_fee = costType === 'PAID' ? parseFloat(document.getElementById('eventEntryFee').value) || 0 : 0;
+
+            const bodyData = {
+                title,
+                description,
+                target_date,
+                tracks: Array.from(SELECTED_TRACKS_SET),
+                is_paid: costType === 'PAID',
+                entry_fee,
+                location_name,
+                registration_link,
+                organizer: loggedAdmin.id
+            };
+
+            try {
+                const res = await fetch('/api/admin/deploy-mission', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (res.ok) {
+                    closeDeployModal();
+                    fetchAdminMissionsFeed();
+                } else {
+                    const errData = await res.json();
+                    alert('Deployment matrix error: ' + (errData.detail || 'Launch sequence rejected.'));
+                }
+            } catch (err) {
+                alert('Failed pushing data tracking packets system-wide.');
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('currentAdmin');
+            window.location.href = '/landing.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -8,9 +8,12 @@ const app = express();
 // Import Models
 const User = require('./models/User');
 const Profile = require('./models/Profile');
+const Admin = require('./models/Admin');
+const Hackathon = require('./models/Hackathon');
 
 // Import Routes
 const profileRoutes = require('./routes/profileRoutes');
+const adminRoutes = require('./routes/adminRoutes'); // <-- Added Admin Route Import
 
 // Middleware
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
@@ -40,13 +43,13 @@ app.get('/hackathons/active', (req, res) => {
 
 // ─── API ROUTE MOUNTING ───
 app.use('/api/profile', profileRoutes);
+app.use('/api/admin', adminRoutes); // <-- Added Admin Route Mounting Space
 
 // ─── SIGNUP ───
 app.post('/signup', async (req, res) => {
   try {
     const { first_name, last_name, email, user_name, password, role, skills, github } = req.body;
 
-    // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       first_name,
