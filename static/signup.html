@@ -701,7 +701,7 @@
           }));
           setTimeout(() => { window.location.href = '/index.html'; }, 1400);
         } else {
-          showMsg('signupMsg', 'error', `⚠ ARCHITECTURAL REJECTION: ${data.message || 'ENROLLMENT FAULT'}`);
+          showMsg('signupMsg', 'error', `⚠ ARCHITECTURAL REJECTION: ${data.detail || 'ENROLLMENT FAULT'}`);
           btn.disabled = false; btn.textContent = '▶ ENROLL OPERATIVE';
         }
       } catch (err) {

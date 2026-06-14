@@ -56,6 +56,44 @@
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
+        /* ─── BUG FIX #5: RETRO HUD COMPONENT UI DEF-BLOCKS ─── */
+        .section-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 4px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.65rem;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            width: 100%;
+        }
+
         .scan-input {
             background: var(--bg2);
             border: 1px solid var(--border);
@@ -90,7 +128,6 @@
             box-shadow: 0 0 16px var(--accent-glow);
         }
 
-        /* Tracks multi-select pills layout styling */
         .track-pill {
             padding: 0.3rem 0.75rem;
             font-size: 0.7rem;
@@ -157,8 +194,7 @@
             <div class="section-tag">// EVENT CREATION MATRIX</div>
             <h2 class="text-xl font-bold uppercase tracking-wider mb-4" style="color: var(--accent);">Deploy New Event
             </h2>
-            <div class="divider mb-4 h-[1px]"
-                style="background: linear-gradient(90deg, transparent, var(--border), transparent);"></div>
+            <div class="divider mb-4"></div>
 
             <form id="deploymentForm" onsubmit="handleLaunchEvent(event)">
                 <div class="mb-4">
@@ -189,7 +225,7 @@
 
                 <div class="mb-4">
                     <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* External
-                        Organization Registration Link (Typeform / Portal URL)</label>
+                        Organization Registration Link</label>
                     <input type="url" id="eventRegLink" class="scan-input"
                         placeholder="https://external-registration-form.com/id" required />
                 </div>
@@ -214,8 +250,7 @@
                 <div class="mb-6">
                     <label class="mono text-[0.65rem] uppercase block mb-2" style="color:var(--text-muted)">*
                         Operational Track Selection Badges</label>
-                    <div id="tracksWrapper" class="flex flex-wrap gap-2">
-                    </div>
+                    <div id="tracksWrapper" class="flex flex-wrap gap-2"></div>
                 </div>
 
                 <div class="flex gap-4">
@@ -234,7 +269,6 @@
         let SELECTED_TRACKS_SET = new Set();
         let loggedAdmin = null;
 
-        // Direct dashboard identity status evaluation execution loops
         window.onload = function () {
             const cacheAdminString = localStorage.getItem('currentAdmin');
             if (!cacheAdminString) {
@@ -313,10 +347,10 @@
                   <h3 class="mono text-lg font-bold text-[var(--accent2)]">${event.title}</h3>
                   <span class="status-badge !bg-emerald-950/20 text-emerald-400 border border-emerald-700/50 text-[0.55rem] uppercase tracking-widest py-0.5 px-1.5 font-bold">● LIVE ON GUEST BOARD</span>
                 </div>
-                <p class="text-xs text-[var(--text-muted)] line-height[1.6] mb-4">${event.description}</p>
+                <p class="text-xs text-[var(--text-muted)] mb-4">${event.description}</p>
                 <div class="mb-4 flex flex-wrap">${trackChipsHTML}</div>
               </div>
-              <div class="divider border-b border-[var(--border)] border-dashed my-3"></div>
+              <div class="divider my-3"></div>
               <div class="flex justify-between items-center text-[0.7rem] mono text-[var(--text-muted)]">
                 <div>📍 Location: <span class="text-[var(--text)] font-bold">${event.location_name}</span></div>
                 <div>📅 Target: <span class="text-[var(--text)] font-bold">${event.target_date}</span></div>
@@ -341,14 +375,10 @@
             const entry_fee = costType === 'PAID' ? parseFloat(document.getElementById('eventEntryFee').value) || 0 : 0;
 
             const bodyData = {
-                title,
-                description,
-                target_date,
+                title, description, target_date,
                 tracks: Array.from(SELECTED_TRACKS_SET),
                 is_paid: costType === 'PAID',
-                entry_fee,
-                location_name,
-                registration_link,
+                entry_fee, location_name, registration_link,
                 organizer: loggedAdmin.id
             };
 

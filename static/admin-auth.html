@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HackMate — Organizer Control Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #3a3532;
+            --bg2: #4e4844;
+            --surface: #5e5751;
+            --border: rgba(201, 160, 115, 0.25);
+            --accent: #c9a073;
+            --text: #e6ded7;
+            --text-muted: #b0a8a1;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .mono {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .scan-input {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.6rem 0.75rem;
+            color: var(--text);
+            width: 100%;
+            outline: none;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .scan-btn {
+            padding: 0.75rem;
+            background: var(--accent);
+            color: #042b1c;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="mono text-[10px] tracking-widest text-[var(--accent)] mb-2">// ORGANIZER COMPONENT</div>
+
+        <div class="flex mb-6 border-b border-[var(--border)]">
+            <div id="tabLogin" class="tab-btn active" onclick="switchMode('LOGIN')">[ LOGIN ]</div>
+            <div id="tabSignup" class="tab-btn" onclick="switchMode('SIGNUP')">[ REGISTER NODE ]</div>
+        </div>
+
+        <form id="authForm" onsubmit="handleSubmit(event)">
+            <div id="signupFields" style="display: none;">
+                <div class="mb-4">
+                    <label class="mono text-[11px] block mb-1 text-[var(--text-muted)]">OPERATOR FULL NAME</label>
+                    <input type="text" id="adminName" class="scan-input" placeholder="e.g. Commander Sarah" />
+                </div>
+                <div class="mb-4">
+                    <label class="mono text-[11px] block mb-1 text-[var(--text-muted)]">ORGANIZATION ENTITY</label>
+                    <input type="text" id="adminOrg" class="scan-input" placeholder="e.g. Nexus Corp Labs" />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="mono text-[11px] block mb-1 text-[var(--text-muted)]">SECURE EMAIL ADDRESS</label>
+                <input type="email" id="adminEmail" class="scan-input" placeholder="org@network.io" required />
+            </div>
+
+            <div class="mb-6">
+                <label class="mono text-[11px] block mb-1 text-[var(--text-muted)]">ACCESS PASSPHRASE</label>
+                <input type="password" id="adminPassword" class="scan-input" placeholder="••••••••" required />
+            </div>
+
+            <button type="submit" id="submitBtn" class="scan-btn">AUTHENTICATE ENTRY</button>
+        </form>
+    </div>
+
+    <script>
+        let currentMode = 'LOGIN';
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const signupFields = document.getElementById('signupFields');
+            const submitBtn = document.getElementById('submitBtn');
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            if (mode === 'LOGIN') {
+                document.getElementById('tabLogin').classList.add('active');
+                signupFields.style.display = 'none';
+                submitBtn.textContent = 'AUTHENTICATE ENTRY';
+                document.getElementById('adminName').required = false;
+                document.getElementById('adminOrg').required = false;
+            } else {
+                document.getElementById('tabSignup').classList.add('active');
+                signupFields.style.display = 'block';
+                submitBtn.textContent = 'DEPLOY NEW NODE';
+                document.getElementById('adminName').required = true;
+                document.getElementById('adminOrg').required = true;
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            // Determine target route structure matching the adminRoutes.js base router mounts
+            const targetEndpoint = currentMode === 'LOGIN' ? '/api/admin/login' : '/api/admin/register';
+
+            let payload = { email, password };
+
+            if (currentMode === 'SIGNUP') {
+                payload.full_name = document.getElementById('adminName').value.trim();
+                payload.organization_name = document.getElementById('adminOrg').value.trim();
+            }
+
+            try {
+                const response = await fetch(targetEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Sync login/registration state with mission control portal memory cache
+                    localStorage.setItem('currentAdmin', JSON.stringify(data.admin));
+                    alert(data.message || "Authorization complete.");
+                    window.location.href = '/admin-dashboard.html';
+                } else {
+                    alert(`Execution Error: ${data.detail || 'Access vector verification failed.'}`);
+                }
+            } catch (err) {
+                console.error("NETWORK COMM FAILURE:", err);
+                alert("Error deploying organizer account node. Server communication disrupted.");
+            }
+        }
+    </script>
+</body>
+
+</html>

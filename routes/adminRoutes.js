@@ -4,16 +4,21 @@ const bcrypt = require('bcrypt');
 const Admin = require('../models/Admin');
 const Hackathon = require('../models/Hackathon');
 
-// ─── ADMIN REGISTER NODE (Section 10.3) ───
-router.post('/register', async (req, res) => {
+// ─── ADMIN REGISTER/SIGNUP ALIAS MATRIX ───
+// Added an identical endpoint mapping for '/signup' to catch discrepancies
+const registerHandler = async (req, res) => {
     try {
-        const { full_name, organization_name, email, password } = req.body;
+        // Read either snake_case (spec) or camelCase (common inputs)
+        const full_name = req.body.full_name || req.body.name;
+        const organization_name = req.body.organization_name || req.body.orgName;
+        const email = req.body.email;
+        const password = req.body.password;
 
         if (!full_name || !organization_name || !email || !password) {
             return res.status(400).json({ detail: "All fields are mandatory (*)" });
         }
 
-        const existingAdmin = await Admin.findOne({ email });
+        const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
         if (existingAdmin) {
             return res.status(400).json({ detail: "An organizer with this email already exists." });
         }
@@ -22,7 +27,7 @@ router.post('/register', async (req, res) => {
         const newAdmin = new Admin({
             full_name,
             organization_name,
-            email,
+            email: email.toLowerCase(),
             password: hashedPassword
         });
 
@@ -39,11 +44,16 @@ router.post('/register', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error("ADMIN REGISTRATION BREAKDOWN:", error);
         res.status(500).json({ detail: error.message });
     }
-});
+};
 
-// ─── ADMIN AUTHENTICATION AIRLOCK (Section 10.2) ───
+// Map both paths to ensure total resilience against front-end call configurations
+router.post('/register', registerHandler);
+router.post('/signup', registerHandler);
+
+// ─── ADMIN AUTHENTICATION AIRLOCK ───
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -52,7 +62,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ detail: "Email and password are required." });
         }
 
-        const admin = await Admin.findOne({ email });
+        const admin = await Admin.findOne({ email: email.toLowerCase() });
         if (!admin) {
             return res.status(401).json({ detail: "Invalid administrative credentials." });
         }
@@ -77,7 +87,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// ─── GET ADMIN SPECIFIC MISSIONS (Section 11) ───
+// ─── GET ADMIN SPECIFIC MISSIONS ───
 router.get('/missions/:adminId', async (req, res) => {
     try {
         const hackathons = await Hackathon.find({ organizer: req.params.adminId });
@@ -87,7 +97,18 @@ router.get('/missions/:adminId', async (req, res) => {
     }
 });
 
-// ─── GLOBAL MISSION DEPLOYMENT TRIGGER (Section 12.2) ───
+// ─── EXPOSE UNIFIED DISCOVERY FEED (P0 FIX) ───
+// This route satisfies the feed required by events.html
+router.get('/missions/all', async (req, res) => {
+    try {
+        const publicMissions = await Hackathon.find({ status: 'PUBLISHED' });
+        res.json(publicMissions);
+    } catch (error) {
+        res.status(500).json({ detail: error.message });
+    }
+});
+
+// ─── GLOBAL MISSION DEPLOYMENT TRIGGER ───
 router.post('/deploy-mission', async (req, res) => {
     try {
         const { title, description, target_date, tracks, is_paid, entry_fee, location_name, registration_link, organizer } = req.body;

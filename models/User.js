@@ -8,8 +8,13 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true }, // The hashed password
   role: { type: String, required: true },
   github: { type: String },
+  linkedin_url: { type: String },
   skills: [String],
-  has_onboarded: { type: Boolean, default: false }
+  has_onboarded: { type: Boolean, default: false },
+
+  // ─── REGISTRATION STATE ENGINE POOL ───
+  // Tracks exactly which hackathons this specific user has joined
+  registered_hackathons: { type: [String], default: [] }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

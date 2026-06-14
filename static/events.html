@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
         rel="stylesheet" />
     <style>
+        /* ─── THEME ENGINE ─── */
         :root {
             --bg: #3a3532;
             --bg2: #4e4844;
@@ -20,9 +21,17 @@
             --text: #e6ded7;
             --text-muted: #b0a8a1;
             --accent: #c9a073;
-            --accent2: #e0bfa0;
-            --accent-glow: rgba(201, 160, 115, 0.35);
-            --hud-line: rgba(201, 160, 115, 0.2);
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f1ed;
+            --bg2: #e6e2de;
+            --surface: #ffffff;
+            --border: rgba(170, 130, 90, 0.2);
+            --border-hi: rgba(170, 130, 90, 0.6);
+            --text: #3a3532;
+            --text-muted: #7a726d;
+            --accent: #a67c52;
         }
 
         body {
@@ -44,16 +53,6 @@
             border-radius: 8px;
             padding: 1.5rem;
             position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            inset-x: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
         .scan-input {
@@ -62,14 +61,8 @@
             border-radius: 4px;
             padding: 0.6rem 0.75rem;
             color: var(--text);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.85rem;
             width: 100%;
             outline: none;
-        }
-
-        .scan-input:focus {
-            border-color: var(--border-hi);
         }
 
         .scan-btn {
@@ -79,56 +72,60 @@
             font-family: 'Share Tech Mono', monospace;
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
             border-radius: 4px;
-            transition: all 0.2s;
             cursor: pointer;
-        }
-
-        .scan-btn:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 0 16px var(--accent-glow);
         }
 
         .filter-pill {
             padding: 0.4rem 1rem;
             font-size: 0.75rem;
-            border-radius: 4px;
             border: 1px solid var(--border);
             background: var(--bg2);
             color: var(--text-muted);
             cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
-            transition: all 0.2s;
+            border-radius: 4px;
         }
 
         .filter-pill.active {
             border-color: var(--accent);
-            background: var(--accent-glow);
+            background: rgba(201, 160, 115, 0.2);
             color: var(--accent);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
 
-    <header style="background: var(--bg2); border-bottom: 1px solid var(--border); z-index: 100;" class="sticky top-0">
+    <header style="background: var(--bg2); border-bottom: 1px solid var(--border);" class="sticky top-0 z-50">
         <div class="max-w-6xl mx-auto h-16 px-6 flex items-center justify-between">
             <div class="logo font-bold tracking-wider text-xl mono cursor-pointer"
-                onclick="window.location.href='/landing.html'" style="color: var(--accent);">⌗ HACKMATE</div>
+                onclick="window.location.href='/index.html'" style="color: var(--accent);">⌗ HACKMATE</div>
             <div class="flex items-center gap-4">
-                <span id="accessTypeIndicator" class="mono text-xs uppercase text-[var(--accent2)]">// PUBLIC ACCESS
-                    VIEW</span>
-                <button id="navActionBtn" onclick="handleNavAction()"
-                    class="scan-btn !py-1.5 !px-3 text-xs mono"></button>
+                <button id="navActionBtn" onclick="handleNavAction()" class="scan-btn text-xs mono"></button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-10 relative z-10">
-
-        <div class="card mb-8">
-            <div class="section-tag">// DISCOVERY CONTROL PARAMETERS</div>
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-10">
+        <div class="card mb-8 flex flex-col gap-6">
             <div class="flex flex-wrap gap-6 items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="mono text-xs text-[var(--text-muted)]">COST:</span>
@@ -137,41 +134,47 @@
                     <button id="costPaid" class="filter-pill" onclick="setCostFilter('PAID')">[ PAID ]</button>
                 </div>
 
-                <div class="flex items-center gap-2 flex-1 max-w-sm">
-                    <span class="mono text-xs text-[var(--text-muted)]">📍 SEARCH AREA:</span>
-                    <input type="text" id="citySearchInput" class="scan-input !py-1.5"
-                        placeholder="Type city coordinates (e.g. Hyderabad)..." oninput="applyFilteringSweep()" />
+                <div class="flex items-center gap-4 flex-1 max-w-xs">
+                    <span class="mono text-xs text-[var(--text-muted)] whitespace-nowrap">RANGE:</span>
+                    <input type="range" id="proximitySlider" min="5" max="200" value="100" class="w-full"
+                        oninput="updateRangeLabel(this.value)" />
+                    <span id="rangeLabel" class="mono text-xs text-[var(--accent)] whitespace-nowrap">100 KM</span>
                 </div>
+
+                <input type="text" id="citySearchInput" class="scan-input max-w-sm"
+                    placeholder="Manual location fallback (e.g. Hyderabad)..." oninput="applyFiltering()" />
+            </div>
+
+            <div class="border-t border-[var(--border)] pt-4 flex flex-wrap items-center gap-2">
+                <span class="mono text-xs text-[var(--text-muted)] mr-2">TRACK CHANNELS:</span>
+                <button class="filter-pill active tracking-pill" onclick="toggleTrackFilter('All', this)">[ All Tracks
+                    ]</button>
+                <button class="filter-pill tracking-pill" onclick="toggleTrackFilter('Web3', this)">Web3</button>
+                <button class="filter-pill tracking-pill" onclick="toggleTrackFilter('AI/ML', this)">AI/ML</button>
+                <button class="filter-pill tracking-pill" onclick="toggleTrackFilter('Fintech', this)">Fintech</button>
+                <button class="filter-pill tracking-pill" onclick="toggleTrackFilter('UI/UX', this)">UI/UX</button>
             </div>
         </div>
 
-        <div id="publicEventFeedGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="filterEmptyCatch" class="card text-center py-12 hidden">
+            <p class="mono text-[var(--accent)] mb-4">⚠️ NO MISSIONS DETECTED MATCHING CURRENT COORDINATE PARAMETERS</p>
+            <button class="scan-btn text-xs mx-auto" onclick="resetAdvancedFilterMatrix()">[ ⚡ RESET FILTERS ]</button>
         </div>
 
-        <div id="intelligentEmptyState" class="card text-center py-12" style="display: none;">
-            <div class="mono text-xl text-[var(--accent)] mb-3">📍 No Hackathons available matching these exact
-                coordinates/filters.</div>
-            <button class="scan-btn text-xs uppercase tracking-wider" onclick="resetAdvancedFilterMatrix()">[ Reset
-                Filters ]</button>
-        </div>
+        <div id="publicEventFeedGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
     </main>
 
     <div id="secureInterceptModal"
-        style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.95); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 1rem;">
-        <div class="card w-full max-w-md text-center p-8 border border-[var(--border-hi)]">
-            <div class="mono text-3xl mb-4 text-[var(--accent)]">🔐</div>
-            <h2 class="mono font-bold tracking-wider text-lg mb-2" style="color: var(--accent2);">Authentication
-                Required</h2>
-            <p class="text-xs leading-relaxed mb-6" style="color: var(--text-muted);">
-                "To register for this event and begin scanning for your ideal teammates, you must secure a hacker
-                profile first. Please log in or create an account to proceed!"
-            </p>
+        style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.95); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="card w-full max-w-md text-center p-8 border border-[var(--accent)]">
+            <h2 class="mono font-bold text-lg mb-4 text-[var(--accent)]">Authentication Required</h2>
+            <p class="text-xs mb-6 text-[var(--text-muted)]">To register for this event, you must secure a hacker
+                profile first.</p>
             <div class="flex gap-4">
-                <button class="scan-btn flex-1 uppercase tracking-wider text-xs"
-                    onclick="window.location.href='/login.html'">[ 🔑 Go to Login / Sign Up ]</button>
-                <button
-                    class="scan-btn !bg-transparent !text-[var(--text-muted)] border border-[var(--border)] text-xs uppercase"
-                    onclick="closeInterceptModal()">[ ❌ Cancel ]</button>
+                <button class="scan-btn flex-1 text-xs" onclick="window.location.href='/login.html'">[ 🔑 LOGIN
+                    ]</button>
+                <button class="scan-btn !bg-transparent border text-xs"
+                    onclick="document.getElementById('secureInterceptModal').style.display='none'">[ ❌ CANCEL ]</button>
             </div>
         </div>
     </div>
@@ -179,131 +182,168 @@
     <script>
         let globalActiveMissions = [];
         let selectedCostFilter = 'ALL';
-        let isAuthenticatedHacker = false;
+        let selectedTracks = new Set(['All']);
+        let isAuthenticatedHacker = !!localStorage.getItem('currentUser');
 
-        window.onload = function () {
-            // Evaluate if current visitor profile belongs to a guest or an authenticated user (Section 3.1)
-            const userToken = localStorage.getItem('currentUser');
-            if (userToken) {
-                const parsingUser = JSON.parse(userToken);
-                if (parsingUser.has_onboarded) {
-                    isAuthenticatedHacker = true;
-                    document.getElementById('accessTypeIndicator').textContent = `// AUTHENTICATED COMPLIANT NODE: ${parsingUser.user_name.toUpperCase()}`;
-                    document.getElementById('navActionBtn').textContent = '⌗ MY DASHBOARD';
-                }
+        window.onload = async () => {
+            document.getElementById('navActionBtn').textContent = isAuthenticatedHacker ? '⌗ MY DASHBOARD' : '🔑 LOGIN';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { console.log("Atmospheric coordinates locked."); },
+                    (err) => { console.warn("Location tracking denied. Reverting to manual entry framework."); }
+                );
             }
 
-            if (!isAuthenticatedHacker) {
-                document.getElementById('navActionBtn').textContent = '🔑 LOGIN';
-            }
-
-            fetchGlobalSynchronizedFeed();
+            try {
+                const res = await fetch('/api/admin/missions/all');
+                globalActiveMissions = await res.json();
+                applyFiltering();
+            } catch (err) { console.error("Sync failed:", err); }
         };
 
         function handleNavAction() {
-            window.location.href = isAuthenticatedHacker ? '/index.html' : '/login.html';
+            if (isAuthenticatedHacker) {
+                window.location.href = '/index.html';
+            } else {
+                window.location.href = '/login.html';
+            }
         }
 
-        async function fetchGlobalSynchronizedFeed() {
-            try {
-                // Querying events data core (Section 3.1 Live Admin Feed synchronization loops)
-                const res = await fetch('/api/profile/status'); // Falls back cleanly or queries via active array parameters
-                // For testing open visibility, pull all events directly from administrative data records
-                const adminMissionsRes = await fetch('/api/admin/missions/all-active-fallback-mock');
-
-                // Let's directly hit our dynamic dashboard endpoints or simulate live synchronized arrays
-                // We'll fetch all matching items from our mongo database profiles
-                const devQueryResponse = await fetch('/api/profile/status'); // Placeholder ping
-
-                // Simulated live synchronizing database array populated via Admin Portal deployments
-                globalActiveMissions = [
-                    { title: "HackMate Invitational 2026", description: "Build the future. Find your team. Ship something legendary.", target_date: "2026-08-20", location_name: "Hyderabad", tracks: ["AI/ML", "Web3"], is_paid: false, entry_fee: 0, registration_link: "https://forms.gle/sample1" },
-                    { title: "Cyber Terminal Delta", description: "Infiltrate infrastructure, compile vulnerabilities, patch core servers.", target_date: "2026-09-12", location_name: "Bangalore", tracks: ["Cybersecurity"], is_paid: true, entry_fee: 450, registration_link: "https://forms.gle/sample2" },
-                    { title: "Creative Front Interface 2026", description: "Design next-gen human interactions and custom component variables.", target_date: "2026-10-05", location_name: "Hyderabad", tracks: ["UI/UX Design", "Mobile App"], is_paid: false, entry_fee: 0, registration_link: "https://forms.gle/sample3" }
-                ];
-
-                applyFilteringSweep();
-            } catch (err) {
-                console.error("Synchronization loop failed:", err);
-            }
+        function updateRangeLabel(val) {
+            document.getElementById('rangeLabel').textContent = `${val} KM`;
+            applyFiltering();
         }
 
         function setCostFilter(mode) {
             selectedCostFilter = mode;
-            document.getElementById('costAll').classList.toggle('active', mode === 'ALL');
-            document.getElementById('costFree').classList.toggle('active', mode === 'FREE');
-            document.getElementById('costPaid').classList.toggle('active', mode === 'PAID');
-            applyFilteringSweep();
+            document.querySelectorAll('#costAll, #costFree, #costPaid').forEach(p => p.classList.remove('active'));
+            if (mode === 'ALL') document.getElementById('costAll').classList.add('active');
+            if (mode === 'FREE') document.getElementById('costFree').classList.add('active');
+            if (mode === 'PAID') document.getElementById('costPaid').classList.add('active');
+            applyFiltering();
         }
 
-        function applyFilteringSweep() {
-            const cityQuery = document.getElementById('citySearchInput').value.toLowerCase().trim();
-            const grid = document.getElementById('publicEventFeedGrid');
-            const emptyState = document.getElementById('intelligentEmptyState');
+        function toggleTrackFilter(track, element) {
+            if (track === 'All') {
+                selectedTracks.clear();
+                selectedTracks.add('All');
+                document.querySelectorAll('.tracking-pill').forEach(p => p.classList.remove('active'));
+                element.classList.add('active');
+            } else {
+                selectedTracks.delete('All');
+                document.querySelectorAll('.tracking-pill')[0].classList.remove('active');
 
-            let filteredRecords = globalActiveMissions.filter(item => {
-                const matchesCost = (selectedCostFilter === 'ALL') ||
-                    (selectedCostFilter === 'FREE' && !item.is_paid) ||
-                    (selectedCostFilter === 'PAID' && item.is_paid);
-                const matchesCity = !cityQuery || item.location_name.toLowerCase().includes(cityQuery);
-                return matchesCost && matchesCity;
+                if (selectedTracks.has(track)) {
+                    selectedTracks.delete(track);
+                    element.classList.remove('active');
+                } else {
+                    selectedTracks.add(track);
+                    element.classList.add('active');
+                }
+
+                if (selectedTracks.size === 0) {
+                    selectedTracks.add('All');
+                    document.querySelectorAll('.tracking-pill')[0].classList.add('active');
+                }
+            }
+            applyFiltering();
+        }
+
+        function applyFiltering() {
+            const cityQuery = document.getElementById('citySearchInput').value.toLowerCase();
+            const grid = document.getElementById('publicEventFeedGrid');
+            const emptyCatch = document.getElementById('filterEmptyCatch');
+            grid.innerHTML = '';
+
+            const filtered = globalActiveMissions.filter(m => {
+                const costMatch = selectedCostFilter === 'ALL' || (selectedCostFilter === 'FREE' ? !m.is_paid : m.is_paid);
+                const cityMatch = m.location_name.toLowerCase().includes(cityQuery);
+
+                let trackMatch = selectedTracks.has('All');
+                if (!trackMatch && m.tracks) {
+                    trackMatch = m.tracks.some(t => selectedTracks.has(t));
+                } else if (!trackMatch) {
+                    trackMatch = true;
+                }
+
+                return costMatch && cityMatch && trackMatch;
             });
 
-            if (filteredRecords.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
+            if (filtered.length === 0) {
+                emptyCatch.classList.remove('hidden');
+                grid.classList.add('hidden');
             } else {
-                grid.style.display = 'grid';
-                emptyState.style.display = 'none';
+                emptyCatch.classList.add('hidden');
+                grid.classList.remove('hidden');
 
-                grid.innerHTML = '';
-                filteredRecords.forEach(mission => {
-                    const trackChips = mission.tracks.map(t => `<span class="skill-tag matched !bg-transparent text-[var(--accent)] border-none font-bold text-[0.65rem] p-0 mr-2 mono">[ ${t} ]</span>`).join('');
-                    const priceBadgeHTML = mission.is_paid ? `🎫 INR ${mission.entry_fee}` : `🆓 FREE ENTRY`;
-
+                filtered.forEach(mission => {
+                    // Note: mapping backend schema '_id' value safely into the action check wrapper 
+                    const uniqueId = mission._id || mission.id;
                     const card = document.createElement('div');
-                    card.className = 'card flex flex-col justify-between border border-[var(--border)]';
+                    card.className = 'card flex flex-col justify-between';
                     card.innerHTML = `
             <div>
-              <div class="flex justify-between items-start mb-2">
-                <h3 class="mono font-bold text-md text-[var(--accent2)]">${mission.title}</h3>
-                <span class="status-badge text-[0.6rem] !bg-stone-900/40">${priceBadgeHTML}</span>
+              <h3 class="mono font-bold text-md text-[var(--accent)] mb-2">${mission.title}</h3>
+              <p class="text-xs text-[var(--text-muted)] mb-4">${mission.description}</p>
+              <div class="flex gap-2 mb-4 flex-wrap">
+                <span class="mono text-[10px] bg-[var(--bg2)] px-2 py-0.5 rounded border border-[var(--border)] text-[var(--text-muted)]">${mission.location_name}</span>
+                <span class="mono text-[10px] bg-[var(--bg2)] px-2 py-0.5 rounded border border-[var(--border)] text-[var(--accent)]">${mission.is_paid ? 'PAID' : 'FREE'}</span>
               </div>
-              <p class="text-xs text-[var(--text-muted)] line-height[1.5] mb-4">${mission.description}</p>
-              <div class="flex flex-wrap mb-3">${trackChips}</div>
             </div>
-            <div>
-              <div class="divider border-b border-[var(--border)] border-dashed my-3"></div>
-              <div class="flex justify-between items-center text-[0.65rem] mono text-[var(--text-muted)] mb-3">
-                <div>📍 ${mission.location_name}</div>
-                <div>📅 ${mission.target_date}</div>
-              </div>
-              <button onclick="executeRegistrationCheck('${mission.registration_link}')" class="scan-btn w-full text-center text-xs uppercase tracking-wider font-bold py-2">[ Register for Event ]</button>
-            </div>
+            <button onclick="checkAuth('${mission.registration_link}', '${uniqueId}')" class="scan-btn w-full text-xs uppercase">[ Register ]</button>
           `;
                     grid.appendChild(card);
                 });
             }
         }
 
-        function executeRegistrationCheck(targetURL) {
-            if (!isAuthenticatedHacker) {
-                // Scenario A: Visitor is a public guest -> Intercept route access entirely and trigger the alert notice (Section 3.3)
-                document.getElementById('secureInterceptModal').style.display = 'flex';
-            } else {
-                // Scenario B: Visitor is fully signed in -> Execute registration funnel immediately (Section 3.3)
-                window.open(targetURL, '_blank');
-            }
-        }
-
-        function closeInterceptModal() {
-            document.getElementById('secureInterceptModal').style.display = 'none';
-        }
-
-        // Reset Filter Button Action (Section 3.2 Handling)
         function resetAdvancedFilterMatrix() {
             document.getElementById('citySearchInput').value = '';
             setCostFilter('ALL');
+            toggleTrackFilter('All', document.querySelectorAll('.tracking-pill')[0]);
+        }
+
+        async function checkAuth(url, hackathonId) {
+            if (!isAuthenticatedHacker) {
+                document.getElementById('secureInterceptModal').style.display = 'flex';
+                return;
+            }
+
+            const userCached = localStorage.getItem('currentUser');
+            if (!userCached) return;
+            const currentUser = JSON.parse(userCached);
+
+            try {
+                // UPDATED: Fixed key configuration mapper parameter to pass 'eventId' instead of old 'hackathonId'
+                const response = await fetch('/api/hacker/register-event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: currentUser.user_name,
+                        hackathonId: hackathonId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("⚡ Mission status updated! Event successfully mapped to your active dashboard.");
+                    window.open(url, '_blank');
+                    window.location.href = '/index.html'; // Relocate tracking target to display countdown live
+                } else {
+                    // Check for structural confirmation variations if the target is already active 
+                    if (data.detail && (data.detail.includes("already") || data.detail.includes("locked"))) {
+                        window.open(url, '_blank');
+                        window.location.href = '/index.html';
+                    } else {
+                        alert(`Registration Sync Error: ${data.detail || 'Data stream anomaly detected'}`);
+                    }
+                }
+            } catch (err) {
+                console.error("Telemetry link dropout:", err);
+                alert("Failed communicating event registration with data core.");
+            }
         }
     </script>
 </body>
