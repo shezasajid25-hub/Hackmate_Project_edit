@@ -116,4 +116,120 @@ router.post('/onboard', async (req, res) => {
   }
 });
 
+/**
+ * ─── FETCH LIVE PROFILE DATA ─────────────────────────────────────────
+ * Returns fresh user data from the DB (used when the profile modal opens)
+ */
+router.get('/me', async (req, res) => {
+  try {
+    const { user_name } = req.query;
+    if (!user_name) return res.status(400).json({ detail: 'user_name required' });
+
+    const user = await User.findOne({ user_name }).select('-password');
+    if (!user) return res.status(404).json({ detail: 'User not found' });
+
+    res.json({
+      user_name: user.user_name,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      location: user.location || '',
+      achievements: user.achievements || '',
+      github: user.github || user.linkedin_url || '',
+      linkedin: user.linkedin || user.linkedin_url || '',
+      skills: user.skills || [],
+      has_onboarded: user.has_onboarded
+    });
+  } catch (error) {
+    res.status(500).json({ detail: error.message });
+  }
+});
+
+/**
+ * ─── ONBOARDING SAVE ENDPOINT ────────────────────────────────────────
+ * Called from the onboarding overlay form (first-time profile setup)
+ */
+router.post('/save', async (req, res) => {
+  try {
+    const { user_name, first_name, last_name, location, skills, github, linkedin, achievements } = req.body;
+    if (!user_name) return res.status(400).json({ detail: 'user_name is required' });
+
+    const user = await User.findOne({ user_name });
+    if (!user) return res.status(404).json({ detail: 'User not found' });
+
+    // Update all editable fields
+    if (first_name)    user.first_name    = first_name;
+    if (last_name)     user.last_name     = last_name;
+    if (location)      user.location      = location;
+    if (achievements)  user.achievements  = achievements;
+    if (github)        user.github        = github;
+    if (linkedin)      user.linkedin      = linkedin;
+    if (skills && skills.length) user.skills = skills;
+    user.has_onboarded = true;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Profile initialized successfully!',
+      user: {
+        user_name: user.user_name,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        location: user.location,
+        achievements: user.achievements,
+        github: user.github,
+        linkedin: user.linkedin,
+        skills: user.skills,
+        has_onboarded: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ detail: error.message });
+  }
+});
+
+/**
+ * ─── PROFILE UPDATE ENDPOINT ─────────────────────────────────────────
+ * Called from the edit-profile form on the dashboard (POST /api/profile/update)
+ */
+router.post('/update', async (req, res) => {
+  try {
+    const { user_name, first_name, last_name, location, github, linkedin, achievements, skills } = req.body;
+    if (!user_name) return res.status(400).json({ detail: 'user_name is required' });
+
+    const user = await User.findOne({ user_name });
+    if (!user) return res.status(404).json({ detail: 'User node not found in database.' });
+
+    // Apply all supplied updates
+    if (first_name !== undefined)   user.first_name   = first_name;
+    if (last_name !== undefined)    user.last_name    = last_name;
+    if (location !== undefined)     user.location     = location;
+    if (achievements !== undefined) user.achievements = achievements;
+    if (github !== undefined)       user.github       = github;
+    if (linkedin !== undefined)     user.linkedin     = linkedin;
+    if (skills && skills.length)    user.skills       = skills;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: {
+        user_name: user.user_name,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        location: user.location,
+        achievements: user.achievements,
+        github: user.github,
+        linkedin: user.linkedin,
+        skills: user.skills,
+        has_onboarded: user.has_onboarded
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ detail: error.message });
+  }
+});
+
 module.exports = router;

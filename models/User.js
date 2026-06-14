@@ -9,7 +9,10 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, required: true },
   github: { type: String },
   linkedin_url: { type: String },
+  linkedin: { type: String },
   skills: [String],
+  location: { type: String, default: '' },
+  achievements: { type: String, default: '' },
   has_onboarded: { type: Boolean, default: false },
 
   // ─── REGISTRATION STATE ENGINE POOL ───
