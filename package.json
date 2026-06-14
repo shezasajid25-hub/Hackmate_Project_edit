@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.3.0",
-    "mongoose": "^9.6.3"
+    "mongoose": "^9.7.0"
   },
   "name": "hackmate_project",
   "version": "1.0.0",
