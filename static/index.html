@@ -1,54 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HackMate — Find Your Team</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
     /* ─── CSS VARIABLES / THEME ─── */
     :root {
-  /* Dark Mode: Earthen Muted */
-  --bg:           #3a3532;
-  --bg2:          #4e4844;
-  --surface:      #5e5751;
-  --border:       rgba(201, 160, 115, 0.25);
-  --border-hi:    rgba(201, 160, 115, 0.7);
-  --text:         #e6ded7;
-  --text-muted:   #b0a8a1;
-  --accent:       #c9a073;
-  --accent2:      #e0bfa0;
-  --accent-glow:  rgba(201, 160, 115, 0.35);
-  --card-shadow:  0 0 40px rgba(201,160,115,0.08), 0 4px 24px rgba(0,0,0,0.4);
-  --radar-bg:     rgba(45, 40, 37, 0.92);
-  --grid-line:    rgba(201, 160, 115, 0.12);
-  --sweep-color:  #c9a073;
-  --hud-line:     rgba(201, 160, 115, 0.2);
-}
+      /* Dark Mode: Earthen Muted */
+      --bg: #3a3532;
+      --bg2: #4e4844;
+      --surface: #5e5751;
+      --border: rgba(201, 160, 115, 0.25);
+      --border-hi: rgba(201, 160, 115, 0.7);
+      --text: #e6ded7;
+      --text-muted: #b0a8a1;
+      --accent: #c9a073;
+      --accent2: #e0bfa0;
+      --accent-glow: rgba(201, 160, 115, 0.35);
+      --card-shadow: 0 0 40px rgba(201, 160, 115, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4);
+      --radar-bg: rgba(45, 40, 37, 0.92);
+      --grid-line: rgba(201, 160, 115, 0.12);
+      --sweep-color: #c9a073;
+      --hud-line: rgba(201, 160, 115, 0.2);
+    }
 
-[data-theme="light"] {
-  /* Light Mode: Softer version of Earthen Muted */
-  --bg:           #f4f1ed;
-  --bg2:          #e6e2de;
-  --surface:      #ffffff;
-  --border:       rgba(170, 130, 90, 0.2);
-  --border-hi:    rgba(170, 130, 90, 0.6);
-  --text:         #3a3532;
-  --text-muted:   #7a726d;
-  --accent:       #a67c52;
-  --accent2:      #c9a073;
-  --accent-glow:  rgba(170, 130, 90, 0.15);
-  --card-shadow:  0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0,0,0,0.05);
-  --radar-bg:     rgba(240, 235, 230, 0.95);
-  --grid-line:    rgba(170, 130, 90, 0.15);
-  --sweep-color:  #a67c52;
-  --hud-line:     rgba(170, 130, 90, 0.18);
-}
+    [data-theme="light"] {
+      /* Light Mode: Softer version of Earthen Muted */
+      --bg: #f4f1ed;
+      --bg2: #e6e2de;
+      --surface: #ffffff;
+      --border: rgba(170, 130, 90, 0.2);
+      --border-hi: rgba(170, 130, 90, 0.6);
+      --text: #3a3532;
+      --text-muted: #7a726d;
+      --accent: #a67c52;
+      --accent2: #c9a073;
+      --accent-glow: rgba(170, 130, 90, 0.15);
+      --card-shadow: 0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0, 0, 0, 0.05);
+      --radar-bg: rgba(240, 235, 230, 0.95);
+      --grid-line: rgba(170, 130, 90, 0.15);
+      --sweep-color: #a67c52;
+      --hud-line: rgba(170, 130, 90, 0.18);
+    }
+
     /* ─── BASE ─── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Exo 2', sans-serif;
       background: var(--bg);
@@ -57,12 +68,17 @@
       transition: background 0.4s ease, color 0.4s ease;
       overflow-x: hidden;
     }
-    .mono { font-family: 'Share Tech Mono', monospace; }
+
+    .mono {
+      font-family: 'Share Tech Mono', monospace;
+    }
 
     /* ─── BACKGROUND TOPOGRAPHY ─── */
     .topo-bg {
       position: fixed;
-      inset: 0; pointer-events: none; z-index: 0;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
       background-image:
         repeating-radial-gradient(circle at 50% 50%,
           transparent 0, transparent 38px,
@@ -77,41 +93,63 @@
     /* ─── NAV ─── */
     nav {
       position: sticky;
-      top: 0; z-index: 100;
+      top: 0;
+      z-index: 100;
       background: var(--bg2);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(12px);
       transition: background 0.4s, border-color 0.4s;
     }
+
     .nav-inner {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      padding: 0 1.5rem; height: 64px;
+      padding: 0 1.5rem;
+      height: 64px;
     }
+
     .logo {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.4rem; font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 700;
       color: var(--accent);
       letter-spacing: 0.08em;
-      display: flex; align-items: center; gap: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+
     .logo-dot {
-      width: 8px; height: 8px;
+      width: 8px;
+      height: 8px;
       background: var(--accent);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
       animation: pulse-dot 1.8s ease-in-out infinite;
     }
+
     @keyframes pulse-dot {
-      0%,100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.6); opacity: 0.6; }
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.6);
+        opacity: 0.6;
+      }
     }
 
     /* ─── THEME TOGGLE ─── */
     .theme-btn {
       display: flex;
-      align-items: center; gap: 0.5rem;
+      align-items: center;
+      gap: 0.5rem;
       padding: 0.4rem 1rem;
       border: 1px solid var(--border-hi);
       border-radius: 4px;
@@ -123,26 +161,38 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+
     .theme-btn:hover {
       background: var(--accent-glow);
       box-shadow: 0 0 12px var(--accent-glow);
     }
-    .theme-icon { font-size: 1rem; transition: transform 0.4s ease; }
-    .theme-btn:hover .theme-icon { transform: rotate(30deg); }
+
+    .theme-icon {
+      font-size: 1rem;
+      transition: transform 0.4s ease;
+    }
+
+    .theme-btn:hover .theme-icon {
+      transform: rotate(30deg);
+    }
 
     /* ─── MAIN LAYOUT ─── */
     main {
       position: relative;
       z-index: 1;
-      max-width: 1200px; margin: 0 auto;
+      max-width: 1200px;
+      margin: 0 auto;
       padding: 2.5rem 1.5rem 4rem;
       display: grid;
       grid-template-columns: 1fr 420px;
       gap: 2rem;
       align-items: start;
     }
+
     @media (max-width: 900px) {
-      main { grid-template-columns: 1fr; }
+      main {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ─── SECTION LABELS ─── */
@@ -167,41 +217,63 @@
       position: relative;
       overflow: hidden;
     }
+
     .card::before {
       content: '';
-      position: absolute; top: 0;
-      left: 0; right: 0; height: 1px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       opacity: 0.6;
     }
+
     .card-title {
-      font-size: 1.05rem; font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 700;
       letter-spacing: 0.04em;
       margin-bottom: 1rem;
       color: var(--text);
     }
 
     /* ─── HACKATHON HEADER CARD ─── */
-    .hackathon-card { grid-column: 1 / -1; }
+    .hackathon-card {
+      grid-column: 1 / -1;
+    }
+
     .hackathon-meta {
-      display: flex; gap: 2rem; flex-wrap: wrap;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
       margin-top: 0.75rem;
     }
+
     .hackathon-title-main {
-      font-size: 1.5rem; font-weight: 900;
+      font-size: 1.5rem;
+      font-weight: 900;
       color: var(--accent2);
       letter-spacing: 0.02em;
     }
+
     .hackathon-desc {
       color: var(--text-muted);
-      font-size: 0.9rem; line-height: 1.6;
+      font-size: 0.9rem;
+      line-height: 1.6;
       margin-top: 0.4rem;
     }
+
     .countdown-block {
-      display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
     }
+
     .countdown-unit {
-      display: flex; flex-direction: column; align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -209,22 +281,29 @@
       min-width: 60px;
       transition: background 0.4s;
     }
+
     .countdown-num {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.6rem; font-weight: 700;
+      font-size: 1.6rem;
+      font-weight: 700;
       color: var(--accent);
       line-height: 1;
     }
+
     .countdown-label {
-      font-size: 0.6rem; letter-spacing: 0.15em;
-      color: var(--text-muted); text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
       margin-top: 0.2rem;
     }
+
     .status-badge {
       display: inline-flex;
-      align-items: center; gap: 0.35rem;
-      background: rgba(16,185,129,0.12);
-      border: 1px solid rgba(16,185,129,0.4);
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
       border-radius: 4px;
       padding: 0.2rem 0.6rem;
       font-family: 'Share Tech Mono', monospace;
@@ -232,6 +311,7 @@
       color: var(--accent);
       letter-spacing: 0.1em;
     }
+
     .status-dot {
       width: 6px;
       height: 6px;
@@ -243,19 +323,25 @@
     /* ─── RADAR PANEL ─── */
     .radar-panel {
       display: flex;
-      flex-direction: column; align-items: center; gap: 1.25rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
     }
+
     .radar-wrap {
       position: relative;
-      width: 340px; height: 340px;
+      width: 340px;
+      height: 340px;
       flex-shrink: 0;
     }
+
     #radarCanvas {
       width: 100%;
       height: 100%;
       border-radius: 50%;
       display: block;
     }
+
     .radar-hud-corner {
       position: absolute;
       font-family: 'Share Tech Mono', monospace;
@@ -265,12 +351,35 @@
       letter-spacing: 0.08em;
       pointer-events: none;
     }
-    .radar-hud-corner.tl { top: 6px; left: 12px; }
-    .radar-hud-corner.tr { top: 6px; right: 12px; text-align: right; }
-    .radar-hud-corner.bl { bottom: 6px; left: 12px; }
-    .radar-hud-corner.br { bottom: 6px; right: 12px; text-align: right; }
 
-    .scan-form { display: flex; gap: 0.5rem; width: 100%; }
+    .radar-hud-corner.tl {
+      top: 6px;
+      left: 12px;
+    }
+
+    .radar-hud-corner.tr {
+      top: 6px;
+      right: 12px;
+      text-align: right;
+    }
+
+    .radar-hud-corner.bl {
+      bottom: 6px;
+      left: 12px;
+    }
+
+    .radar-hud-corner.br {
+      bottom: 6px;
+      right: 12px;
+      text-align: right;
+    }
+
+    .scan-form {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
     .scan-input {
       flex: 1;
       background: var(--bg2);
@@ -283,8 +392,15 @@
       outline: none;
       transition: border-color 0.2s, background 0.4s;
     }
-    .scan-input:focus { border-color: var(--border-hi); }
-    .scan-input::placeholder { color: var(--text-muted); }
+
+    .scan-input:focus {
+      border-color: var(--border-hi);
+    }
+
+    .scan-input::placeholder {
+      color: var(--text-muted);
+    }
+
     .scan-btn {
       padding: 0.6rem 1.25rem;
       background: var(--accent);
@@ -299,8 +415,18 @@
       transition: all 0.2s ease;
       white-space: nowrap;
     }
-    .scan-btn:hover { filter: brightness(1.15); box-shadow: 0 0 16px var(--accent-glow); }
-    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; box-shadow: none; }
+
+    .scan-btn:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    .scan-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: none;
+      box-shadow: none;
+    }
 
     .radar-status {
       font-family: 'Share Tech Mono', monospace;
@@ -311,7 +437,10 @@
       transition: color 0.3s;
       text-align: center;
     }
-    .radar-status.active { color: var(--accent); }
+
+    .radar-status.active {
+      color: var(--accent);
+    }
 
     /* ─── PROFILE RESULT CARD ─── */
     #profileCard {
@@ -319,109 +448,229 @@
       display: none;
       animation: slideUp 0.4s ease forwards;
     }
+
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .profile-name { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+    .profile-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
     .match-score {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.6rem; font-weight: 700;
+      font-size: 1.6rem;
+      font-weight: 700;
       color: var(--accent);
       line-height: 1;
     }
-    .match-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; }
-    .progress-bar-wrap { height: 6px; background: var(--bg2); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+
+    .match-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .progress-bar-wrap {
+      height: 6px;
+      background: var(--bg2);
+      border-radius: 3px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
     .progress-bar-fill {
-      height: 100%; border-radius: 3px;
+      height: 100%;
+      border-radius: 3px;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       width: 0%;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 0 8px var(--accent);
     }
-    .skills-section { margin-top: 1rem; }
+
+    .skills-section {
+      margin-top: 1rem;
+    }
+
     .skills-heading {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem; letter-spacing: 0.18em;
-      color: var(--text-muted); text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      text-transform: uppercase;
       margin-bottom: 0.4rem;
     }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
     .skill-tag {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem; letter-spacing: 0.05em;
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
       padding: 0.2rem 0.55rem;
       border-radius: 3px;
       border: 1px solid;
     }
-    .skill-tag.matched { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.5); color: var(--accent2); }
-    .skill-tag.missing { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.35); color: #f87171; }
+
+    .skill-tag.matched {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: var(--accent2);
+    }
+
+    .skill-tag.missing {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
+
     .skill-tag.all-skill {
-      background: var(--bg2); border-color: var(--border); color: var(--text-muted);
+      background: var(--bg2);
+      border-color: var(--border);
+      color: var(--text-muted);
       transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
     }
+
     .skill-tag.all-skill:hover {
-      background: rgba(16,185,129,0.08);
-      border-color: rgba(16,185,129,0.4);
-      color: var(--accent2); box-shadow: 0 0 8px rgba(16,185,129,0.15); cursor: default;
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--accent2);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+      cursor: default;
     }
-    .all-skills-wrap { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+
+    .all-skills-wrap {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
     .all-skills-count {
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.55rem;
-      letter-spacing: 0.15em; color: var(--text-muted); margin-left: 0.4rem; opacity: 0.7;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-left: 0.4rem;
+      opacity: 0.7;
     }
 
     /* ─── COLUMN CONFIGS ─── */
-    .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
-    .right-col { display: flex; flex-direction: column; gap: 1.25rem; }
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
 
     /* ─── SCANNER RING DECORATIONS ─── */
     .radar-outer-ring {
       position: absolute;
       inset: -6px;
-      border-radius: 50%; border: 1px solid var(--border);
+      border-radius: 50%;
+      border: 1px solid var(--border);
       pointer-events: none;
     }
+
     .radar-outer-ring::before {
-      content: ''; position: absolute; inset: -4px; border-radius: 50%;
-      border: 1px dashed var(--border); animation: spin-slow 30s linear infinite;
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px dashed var(--border);
+      animation: spin-slow 30s linear infinite;
     }
+
     .radar-outer-ring::after {
-      content: ''; position: absolute; inset: 4px; border-radius: 50%;
-      border: 1px solid rgba(16,185,129,0.08);
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 1px solid rgba(16, 185, 129, 0.08);
     }
-    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    @keyframes spin-slow {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ─── BLIP TOOLTIP ─── */
     #blipTooltip {
       position: absolute;
       background: var(--surface);
-      border: 1px solid var(--border-hi); border-radius: 4px;
-      padding: 0.3rem 0.6rem; font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem; color: var(--accent);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
       pointer-events: none;
-      display: none; white-space: nowrap; z-index: 10;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
       box-shadow: 0 0 12px var(--accent-glow);
     }
 
-    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0.75rem 0; }
-    .loading-dots::after { content: ''; animation: dots 1.4s infinite; }
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0.75rem 0;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.4s infinite;
+    }
+
     @keyframes dots {
-      0%   { content: '.'; }
-      33%  { content: '..'; }
-      66%  { content: '...'; }
-      100% { content: ''; }
+      0% {
+        content: '.';
+      }
+
+      33% {
+        content: '..';
+      }
+
+      66% {
+        content: '...';
+      }
+
+      100% {
+        content: '';
+      }
     }
   </style>
 </head>
+
 <body>
 
   <div class="topo-bg"></div>
 
   <nav>
     <div class="nav-inner">
-      <div class="logo"><div class="logo-dot"></div>HACKMATE</div>
+      <div class="logo">
+        <div class="logo-dot"></div>HACKMATE
+      </div>
       <div style="display:flex;align-items:center;gap:1rem;">
         <span class="mono" style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;">SYSTEM ONLINE</span>
         <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
@@ -433,19 +682,23 @@
   </nav>
 
   <main>
-    <div class="card welcome-card" id="welcomeCard" style="grid-column: 1 / -1; display: none; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--surface) 0%, var(--bg2) 100%); border: 1px solid var(--border-hi);">
+    <div class="card welcome-card" id="welcomeCard"
+      style="grid-column: 1 / -1; display: none; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--surface) 0%, var(--bg2) 100%); border: 1px solid var(--border-hi);">
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <div>
           <div class="section-tag">// IDENTITY VERIFIED // OPERATOR GREETING</div>
-          <h2 class="welcome-message" id="welcomeMessage" style="font-size: 1.4rem; font-weight: 900; color: var(--accent2); margin-top: 0.2rem; letter-spacing: 0.02em;"></h2>
+          <h2 class="welcome-message" id="welcomeMessage"
+            style="font-size: 1.4rem; font-weight: 900; color: var(--accent2); margin-top: 0.2rem; letter-spacing: 0.02em;">
+          </h2>
         </div>
-        <button onclick="handleLogout()" class="scan-btn" style="padding: 0.4rem 0.8rem; font-size: 0.7rem; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 4px; width: auto;">
+        <button onclick="handleLogout()" class="scan-btn"
+          style="padding: 0.4rem 0.8rem; font-size: 0.7rem; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 4px; width: auto;">
           ⎋ LOGOUT
         </button>
       </div>
     </div>
 
-    <div class="card hackathon-card" id="hackathonCard">
+    <div class="card hackathon-card" id="dashboardStateRegistered" style="display: none;">
       <div class="section-tag">// ACTIVE MISSION</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
         <div>
@@ -457,37 +710,53 @@
       <div class="divider"></div>
       <div class="section-tag">// TIME TO LAUNCH</div>
       <div class="countdown-block">
-        <div class="countdown-unit"><span class="countdown-num" id="cdDays">--</span><span class="countdown-label">DAYS</span></div>
-        <div class="countdown-unit"><span class="countdown-num" id="cdHours">--</span><span class="countdown-label">HRS</span></div>
-        <div class="countdown-unit"><span class="countdown-num" id="cdMins">--</span><span class="countdown-label">MIN</span></div>
-        <div class="countdown-unit"><span class="countdown-num" id="cdSecs">--</span><span class="countdown-label">SEC</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdDays">--</span><span
+            class="countdown-label">DAYS</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdHours">--</span><span
+            class="countdown-label">HRS</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdMins">--</span><span
+            class="countdown-label">MIN</span></div>
+        <div class="countdown-unit"><span class="countdown-num" id="cdSecs">--</span><span
+            class="countdown-label">SEC</span></div>
       </div>
+    </div>
+
+    <div class="card hackathon-card" id="dashboardStateUnregistered"
+      style="display: none; text-align: center; padding: 3rem 1rem;">
+      <div class="mono" style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;">📡 Status: Scanning for
+        Signals...</div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">No active missions – No
+        registrations made. Explore events nearby to lock in a target!</p>
+      <button class="scan-btn" style="display: inline-block; margin: 0 auto;">[ Browse Nearby Hackathons ]</button>
     </div>
 
     <div class="left-col">
       <div class="card">
         <div class="section-tag">// TALENT SCANNER v2.4</div>
         <p class="card-title">Find Your Perfect Teammate</p>
-        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;">
-          Enter the skills your team needs. The radar will scan active hackers and plot matches on the display. 
-          Higher compatibility = closer to the bullseye. Click any blip to view the full profile.
-        </p>
+        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;"> Enter the skills your team needs. The
+          radar will scan active hackers and plot matches on the display. Higher compatibility = closer to the bullseye.
+          Click any blip to view the full profile. </p>
         <div class="divider"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;font-size:0.78rem;">
           <div style="display:flex;gap:0.5rem;align-items:center;">
-            <span style="width:10px;height:10px;background:var(--accent);border-radius:50%;display:inline-block;box-shadow:0 0 6px var(--accent);"></span>
+            <span
+              style="width:10px;height:10px;background:var(--accent);border-radius:50%;display:inline-block;box-shadow:0 0 6px var(--accent);"></span>
             <span style="color:var(--text-muted);">High match (&gt;75%)</span>
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;">
-            <span style="width:10px;height:10px;background:#facc15;border-radius:50%;display:inline-block;box-shadow:0 0 6px #facc15;"></span>
+            <span
+              style="width:10px;height:10px;background:#facc15;border-radius:50%;display:inline-block;box-shadow:0 0 6px #facc15;"></span>
             <span style="color:var(--text-muted);">Mid match (40–75%)</span>
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;">
-            <span style="width:10px;height:10px;background:#f87171;border-radius:50%;display:inline-block;box-shadow:0 0 6px #f87171;"></span>
+            <span
+              style="width:10px;height:10px;background:#f87171;border-radius:50%;display:inline-block;box-shadow:0 0 6px #f87171;"></span>
             <span style="color:var(--text-muted);">Low match (&lt;40%)</span>
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;">
-            <span style="width:10px;height:10px;border:1.5px solid var(--accent);border-radius:50%;display:inline-block;animation:pulse-dot 1.4s infinite;"></span>
+            <span
+              style="width:10px;height:10px;border:1.5px solid var(--accent);border-radius:50%;display:inline-block;animation:pulse-dot 1.4s infinite;"></span>
             <span style="color:var(--text-muted);">Scanning…</span>
           </div>
         </div>
@@ -509,7 +778,8 @@
           </div>
           <div class="radar-status mono" id="radarStatus">AWAITING TARGET PARAMETERS</div>
           <div class="scan-form">
-            <input class="scan-input" id="skillsInput" type="text" placeholder="e.g. Python, React, ML..." onkeydown="if(event.key==='Enter') startScan()" />
+            <input class="scan-input" id="skillsInput" type="text" placeholder="e.g. Python, React, ML..."
+              onkeydown="if(event.key==='Enter') startScan()" />
             <button class="scan-btn" id="scanBtn" onclick="startScan()">▶ SCAN</button>
           </div>
         </div>
@@ -527,7 +797,9 @@
             <div class="match-label">MATCH</div>
           </div>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
         <div class="skills-section">
           <div class="skills-heading">✓ Skills Matched</div>
           <div class="skill-tags" id="matchedSkills"></div>
@@ -537,70 +809,101 @@
           <div class="skill-tags" id="missingSkills"></div>
         </div>
         <div class="all-skills-wrap" id="allSkillsWrap" style="display:none;">
-          <div class="skills-heading" style="display:flex;align-items:baseline;gap:0;">
-            🧳 Full Skill Set<span class="all-skills-count" id="allSkillsCount"></span>
-          </div>
+          <div class="skills-heading" style="display:flex;align-items:baseline;gap:0;"> 🧳 Full Skill Set<span
+              class="all-skills-count" id="allSkillsCount"></span> </div>
           <div class="skill-tags" style="margin-top:0.4rem;" id="allSkillsTags"></div>
         </div>
-        
         <div class="all-skills-wrap" style="margin-top: 1.25rem; padding-top: 1rem; display: flex; gap: 0.5rem;">
-          <a id="linkedinBtn" href="#" target="_blank" class="scan-btn" style="background: #0077b5; color: white; display: flex; align-items: center; justify-content: center; width: 48px; padding: 0.6rem 0; border-radius: 4px;" title="View LinkedIn Profile">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/>
+          <a id="linkedinBtn" href="#" target="_blank" class="scan-btn"
+            style="background: #0077b5; color: white; display: flex; align-items: center; justify-content: center; width: 48px; padding: 0.6rem 0; border-radius: 4px;"
+            title="View LinkedIn Profile">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+              style="width: 16px; height: 16px;">
+              <path
+                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z" />
             </svg>
           </a>
-          <button class="scan-btn" style="flex: 1; text-align: center;" id="inviteBtn" onclick="sendInvitation()">✉ SEND TEAM INVITATION</button>
+          <button class="scan-btn" style="flex: 1; text-align: center;" id="inviteBtn" onclick="sendInvitation()">✉ SEND
+            TEAM INVITATION</button>
         </div>
-
       </div>
     </div>
   </main>
 
-  <!-- ONBOARDING PORTAL OVERLAY -->
-  <div id="onboardingOverlay" style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem 1rem;">
-    <div class="card" style="width: 100%; max-width: 500px; padding: 2.5rem; position: relative; background: var(--surface); border: 1px solid var(--border-hi);">
+  <div id="onboardingOverlay"
+    style="position: fixed; inset: 0; background: rgba(5, 20, 14, 0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem 1rem;">
+    <div class="card"
+      style="width: 100%; max-width: 550px; padding: 2.5rem; position: relative; background: var(--surface); border: 1px solid var(--border-hi);">
       <span class="corner-tag tl">SYS-INIT-09</span>
       <div class="section-tag">// CORE ONBOARDING PORTAL</div>
-      <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.05em;">OPERATOR PROFILE INITIALIZATION</h2>
+      <h2
+        style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.05em;">
+        OPERATOR PROFILE INITIALIZATION</h2>
       <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-        Welcome to the grid, operator. Before scanning or joining active missions, initialize your profile node.
+        Welcome to the grid, operator. Before scanning or joining active missions, initialize your profile parameters.
       </p>
-      
       <div class="divider"></div>
-      
+
       <form id="onboardingForm" onsubmit="submitOnboarding(event)">
         <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
-          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">ROLE PREFERENCE</label>
-          <select id="onboardRole" class="scan-input" style="padding-left: 0.75rem;" required>
-            <option value="Backend Developer">Backend Developer</option>
-            <option value="Frontend UI Expert">Frontend UI Expert</option>
-            <option value="Fullstack Generalist">Fullstack Generalist</option>
-            <option value="ML/AI Engineer">ML/AI Engineer</option>
-            <option value="UI/UX Designer">UI/UX Designer</option>
-          </select>
+          <label class="form-label"
+            style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">*
+            CURRENT LOCATION (FALLBACK: MANUAL CITY INPUT)</label>
+          <input type="text" id="onboardLocation" class="scan-input" style="padding-left: 0.75rem;"
+            placeholder="e.g. Hyderabad, India" required />
         </div>
 
         <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
-          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">PRIMARY SKILLS (comma-separated)</label>
-          <input type="text" id="onboardSkills" class="scan-input" style="padding-left: 0.75rem;" placeholder="e.g. React, Python, Node.js, PyTorch" required />
+          <label class="form-label"
+            style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">*
+            TECHNICAL ACHIEVEMENTS / PAST COMPLETIONS</label>
+          <textarea id="onboardAchievements" class="scan-input"
+            style="padding: 0.6rem 0.75rem; min-height: 70px; resize: none;"
+            placeholder="Highlight major completions, framework metrics, or build logs..." required></textarea>
         </div>
 
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem;">
-          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">LINKEDIN PROFILE URL</label>
-          <input type="url" id="onboardLinkedin" class="scan-input" style="padding-left: 0.75rem;" placeholder="https://www.linkedin.com/in/username" required />
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <label class="form-label"
+              style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">*
+              GITHUB HANDLING URL / PORTFOLIO LINK</label>
+            <input type="url" id="onboardGithub" class="scan-input" style="padding-left: 0.75rem;"
+              placeholder="https://github.com/username" required />
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <label class="form-label"
+              style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">LINKEDIN
+              URL</label>
+            <input type="url" id="onboardLinkedin" class="scan-input" style="padding-left: 0.75rem;"
+              placeholder="https://linkedin.com/in/username" />
+          </div>
         </div>
 
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.5rem;">
-          <label class="form-label" style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">GITHUB USERNAME (optional)</label>
-          <input type="text" id="onboardGithub" class="scan-input" style="padding-left: 0.75rem;" placeholder="e.g. octocat" />
+        <div class="form-group"
+          style="display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.5rem; padding: 1rem; border: 1px dashed var(--border); border-radius: 4px;">
+          <label class="form-label"
+            style="font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+            ⚡ SMART DYNAMIC SKILLS INVENTORY (SELECT MINIMUM 3 BADGES)
+          </label>
+          <div id="quickSkillsWrapper" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;">
+          </div>
+          <div id="skillsPillCountAlert" class="mono" style="font-size: 0.7rem; color: #f87171;">❌ 0 BADGES COLLECTED (3
+            REQUIRED)</div>
         </div>
 
-        <button type="submit" class="scan-btn" id="onboardSubmitBtn">▶ INITIALIZE CORE PROFILE</button>
+        <button type="submit" class="scan-btn" id="onboardSubmitBtn" disabled
+          style="width: 100%; opacity: 0.5; cursor: not-allowed;">▶ INITIALIZE CORE PROFILE</button>
       </form>
     </div>
   </div>
 
   <script>
+    // ═══════════════════════════════════════════════════
+    // GLOBAL SUGGESTED INVENTORY MATRIX
+    // ═══════════════════════════════════════════════════
+    const DEFAULT_SUGGESTED_SKILLS = ["Python", "React", "TypeScript", "Solidity", "UI Design", "Figma", "FastAPI", "Node.js"];
+    let INTERACTIVE_SKILLS_POOL = new Set();
+
     // ═══════════════════════════════════════════════════
     // THEME TOGGLE
     // ═══════════════════════════════════════════════════
@@ -611,13 +914,13 @@
 
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      const icon  = document.getElementById('themeIcon');
+      const icon = document.getElementById('themeIcon');
       const label = document.getElementById('themeLabel');
       if (theme === 'dark') {
-        icon.textContent  = '☀️';
+        icon.textContent = '☀️';
         label.textContent = 'LIGHT MODE';
       } else {
-        icon.textContent  = '🌙';
+        icon.textContent = '🌙';
         label.textContent = 'DARK MODE';
       }
       localStorage.setItem('hackmate-theme', theme);
@@ -630,59 +933,68 @@
     }
 
     // ═══════════════════════════════════════════════════
-    // HACKATHON DATA + COUNTDOWN
+    // HACKATHON DATA + STATE B DASHBOARD CONDITION
     // ═══════════════════════════════════════════════════
     async function loadHackathon() {
       try {
-        const res  = await fetch('/hackathons/active');
-        const data = await res.json();
-        document.getElementById('hackTitle').textContent = data.title || 'Unnamed Hackathon';
-        document.getElementById('hackDesc').textContent  = data.description || '';
-        if (data.target_date) startCountdown(data.target_date);
-      } catch(e) {
-        document.getElementById('hackTitle').textContent = 'HackMate Invitational 2026';
-        document.getElementById('hackDesc').textContent  = 'Build the future. Find your team. Ship something legendary.';
-        startCountdown('2026-08-20');
+        const res = await fetch('/hackathons/active');
+        if (res.ok) {
+          const data = await res.json();
+          // Hide State A unregistered placeholder layout, switch on State B
+          document.getElementById('dashboardStateUnregistered').style.display = 'none';
+          document.getElementById('dashboardStateRegistered').style.display = 'block';
+
+          document.getElementById('hackTitle').textContent = data.title || 'Unnamed Hackathon';
+          document.getElementById('hackDesc').textContent = data.description || '';
+          if (data.target_date) startCountdown(data.target_date);
+        } else {
+          activateStateAEmptyWorkspace();
+        }
+      } catch (e) {
+        activateStateAEmptyWorkspace();
       }
+    }
+
+    function activateStateAEmptyWorkspace() {
+      document.getElementById('dashboardStateRegistered').style.display = 'none';
+      document.getElementById('dashboardStateUnregistered').style.display = 'block';
     }
 
     function startCountdown(dateStr) {
       const target = new Date(dateStr + 'T00:00:00');
       function tick() {
-        const now  = new Date();
+        const now = new Date();
         const diff = target - now;
         if (diff <= 0) {
-          ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
+          ['cdDays', 'cdHours', 'cdMins', 'cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
           return;
         }
         const d = Math.floor(diff / 86400000);
         const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000)  / 60000);
-        const s = Math.floor((diff % 60000)    / 1000);
-        document.getElementById('cdDays').textContent  = String(d).padStart(2,'0');
-        document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
-        document.getElementById('cdMins').textContent  = String(m).padStart(2,'0');
-        document.getElementById('cdSecs').textContent  = String(s).padStart(2,'0');
-        document.getElementById('hudBR').textContent   = `T-${d}D ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('cdDays').textContent = String(d).padStart(2, '0');
+        document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
+        document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
+        document.getElementById('cdSecs').textContent = String(s).padStart(2, '0');
+        document.getElementById('hudBR').textContent = `T-${d}D ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
       }
       tick();
       setInterval(tick, 1000);
     }
 
     // ═══════════════════════════════════════════════════
-    // RADAR ENGINE 
+    // RADAR ENGINE
     // ═══════════════════════════════════════════════════
     const canvas = document.getElementById('radarCanvas');
-    const ctx    = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     window._radarCtx = ctx;
-
-    const CX = canvas.width  / 2;
+    const CX = canvas.width / 2;
     const CY = canvas.height / 2;
-    const R  = (canvas.width / 2) - 18;
-
-    let sweepAngle  = 0;
-    let isScanning  = false;
-    let blips       = [];
+    const R = (canvas.width / 2) - 18;
+    let sweepAngle = 0;
+    let isScanning = false;
+    let blips = [];
     window._radarBlips = blips;
 
     function cssVar(name) {
@@ -693,110 +1005,78 @@
       const W = canvas.width, H = canvas.height;
       c.clearRect(0, 0, W, H);
       c.save();
-      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2); c.clip();
-
+      c.beginPath();
+      c.arc(CX, CY, R, 0, Math.PI * 2);
+      c.clip();
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       c.fillStyle = isDark ? 'rgba(5,20,14,0.97)' : 'rgba(224,245,236,0.97)';
       c.fillRect(0, 0, W, H);
-
       const ringColor = cssVar('--grid-line');
       for (let i = 1; i <= 4; i++) {
         c.beginPath();
         c.arc(CX, CY, R * (i / 4), 0, Math.PI * 2);
-        c.strokeStyle = ringColor; c.lineWidth = 1; c.stroke();
+        c.strokeStyle = ringColor;
+        c.lineWidth = 1;
+        c.stroke();
       }
-
-      c.strokeStyle = ringColor; c.lineWidth = 0.8; c.setLineDash([4, 6]);
-      c.beginPath(); c.moveTo(CX, CY - R);
-      c.lineTo(CX, CY + R); c.stroke();
+      c.strokeStyle = ringColor;
+      c.lineWidth = 0.8;
+      c.setLineDash([4, 6]);
+      c.beginPath(); c.moveTo(CX, CY - R); c.lineTo(CX, CY + R); c.stroke();
       c.beginPath(); c.moveTo(CX - R, CY); c.lineTo(CX + R, CY); c.stroke();
       c.setLineDash([]);
-
       const accentColor = cssVar('--sweep-color');
       c.strokeStyle = accentColor; c.lineWidth = 1.5; c.globalAlpha = 0.5;
       c.beginPath(); c.moveTo(CX - 10, CY); c.lineTo(CX + 10, CY); c.stroke();
-      c.beginPath();
-      c.moveTo(CX, CY - 10); c.lineTo(CX, CY + 10); c.stroke();
+      c.beginPath(); c.moveTo(CX, CY - 10); c.lineTo(CX, CY + 10); c.stroke();
       c.globalAlpha = 1;
-      c.beginPath(); c.arc(CX, CY, 3, 0, Math.PI * 2);
-      c.fillStyle = accentColor; c.fill();
-
+      c.beginPath(); c.arc(CX, CY, 3, 0, Math.PI * 2); c.fillStyle = accentColor; c.fill();
       if (currentBlips && currentBlips.length) {
         currentBlips.forEach(b => { if (b.revealed) drawBlip(c, b); });
       }
       c.restore();
-      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2);
-      c.strokeStyle = cssVar('--border-hi');
-      c.lineWidth = 1.5; c.stroke();
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2); c.strokeStyle = cssVar('--border-hi'); c.lineWidth = 1.5; c.stroke();
     }
 
     function drawSweepFrame() {
-      const c = ctx;
-      const W = canvas.width, H = canvas.height;
+      const c = ctx; const W = canvas.width, H = canvas.height;
       const accentColor = cssVar('--sweep-color');
       c.clearRect(0, 0, W, H);
       c.save();
-      c.beginPath();
-      c.arc(CX, CY, R, 0, Math.PI * 2); c.clip();
-
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2); c.clip();
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       c.fillStyle = isDark ? 'rgba(5,20,14,0.97)' : 'rgba(224,245,236,0.97)';
       c.fillRect(0, 0, W, H);
-
       const ringColor = cssVar('--grid-line');
       for (let i = 1; i <= 4; i++) {
-        c.beginPath();
-        c.arc(CX, CY, R * (i/4), 0, Math.PI * 2);
-        c.strokeStyle = ringColor; c.lineWidth = 1; c.stroke();
+        c.beginPath(); c.arc(CX, CY, R * (i / 4), 0, Math.PI * 2); c.strokeStyle = ringColor; c.lineWidth = 1; c.stroke();
       }
-
-      c.save();
-      c.translate(CX, CY);
-      const precisionWedgeSteps = 40;
-      const sweepTrailArcAngle = (Math.PI * 2) / 4;
+      c.save(); c.translate(CX, CY);
+      const precisionWedgeSteps = 40; const sweepTrailArcAngle = (Math.PI * 2) / 4;
       for (let i = 0; i < precisionWedgeSteps; i++) {
-        const frac = i / precisionWedgeSteps;
-        const angle = sweepAngle - sweepTrailArcAngle * (1 - frac);
-        c.beginPath(); c.moveTo(0, 0);
-        c.arc(0, 0, R, angle, angle + (sweepTrailArcAngle / precisionWedgeSteps));
-        c.closePath();
+        const frac = i / precisionWedgeSteps; const angle = sweepAngle - sweepTrailArcAngle * (1 - frac);
+        c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R, angle, angle + (sweepTrailArcAngle / precisionWedgeSteps)); c.closePath();
         const alpha = isDark ? frac * 0.15 : frac * 0.10;
-        c.fillStyle = isDark ? `rgba(16,185,129,${alpha})` : `rgba(5,150,105,${alpha})`;
-        c.fill();
+        c.fillStyle = isDark ? `rgba(16,185,129,${alpha})` : `rgba(5,150,105,${alpha})`; c.fill();
       }
-
       c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(sweepAngle) * R, Math.sin(sweepAngle) * R);
-      c.strokeStyle = accentColor;
-      c.lineWidth = 2; c.stroke();
-      c.restore();
-
+      c.strokeStyle = accentColor; c.lineWidth = 2; c.stroke(); c.restore();
       c.strokeStyle = ringColor; c.lineWidth = 0.8; c.setLineDash([4, 6]);
-      c.beginPath(); c.moveTo(CX, CY - R);
-      c.lineTo(CX, CY + R); c.stroke();
+      c.beginPath(); c.moveTo(CX, CY - R); c.lineTo(CX, CY + R); c.stroke();
       c.beginPath(); c.moveTo(CX - R, CY); c.lineTo(CX + R, CY); c.stroke();
       c.setLineDash([]);
       blips.forEach(b => { if (b.revealed) drawBlip(c, b); });
       c.restore();
-      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2);
-      c.strokeStyle = cssVar('--border-hi');
-      c.lineWidth = 1.5; c.stroke();
+      c.beginPath(); c.arc(CX, CY, R, 0, Math.PI * 2); c.strokeStyle = cssVar('--border-hi'); c.lineWidth = 1.5; c.stroke();
     }
 
     function drawBlip(c, b) {
-      const now = Date.now();
-      const age = (now - b.bornAt) / 1000;
+      const now = Date.now(); const age = (now - b.bornAt) / 1000;
       const pulse = 0.7 + 0.3 * Math.abs(Math.sin(age * 3));
-      c.save();
-      c.beginPath();
-      c.arc(b.px, b.py, 5, 0, Math.PI * 2);
-      c.strokeStyle = b.color; c.lineWidth = 1.5; c.globalAlpha = 0.4 * pulse; c.stroke();
-      c.beginPath();
-      c.arc(b.px, b.py, 4, 0, Math.PI * 2);
-      c.fillStyle = b.color; c.globalAlpha = pulse; c.fill();
-      c.restore();
+      c.save(); c.beginPath(); c.arc(b.px, b.py, 5, 0, Math.PI * 2); c.strokeStyle = b.color; c.lineWidth = 1.5; c.globalAlpha = 0.4 * pulse; c.stroke();
+      c.beginPath(); c.arc(b.px, b.py, 4, 0, Math.PI * 2); c.fillStyle = b.color; c.globalAlpha = pulse; c.fill(); c.restore();
     }
 
-    // INTERCEPT PULSE CLOCK RENDER LOOP
     setInterval(() => {
       if (isScanning) {
         sweepAngle = (sweepAngle + 0.04) % (Math.PI * 2);
@@ -805,50 +1085,33 @@
           if (!b.revealed) {
             const bAngle = (b.angle + Math.PI * 2) % (Math.PI * 2);
             const currentSweepNormalized = (sweepAngle + Math.PI * 2) % (Math.PI * 2);
-            if (Math.abs(currentSweepNormalized - bAngle) < 0.1) {
-              b.revealed = true;
-              b.bornAt = Date.now();
-            }
+            if (Math.abs(currentSweepNormalized - bAngle) < 0.1) { b.revealed = true; b.bornAt = Date.now(); }
           }
         });
-      } else if (blips.length > 0) {
-        drawStaticRadar(ctx, blips);
-      }
+      } else if (blips.length > 0) { drawStaticRadar(ctx, blips); }
     }, 20);
 
     function scoreToRadius(scoreNum) {
-      const pct = Math.max(0, Math.min(100, scoreNum)) / 100;
-      return R * (0.85 - pct * 0.7);
+      const pct = Math.max(0, Math.min(100, scoreNum)) / 100; return R * (0.85 - pct * 0.7);
     }
-
     function blipColor(scoreNum) {
-      if (scoreNum >= 75) return '#10b981';
-      if (scoreNum >= 40) return '#facc15';
-      return '#f87171';
+      if (scoreNum >= 75) return '#10b981'; if (scoreNum >= 40) return '#facc15'; return '#f87171';
     }
 
     // ═══════════════════════════════════════════════════
-    // CORE ASYNC TALENT DISCOVERY CONTROLLER (MOCK INTERCEPT)
+    // CORE ASYNC TALENT DISCOVERY CONTROLLER
     // ═══════════════════════════════════════════════════
     async function startScan() {
       const skills = document.getElementById('skillsInput').value.trim();
-      if (!skills) {
-        document.getElementById('skillsInput').focus();
-        return;
-      }
+      if (!skills) { document.getElementById('skillsInput').focus(); return; }
       if (isScanning) return;
-
-      isScanning = true;
-      blips = [];
-      window._radarBlips = blips;
-
+      isScanning = true; blips = []; window._radarBlips = blips;
       document.getElementById('scanBtn').disabled = true;
       document.getElementById('profileCard').style.display = 'none';
       document.getElementById('radarStatus').textContent = 'SCANNING';
       document.getElementById('radarStatus').className = 'radar-status active loading-dots mono';
       document.getElementById('hudBL').textContent = 'MODE: SCAN';
 
-      // Local sandbox payload simulation containing target social hyperlinks
       const mockCandidates = [
         { user_name: "Anya Malhotra", score_number: 94, linkedin: "https://www.linkedin.com/in/syeda-umme-habeeba-716b4b358", match_score: "94%", angle_offset: 45, skills_matched: ["Python", "ML"], skills_missing: ["React"], all_skills: ["Python", "ML", "Git", "Docker"] },
         { user_name: "Sarah Jenkins", score_number: 28, linkedin: "https://linkedin.com", match_score: "28%", angle_offset: 135, skills_matched: ["Python"], skills_missing: ["TensorFlow", "FastAPI"], all_skills: ["Python", "HTML", "CSS"] },
@@ -857,167 +1120,81 @@
       ];
 
       const query = skills.toLowerCase();
-      
       mockCandidates.forEach(candidate => {
         const matchesQuery = candidate.all_skills.some(s => s.toLowerCase().includes(query));
-        
         if (matchesQuery || query === "" || query === "all") {
-          const angle = (candidate.angle_offset * Math.PI) / 180;
-          const rad = scoreToRadius(candidate.score_number);
-          blips.push({
-            px: CX + Math.cos(angle) * rad,
-            py: CY + Math.sin(angle) * rad,
-            angle,
-            color: blipColor(candidate.score_number),
-            revealed: false,
-            bornAt: 0,
-            data: candidate
-          });
+          const angle = (candidate.angle_offset * Math.PI) / 180; const rad = scoreToRadius(candidate.score_number);
+          blips.push({ px: CX + Math.cos(angle) * rad, py: CY + Math.sin(angle) * rad, angle, color: blipColor(candidate.score_number), revealed: false, bornAt: 0, data: candidate });
         }
       });
-
       document.getElementById('hudTR').textContent = `TGTS: ${blips.length}`;
       setupCanvasInteraction();
 
-      // Clear layout processing states accurately at execution end
       setTimeout(() => {
-        isScanning = false;
-        document.getElementById('scanBtn').disabled = false;
+        isScanning = false; document.getElementById('scanBtn').disabled = false;
         document.getElementById('radarStatus').textContent = `SCAN COMPLETE — ${blips.length} TARGETS ACQUIRED`;
         document.getElementById('radarStatus').className = 'radar-status mono';
         document.getElementById('hudBL').textContent = 'MODE: STANDBY';
-
-        // Explicitly lock all detected targets visible
-        blips.forEach(b => {
-          b.revealed = true;
-          b.bornAt = Date.now();
-        });
-
-        // Fast re-render boundary cycle update
+        blips.forEach(b => { b.revealed = true; b.bornAt = Date.now(); });
         drawStaticRadar(ctx, blips);
       }, 3000);
     }
 
-    // ═══════════════════════════════════════════════════
-    // INTERACTION MECHANICS (HOVER TOOLTIPS + CLICKS)
-    // ═══════════════════════════════════════════════════
     function setupCanvasInteraction() {
       const tooltip = document.getElementById('blipTooltip');
-      canvas.onmousemove = function(e) {
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        let found = null;
-        blips.forEach(b => {
-          if (!b.revealed) return;
-          const dist = Math.hypot(b.px - mx, b.py - my);
-          if (dist < 10) found = b;
-        });
+      canvas.onmousemove = function (e) {
+        const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+        let found = null; blips.forEach(b => { if (!b.revealed) return; const dist = Math.hypot(b.px - mx, b.py - my); if (dist < 10) found = b; });
         if (found) {
-          canvas.style.cursor = 'pointer';
-          tooltip.style.display = 'block';
-          tooltip.style.left = (found.px + 12) + 'px';
-          tooltip.style.top = (found.py - 12) + 'px';
+          canvas.style.cursor = 'pointer'; tooltip.style.display = 'block'; tooltip.style.left = (found.px + 12) + 'px'; tooltip.style.top = (found.py - 12) + 'px';
           tooltip.textContent = `${found.data.user_name} (${found.data.score_number}%)`;
-        } else {
-          canvas.style.cursor = 'default';
-          tooltip.style.display = 'none';
-        }
+        } else { canvas.style.cursor = 'default'; tooltip.style.display = 'none'; }
       };
-
-      canvas.onclick = function(e) {
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        blips.forEach(b => {
-          if (!b.revealed) return;
-          const dist = Math.hypot(b.px - mx, b.py - my);
-          if (dist < 10) displayProfileCard(b.data);
-        });
+      canvas.onclick = function (e) {
+        const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+        blips.forEach(b => { if (!b.revealed) return; const dist = Math.hypot(b.px - mx, b.py - my); if (dist < 10) displayProfileCard(b.data); });
       };
     }
 
     function displayProfileCard(data) {
-      const card = document.getElementById('profileCard');
-      card.style.display = 'block';
+      const card = document.getElementById('profileCard'); card.style.display = 'block';
       document.getElementById('profileName').textContent = data.user_name;
       document.getElementById('profileScore').textContent = data.score_number + '%';
-      
-      const pBar = document.getElementById('progressBar');
-      pBar.style.width = '0%';
+      const pBar = document.getElementById('progressBar'); pBar.style.width = '0%';
       setTimeout(() => { pBar.style.width = data.score_number + '%'; }, 50);
-
-      const matched = document.getElementById('matchedSkills');
-      const missing = document.getElementById('missingSkills');
-      matched.innerHTML = '';
-      missing.innerHTML = '';
-
-      (data.skills_matched || []).forEach(s => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag matched';
-        span.textContent = s;
-        matched.appendChild(span);
-      });
-      (data.skills_missing || []).forEach(s => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag missing';
-        span.textContent = s;
-        missing.appendChild(span);
-      });
-      const allWrap = document.getElementById('allSkillsWrap');
-      const allTags = document.getElementById('allSkillsTags');
-      const allCount = document.getElementById('allSkillsCount');
+      const matched = document.getElementById('matchedSkills'); const missing = document.getElementById('missingSkills');
+      matched.innerHTML = ''; missing.innerHTML = '';
+      (data.skills_matched || []).forEach(s => { const span = document.createElement('span'); span.className = 'skill-tag matched'; span.textContent = s; matched.appendChild(span); });
+      (data.skills_missing || []).forEach(s => { const span = document.createElement('span'); span.className = 'skill-tag missing'; span.textContent = s; missing.appendChild(span); });
+      const allWrap = document.getElementById('allSkillsWrap'); const allTags = document.getElementById('allSkillsTags'); const allCount = document.getElementById('allSkillsCount');
       allTags.innerHTML = '';
       if (data.all_skills && data.all_skills.length) {
-        allWrap.style.display = 'block';
-        allCount.textContent = ` · ${data.all_skills.length} skill${data.all_skills.length !== 1 ? 's' : ''}`;
+        allWrap.style.display = 'block'; allCount.textContent = ` · ${data.all_skills.length} skill${data.all_skills.length !== 1 ? 's' : ''}`;
         data.all_skills.forEach((skill, i) => {
-          const span = document.createElement('span');
-          span.className = 'skill-tag all-skill';
-          span.textContent = skill;
-          span.style.opacity = '0';
-          span.style.transform = 'translateY(4px)';
-          span.style.transition = `opacity 0.2s ease ${i * 40}ms, transform 0.2s ease ${i * 40}ms`;
-          allTags.appendChild(span);
-  
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            span.style.opacity = '1';
-            span.style.transform = 'translateY(0)';
-          }));
+          const span = document.createElement('span'); span.className = 'skill-tag all-skill'; span.textContent = skill; span.style.opacity = '0'; span.style.transform = 'translateY(4px)';
+          span.style.transition = `opacity 0.2s ease ${i * 40}ms, transform 0.2s ease ${i * 40}ms`; allTags.appendChild(span);
+          requestAnimationFrame(() => requestAnimationFrame(() => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; }));
         });
-      } else {
-        allWrap.style.display = 'none';
-      }
-
-      // Dynamically update the anchor target's URL link mapping
+      } else { allWrap.style.display = 'none'; }
       document.getElementById('linkedinBtn').href = data.linkedin || "https://linkedin.com";
-
       window._selectedCandidateToken = data.user_name;
     }
 
     function sendInvitation() {
-      const target = window._selectedCandidateToken || "hacker";
-      const btn = document.getElementById('inviteBtn');
-      btn.disabled = true;
-      btn.textContent = "✓ INVITATION TRANSMITTED";
-      alert(`Team invitation routed cleanly to ${target}!`);
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = "✉ SEND TEAM INVITATION";
-      }, 3000);
+      const target = window._selectedCandidateToken || "hacker"; const btn = document.getElementById('inviteBtn');
+      btn.disabled = true; btn.textContent = "✓ INVITATION TRANSMITTED"; alert(`Team invitation routed cleanly to ${target}!`);
+      setTimeout(() => { btn.disabled = false; btn.textContent = "✉ SEND TEAM INVITATION"; }, 3000);
     }
 
+    // ═══════════════════════════════════════════════════
+    // INITIALIZATION & SESSION GATES (STATE A VS STATE B)
+    // ═══════════════════════════════════════════════════
     async function initUserSession() {
       const userStr = localStorage.getItem('currentUser');
-      if (!userStr) {
-        window.location.href = '/login.html';
-        return;
-      }
-      
+      if (!userStr) { window.location.href = '/login.html'; return; }
       let currentUser = JSON.parse(userStr);
-      
+
       try {
-        // Fetch fresh state from the database
         const res = await fetch(`/api/profile/status?user_name=${encodeURIComponent(currentUser.user_name)}`);
         if (res.ok) {
           const data = await res.json();
@@ -1026,25 +1203,83 @@
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
       } catch (err) {
-        console.warn("Failed to fetch fresh user status, using cached state.", err);
+        console.warn("Offline state fallback routing invoked.", err);
       }
-      
-      // Update welcome banner visibility
+
       document.getElementById('welcomeCard').style.display = 'block';
-      
+
       if (!currentUser.has_onboarded) {
-        // Show onboarding portal
+        // STATE A: Profile Incomplete -> Render the lock overlay banner and trigger interactive tag grid
         document.getElementById('onboardingOverlay').style.display = 'flex';
+        renderSkillsSelectorGrid();
       } else {
-        // Already onboarded - check if returning or just completed onboarding
+        // STATE B: Profile Complete -> Funnel smoothly straight to personalized viewports
+        document.getElementById('onboardingOverlay').style.display = 'none';
         if (currentUser.just_registered) {
-          document.getElementById('welcomeMessage').textContent = `Welcome to the grid, Hacker! 👋 Ready to ship something legendary?`;
-          // Clear just_registered flag so next time they load, they are returning
+          document.getElementById('welcomeMessage').textContent = `Welcome to the grid, ${currentUser.first_name || 'Hacker'}! 👋 Ready to ship something legendary?`;
           currentUser.just_registered = false;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
         } else {
-          document.getElementById('welcomeMessage').textContent = `Welcome Back, Hacker 👋 Ready to build something amazing today?`;
+          document.getElementById('welcomeMessage').textContent = `Welcome Back, ${currentUser.first_name || 'Hacker'} 👋 Ready to build something amazing today?`;
         }
+        loadHackathon();
+      }
+    }
+
+    // ═══════════════════════════════════════════════════
+    // INTERACTIVE PROFILE INVENTORY COMPONENT METHODS
+    // ═══════════════════════════════════════════════════
+    function renderSkillsSelectorGrid() {
+      const wrapper = document.getElementById('quickSkillsWrapper');
+      if (!wrapper) return;
+      wrapper.innerHTML = '';
+
+      DEFAULT_SUGGESTED_SKILLS.forEach(skill => {
+        const selected = INTERACTIVE_SKILLS_POOL.has(skill);
+        const pill = document.createElement('span');
+        pill.className = 'mono';
+        pill.style.cssText = `
+          padding: 0.3rem 0.75rem;
+          font-size: 0.7rem;
+          border-radius: 4px;
+          border: 1px solid ${selected ? 'var(--accent)' : 'var(--border)'};
+          background: ${selected ? 'var(--accent-glow)' : 'transparent'};
+          color: ${selected ? 'var(--accent)' : 'var(--text-muted)'};
+          cursor: pointer;
+          user-select: none;
+          transition: all 0.15s ease;
+        `;
+        pill.textContent = skill;
+        pill.onclick = () => {
+          if (INTERACTIVE_SKILLS_POOL.has(skill)) {
+            INTERACTIVE_SKILLS_POOL.delete(skill);
+          } else {
+            INTERACTIVE_SKILLS_POOL.add(skill);
+          }
+          renderSkillsSelectorGrid();
+          evaluateSkillsThreshold();
+        };
+        wrapper.appendChild(pill);
+      });
+    }
+
+    function evaluateSkillsThreshold() {
+      const size = INTERACTIVE_SKILLS_POOL.size;
+      const alertLabel = document.getElementById('skillsPillCountAlert');
+      const submitBtn = document.getElementById('onboardSubmitBtn');
+
+      if (size >= 3) {
+        alertLabel.textContent = `✅ ${size} COMPETENCY BADGES POPULATED`;
+        alertLabel.style.color = 'var(--accent)';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      } else {
+        alertLabel.textContent = `❌ ${size} BADGES COLLECTED (3 REQUIRED)`;
+        alertLabel.style.color = '#f87171';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
       }
     }
 
@@ -1052,18 +1287,17 @@
       e.preventDefault();
       const userStr = localStorage.getItem('currentUser');
       if (!userStr) return;
-      
       const currentUser = JSON.parse(userStr);
       const btn = document.getElementById('onboardSubmitBtn');
+
       btn.disabled = true;
       btn.textContent = '◌ INITIALIZING NODE...';
-      
-      const role = document.getElementById('onboardRole').value;
-      const skillsInput = document.getElementById('onboardSkills').value;
-      const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(Boolean) : [];
-      const linkedin = document.getElementById('onboardLinkedin').value.trim();
+
+      const location = document.getElementById('onboardLocation').value.trim();
+      const achievements = document.getElementById('onboardAchievements').value.trim();
       const github = document.getElementById('onboardGithub').value.trim();
-      
+      const linkedin = document.getElementById('onboardLinkedin').value.trim();
+
       try {
         const response = await fetch('/api/profile/onboard', {
           method: 'POST',
@@ -1071,60 +1305,39 @@
           body: JSON.stringify({
             user_name: currentUser.user_name,
             status: 'looking_for_team',
-            skills: skills,
+            skills: Array.from(INTERACTIVE_SKILLS_POOL),
             linkedin_url: linkedin,
-            github: github
+            github: github,
+            location: location,
+            achievements: achievements
           })
         });
-        
         const data = await response.json();
+
         if (response.ok) {
-          // Update localStorage
           currentUser.has_onboarded = true;
+          currentUser.just_registered = true;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          
-          // Hide overlay
-          document.getElementById('onboardingOverlay').style.display = 'none';
-          
-          // Show signup welcome greeting
-          document.getElementById('welcomeMessage').textContent = `Welcome to the grid, Hacker! 👋 Ready to ship something legendary?`;
-          
-          // Clear just_registered flag after greeting is displayed
-          currentUser.just_registered = false;
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          initUserSession();
         } else {
           alert('Onboarding failed: ' + (data.detail || 'Unknown error'));
-          btn.disabled = false;
-          btn.textContent = '▶ INITIALIZE CORE PROFILE';
+          btn.disabled = false; btn.textContent = '▶ INITIALIZE CORE PROFILE';
         }
       } catch (err) {
         console.error(err);
         alert('Error connecting to onboarding service');
-        btn.disabled = false;
-        btn.textContent = '▶ INITIALIZE CORE PROFILE';
+        btn.disabled = false; btn.textContent = '▶ INITIALIZE CORE PROFILE';
       }
     }
 
     function handleLogout() {
-      localStorage.removeItem('currentUser');
-      window.location.href = '/login.html';
+      localStorage.removeItem('currentUser'); window.location.href = '/login.html';
     }
 
     window.onload = () => {
-      initUserSession();
-      loadHackathon();
-      drawStaticRadar(ctx, []);
+      initUserSession(); drawStaticRadar(ctx, []);
     };
-    async function addHacker() {
-        const name = document.getElementById('name').value;
-        const response = await fetch('/add-hacker', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_name: name, all_skills: ["Node.js"] })
-        });
-        const result = await response.text();
-        alert(result);
-    }
   </script>
 </body>
+
 </html>
