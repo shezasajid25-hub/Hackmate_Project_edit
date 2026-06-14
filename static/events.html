@@ -280,10 +280,12 @@
                 filtered.forEach(mission => {
                     // Note: mapping backend schema '_id' value safely into the action check wrapper 
                     const uniqueId = mission._id || mission.id;
+                    const posterHTML = mission.poster ? `<img src="${mission.poster}" class="w-full h-32 object-cover rounded mb-3 border border-[var(--border)]" alt="Event Poster" />` : '';
                     const card = document.createElement('div');
                     card.className = 'card flex flex-col justify-between';
                     card.innerHTML = `
             <div>
+              ${posterHTML}
               <h3 class="mono font-bold text-md text-[var(--accent)] mb-2">${mission.title}</h3>
               <p class="text-xs text-[var(--text-muted)] mb-4">${mission.description}</p>
               <div class="flex gap-2 mb-4 flex-wrap">

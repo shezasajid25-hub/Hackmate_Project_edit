@@ -1292,7 +1292,10 @@
         // Unique countdown IDs per card
         const cdId = `cd_${idx}`;
 
+        const posterHTML = h.poster ? `<img src="${h.poster}" class="w-full h-32 object-cover rounded mb-3 border border-[var(--border)]" alt="Event Poster" />` : '';
+
         card.innerHTML = `
+          ${posterHTML}
           <div class="section-tag" style="margin-bottom:0.35rem;">// MISSION ${String(idx + 1).padStart(2, '0')}</div>
           <div class="mission-title">${h.title}</div>
           <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.5rem;">${h.description || ''}</p>

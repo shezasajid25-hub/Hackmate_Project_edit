@@ -230,6 +230,11 @@
                         placeholder="https://external-registration-form.com/id" required />
                 </div>
 
+                <div class="mb-4">
+                    <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">Event Poster Image</label>
+                    <input type="file" id="eventPoster" class="scan-input" accept="image/*" />
+                </div>
+
                 <div class="mb-4 grid grid-cols-2 gap-4">
                     <div>
                         <label class="mono text-[0.65rem] uppercase block mb-1.5" style="color:var(--text-muted)">* Cost
@@ -251,6 +256,10 @@
                     <label class="mono text-[0.65rem] uppercase block mb-2" style="color:var(--text-muted)">*
                         Operational Track Selection Badges</label>
                     <div id="tracksWrapper" class="flex flex-wrap gap-2"></div>
+                    <div id="customTrackContainer" style="display: none;" class="mt-3">
+                        <label class="mono text-[0.65rem] block mb-1.5" style="color:var(--text-muted)">* Custom Operational Track Name</label>
+                        <input type="text" id="customTrackInput" class="scan-input" placeholder="e.g. Cloud Computing, DevOps" />
+                    </div>
                 </div>
 
                 <div class="flex gap-4">
@@ -265,7 +274,7 @@
     </div>
 
     <script>
-        const STRUCTURAL_TRACK_OPTIONS = ["AI/ML", "Web3", "Mobile App", "UI/UX Design", "Fintech", "Cybersecurity"];
+        const STRUCTURAL_TRACK_OPTIONS = ["AI/ML", "Web3", "Mobile App", "UI/UX Design", "Fintech", "Cybersecurity", "Other"];
         let SELECTED_TRACKS_SET = new Set();
         let loggedAdmin = null;
 
@@ -297,6 +306,19 @@
                         SELECTED_TRACKS_SET.add(track);
                         button.classList.add('selected');
                     }
+
+                    if (track === 'Other') {
+                        const customContainer = document.getElementById('customTrackContainer');
+                        const customInput = document.getElementById('customTrackInput');
+                        if (SELECTED_TRACKS_SET.has('Other')) {
+                            customContainer.style.display = 'block';
+                            customInput.required = true;
+                        } else {
+                            customContainer.style.display = 'none';
+                            customInput.required = false;
+                            customInput.value = '';
+                        }
+                    }
                 };
                 wrapper.appendChild(button);
             });
@@ -316,6 +338,16 @@
             SELECTED_TRACKS_SET.clear();
             generateTrackPillBadges();
             toggleFeeField('FREE');
+
+            const customContainer = document.getElementById('customTrackContainer');
+            if (customContainer) {
+                customContainer.style.display = 'none';
+                const customInput = document.getElementById('customTrackInput');
+                if (customInput) {
+                    customInput.required = false;
+                    customInput.value = '';
+                }
+            }
         }
 
         async function fetchAdminMissionsFeed() {
@@ -339,10 +371,12 @@
                     stateLive.innerHTML = '';
                     data.forEach(event => {
                         const trackChipsHTML = event.tracks.map(t => `<span class="skill-tag matched !bg-transparent text-[var(--accent)] border-none font-bold p-0 mr-2 text-[0.7rem] mono">[ ${t} ]</span>`).join('');
+                        const posterHTML = event.poster ? `<img src="${event.poster}" class="w-full h-40 object-cover rounded mb-3 border border-[var(--border)]" alt="Event Poster" />` : '';
                         const card = document.createElement('div');
                         card.className = 'card border border-[var(--border)] flex flex-col justify-between';
                         card.innerHTML = `
               <div>
+                ${posterHTML}
                 <div class="flex justify-between items-start mb-2">
                   <h3 class="mono text-lg font-bold text-[var(--accent2)]">${event.title}</h3>
                   <span class="status-badge !bg-emerald-950/20 text-emerald-400 border border-emerald-700/50 text-[0.55rem] uppercase tracking-widest py-0.5 px-1.5 font-bold">● LIVE ON GUEST BOARD</span>
@@ -374,12 +408,39 @@
             const costType = document.getElementById('eventCostType').value;
             const entry_fee = costType === 'PAID' ? parseFloat(document.getElementById('eventEntryFee').value) || 0 : 0;
 
+            const tracksArray = Array.from(SELECTED_TRACKS_SET);
+            const otherIndex = tracksArray.indexOf('Other');
+            if (otherIndex !== -1) {
+                const customVal = document.getElementById('customTrackInput').value.trim();
+                if (customVal) {
+                    tracksArray[otherIndex] = customVal;
+                } else {
+                    tracksArray.splice(otherIndex, 1);
+                }
+            }
+
+            let posterBase64 = "";
+            const posterFile = document.getElementById('eventPoster').files[0];
+            if (posterFile) {
+                try {
+                    posterBase64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(posterFile);
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = error => reject(error);
+                    });
+                } catch (err) {
+                    console.error("Failed to read poster file:", err);
+                }
+            }
+
             const bodyData = {
                 title, description, target_date,
-                tracks: Array.from(SELECTED_TRACKS_SET),
+                tracks: tracksArray,
                 is_paid: costType === 'PAID',
                 entry_fee, location_name, registration_link,
-                organizer: loggedAdmin.id
+                organizer: loggedAdmin.id,
+                poster: posterBase64
             };
 
             try {

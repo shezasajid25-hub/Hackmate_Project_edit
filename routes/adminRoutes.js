@@ -111,7 +111,7 @@ router.get('/missions/all', async (req, res) => {
 // ─── GLOBAL MISSION DEPLOYMENT TRIGGER ───
 router.post('/deploy-mission', async (req, res) => {
     try {
-        const { title, description, target_date, tracks, is_paid, entry_fee, location_name, registration_link, organizer } = req.body;
+        const { title, description, target_date, tracks, is_paid, entry_fee, location_name, registration_link, organizer, poster } = req.body;
 
         if (!title || !description || !target_date || !location_name || !registration_link || !organizer) {
             return res.status(400).json({ detail: "Missing required deployment matrix parameters." });
@@ -127,6 +127,7 @@ router.post('/deploy-mission', async (req, res) => {
             location_name,
             registration_link,
             organizer,
+            poster: poster || "",
             status: 'PUBLISHED'
         });
 

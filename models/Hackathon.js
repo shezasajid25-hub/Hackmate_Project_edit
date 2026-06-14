@@ -45,6 +45,10 @@ const HackathonSchema = new mongoose.Schema({
         type: String,
         enum: ['PUBLISHED', 'UNPUBLISHED'],
         default: 'PUBLISHED'
+    },
+    poster: {
+        type: String,
+        default: ""
     }
 }, {
     timestamps: true,
