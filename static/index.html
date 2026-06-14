@@ -385,6 +385,7 @@
 
     .scan-input {
       flex: 1;
+      width: 100%;
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 4px;
@@ -654,7 +655,7 @@
       </div>
       <div style="display:flex;align-items:center;gap:1rem;">
         <span class="mono"
-          style="font-size:0.65rem;color:var(--text-muted); display: none; md:display: inline-block;">SYSTEM
+          style="font-size:0.65rem;color:var(--text-muted);">SYSTEM
           ONLINE</span>
 
         <button class="theme-btn" id="profileBtn" onclick="openProfileModal()">
@@ -775,9 +776,10 @@
           <div class="skills-heading">✗ Skills Missing</div>
           <div class="skill-tags" id="missingSkills"></div>
         </div>
-        <button class="scan-btn mt-4 w-full" id="mainInviteBtn" onclick="openConnectPopup()">✉ SEND TEAM INVITATION</button>
+        <button class="scan-btn" id="mainInviteBtn" onclick="openConnectPopup()" style="width:100%;margin-top:1rem;">✉ SEND TEAM INVITATION</button>
       </div>
     </div>
+  </main>
 
   <!-- ─── CONNECT POPUP ─── -->
   <div class="connect-popup" id="connectPopup">
@@ -799,7 +801,7 @@
       <div class="invite-success" id="inviteSuccess">✅ INVITATION SUCCESSFULLY SENT</div>
     </div>
   </div>
-  </main>
+
 
   <div id="onboardingOverlay" class="modal-overlay">
     <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem;">
