@@ -105,6 +105,56 @@ app.post('/api/hacker/register-event', async (req, res) => {
   }
 });
 
+app.post('/api/hacker/unregister-event', async (req, res) => {
+  try {
+    const { username, hackathonId } = req.body;
+
+    if (!username || !hackathonId) {
+      return res.status(400).json({ detail: "Missing unregister context parameters." });
+    }
+
+    const user = await User.findOne({ user_name: username });
+    if (!user) return res.status(404).json({ detail: "Hacker context node not found." });
+
+    if (!user.registered_hackathons || !user.registered_hackathons.includes(hackathonId)) {
+      return res.status(400).json({ detail: "No active registration found for this hackathon." });
+    }
+
+    const hackathon = await Hackathon.findById(hackathonId);
+    if (!hackathon) {
+      return res.status(404).json({ detail: "Hackathon record not found." });
+    }
+
+    const admin = await Admin.findById(hackathon.organizer);
+
+    if (admin) {
+      admin.notifications = admin.notifications || [];
+      admin.notifications.unshift({
+        message: `${user.user_name} has requested to unregister from \"${hackathon.title}\".`,
+        type: 'unregister_request',
+        event: hackathon._id,
+        user_name: user.user_name,
+        createdAt: new Date()
+      });
+      admin.markModified('notifications');
+      await admin.save();
+    }
+
+    user.registered_hackathons = user.registered_hackathons.filter(
+      (id) => id.toString() !== hackathonId.toString(),
+    );
+    user.markModified('registered_hackathons');
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Your unregister request has been recorded and the organizer has been notified.",
+    });
+  } catch (error) {
+    res.status(500).json({ detail: "Failed executing event unregister request: " + error.message });
+  }
+});
+
 // 2. Endpoint that index.html queries to populate the State Engine views
 app.get('/api/hacker/my-registrations', async (req, res) => {
   try {

@@ -97,6 +97,18 @@ router.get('/missions/:adminId', async (req, res) => {
     }
 });
 
+router.get('/notifications/:adminId', async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.params.adminId);
+        if (!admin) {
+            return res.status(404).json({ detail: "Organizer node not found." });
+        }
+        res.json(admin.notifications || []);
+    } catch (error) {
+        res.status(500).json({ detail: error.message });
+    }
+});
+
 // ─── EXPOSE UNIFIED DISCOVERY FEED (P0 FIX) ───
 // This route satisfies the feed required by events.html
 router.get('/missions/all', async (req, res) => {

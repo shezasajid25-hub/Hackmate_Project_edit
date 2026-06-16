@@ -146,6 +146,56 @@ router.get('/me', async (req, res) => {
 });
 
 /**
+ * ─── RADAR SCAN — REGISTERED USERS ONLY ──────────────────────────────
+ * Returns only real on-boarded users from the database.
+ */
+router.get('/scan', async (req, res) => {
+  try {
+    const skillsQuery = req.query.skills || '';
+    const searchSkills = skillsQuery
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (!searchSkills.length) {
+      return res.status(400).json({ detail: 'skills query parameter is required' });
+    }
+
+    const users = await User.find({
+      has_onboarded: true,
+      skills: { $exists: true, $ne: [] }
+    }).select('-password');
+
+    const matches = users
+      .map(user => {
+        const userSkills = (user.skills || []).map(s => s.toLowerCase());
+        const matched = searchSkills.filter(skill => userSkills.some(us => us.includes(skill)));
+        const missing = searchSkills.filter(skill => !userSkills.some(us => us.includes(skill)));
+        const score = searchSkills.length ? Math.round((matched.length / searchSkills.length) * 100) : 0;
+
+        return {
+          user_name: user.user_name,
+          name: `${user.first_name} ${user.last_name}`,
+          score,
+          matched,
+          missing,
+          linkedin: user.linkedin || user.linkedin_url || '',
+          github: user.github || '',
+          location: user.location || '',
+          achievements: user.achievements || ''
+        };
+      })
+      .filter(user => user.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
+
+    res.json({ users: matches });
+  } catch (error) {
+    res.status(500).json({ detail: error.message });
+  }
+});
+
+/**
  * ─── ONBOARDING SAVE ENDPOINT ────────────────────────────────────────
  * Called from the onboarding overlay form (first-time profile setup)
  */

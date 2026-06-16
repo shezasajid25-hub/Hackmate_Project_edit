@@ -1,1310 +1,1859 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HackMate — Find Your Team</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
-    rel="stylesheet" />
-  <style>
-    /* ─── CSS VARIABLES / THEME ─── */
-    :root {
-      --bg: #3a3532;
-      --bg2: #4e4844;
-      --surface: #5e5751;
-      --border: rgba(201, 160, 115, 0.25);
-      --border-hi: rgba(201, 160, 115, 0.7);
-      --text: #e6ded7;
-      --text-muted: #b0a8a1;
-      --accent: #c9a073;
-      --accent2: #e0bfa0;
-      --accent-glow: rgba(201, 160, 115, 0.35);
-      --card-shadow: 0 0 40px rgba(201, 160, 115, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4);
-      --radar-bg: rgba(45, 40, 37, 0.92);
-      --grid-line: rgba(201, 160, 115, 0.12);
-      --sweep-color: #c9a073;
-      --hud-line: rgba(201, 160, 115, 0.2);
-    }
-
-    [data-theme="light"] {
-      --bg: #f4f1ed;
-      --bg2: #e6e2de;
-      --surface: #ffffff;
-      --border: rgba(170, 130, 90, 0.2);
-      --border-hi: rgba(170, 130, 90, 0.6);
-      --text: #3a3532;
-      --text-muted: #7a726d;
-      --accent: #a67c52;
-      --accent2: #c9a073;
-      --accent-glow: rgba(170, 130, 90, 0.15);
-      --card-shadow: 0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0, 0, 0, 0.05);
-      --radar-bg: rgba(240, 235, 230, 0.95);
-      --grid-line: rgba(170, 130, 90, 0.15);
-      --sweep-color: #a67c52;
-      --hud-line: rgba(170, 130, 90, 0.18);
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Exo 2', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background 0.4s ease, color 0.4s ease;
-      overflow-x: hidden;
-    }
-
-    .mono {
-      font-family: 'Share Tech Mono', monospace;
-    }
-
-    .topo-bg {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      background-image:
-        repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 38px, var(--hud-line) 39px, transparent 40px),
-        repeating-radial-gradient(circle at 20% 80%, transparent 0, transparent 58px, var(--hud-line) 59px, transparent 60px);
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-    }
-
-    .nav-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1.5rem;
-      height: 64px;
-    }
-
-    .logo {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .logo-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent);
-    }
-
-    .theme-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 1rem;
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      background: transparent;
-      color: var(--accent);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .theme-btn:hover {
-      background: rgba(201, 160, 115, 0.1);
-    }
-
-    main {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 2rem;
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      main {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HackMate — Find Your Team</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ─── CSS VARIABLES / THEME ─── */
+      :root {
+        --bg: #3a3532;
+        --bg2: #4e4844;
+        --surface: #5e5751;
+        --border: rgba(201, 160, 115, 0.25);
+        --border-hi: rgba(201, 160, 115, 0.7);
+        --text: #e6ded7;
+        --text-muted: #b0a8a1;
+        --accent: #c9a073;
+        --accent2: #e0bfa0;
+        --accent-glow: rgba(201, 160, 115, 0.35);
+        --card-shadow:
+          0 0 40px rgba(201, 160, 115, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4);
+        --radar-bg: rgba(45, 40, 37, 0.92);
+        --grid-line: rgba(201, 160, 115, 0.12);
+        --sweep-color: #c9a073;
+        --hud-line: rgba(201, 160, 115, 0.2);
       }
-    }
 
-    .section-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
+      [data-theme="light"] {
+        --bg: #f4f1ed;
+        --bg2: #e6e2de;
+        --surface: #ffffff;
+        --border: rgba(170, 130, 90, 0.2);
+        --border-hi: rgba(170, 130, 90, 0.6);
+        --text: #3a3532;
+        --text-muted: #7a726d;
+        --accent: #a67c52;
+        --accent2: #c9a073;
+        --accent-glow: rgba(170, 130, 90, 0.15);
+        --card-shadow:
+          0 4px 24px rgba(170, 130, 90, 0.1), 0 1px 6px rgba(0, 0, 0, 0.05);
+        --radar-bg: rgba(240, 235, 230, 0.95);
+        --grid-line: rgba(170, 130, 90, 0.15);
+        --sweep-color: #a67c52;
+        --hud-line: rgba(170, 130, 90, 0.18);
+      }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: var(--card-shadow);
-      position: relative;
-    }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    }
+      body {
+        font-family: "Exo 2", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.4s ease,
+          color 0.4s ease;
+        overflow-x: hidden;
+      }
 
-    .hackathon-card {
-      grid-column: 1 / -1;
-    }
+      .mono {
+        font-family: "Share Tech Mono", monospace;
+      }
 
-    .hackathon-title-main {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--accent2);
-    }
+      .topo-bg {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image:
+          repeating-radial-gradient(
+            circle at 50% 50%,
+            transparent 0,
+            transparent 38px,
+            var(--hud-line) 39px,
+            transparent 40px
+          ),
+          repeating-radial-gradient(
+            circle at 20% 80%,
+            transparent 0,
+            transparent 58px,
+            var(--hud-line) 59px,
+            transparent 60px
+          );
+      }
 
-    .hackathon-desc {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 0.4rem;
-    }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+      }
 
-    .countdown-block {
-      display: flex;
-      gap: 0.6rem;
-      margin-top: 0.75rem;
-      flex-wrap: wrap;
-    }
+      .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        height: 64px;
+      }
 
-    .countdown-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.4rem 0.75rem;
-      min-width: 52px;
-    }
+      .logo {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-    .countdown-num {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
+      .logo-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent);
+      }
 
-    .countdown-label {
-      font-size: 0.55rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+      .theme-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        border: 1px solid var(--border-hi);
+        border-radius: 4px;
+        background: transparent;
+        color: var(--accent);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-    /* ─── MISSION CARDS GRID ─── */
-    .missions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1rem;
-    }
+      .theme-btn:hover {
+        background: rgba(201, 160, 115, 0.1);
+      }
 
-    .mission-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-      position: relative;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      overflow: hidden;
-    }
+      main {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 2rem;
+        align-items: start;
+      }
 
-    .mission-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-    }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    .mission-card:hover {
-      border-color: var(--border-hi);
-      box-shadow: 0 0 24px var(--accent-glow);
-    }
+      .section-tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
 
-    .mission-title {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--accent2);
-      margin-bottom: 0.35rem;
-      line-height: 1.3;
-    }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+      }
 
-    .mission-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0.5rem 0 0.75rem;
-    }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+      }
 
-    .mission-meta-chip {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 3px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
+      .hackathon-card {
+        grid-column: 1 / -1;
+      }
 
-    .mission-tracks {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.5rem;
-    }
+      .hackathon-title-main {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--accent2);
+      }
 
-    .mission-track-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      background: rgba(201,160,115,0.1);
-      border: 1px solid rgba(201,160,115,0.3);
-      color: var(--accent);
-    }
+      .hackathon-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.4rem;
+      }
 
-    /* empty-state when no events registered */
-    .no-missions-state {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 3.5rem 1rem;
-    }
+      .countdown-block {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.12);
-      border-radius: 4px;
-      padding: 0.2rem 0.6rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--accent);
-    }
+      .countdown-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.4rem 0.75rem;
+        min-width: 52px;
+      }
 
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent);
-      border-radius: 50%;
-    }
+      .countdown-num {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
 
-    .radar-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.25rem;
-    }
+      .countdown-label {
+        font-size: 0.55rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
 
-    .radar-wrap {
-      position: relative;
-      width: 340px;
-      height: 340px;
-    }
+      /* ─── MISSION CARDS GRID ─── */
+      .missions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.25rem;
+        margin-top: 1rem;
+      }
 
-    #radarCanvas {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      display: block;
-    }
+      .mission-card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+        position: relative;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        overflow: hidden;
+      }
 
-    .radar-hud-corner {
-      position: absolute;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.55rem;
-      color: var(--accent);
-      opacity: 0.7;
-    }
+      .mission-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
 
-    .radar-hud-corner.tl {
-      top: 6px;
-      left: 12px;
-    }
+      .mission-card:hover {
+        border-color: var(--border-hi);
+        box-shadow: 0 0 24px var(--accent-glow);
+      }
 
-    .radar-hud-corner.tr {
-      top: 6px;
-      right: 12px;
-    }
+      .mission-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--accent2);
+        margin-bottom: 0.35rem;
+        line-height: 1.3;
+      }
 
-    .radar-hud-corner.bl {
-      bottom: 6px;
-      left: 12px;
-    }
+      .mission-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.5rem 0 0.75rem;
+      }
 
-    .radar-hud-corner.br {
-      bottom: 6px;
-      right: 12px;
-    }
+      .mission-meta-chip {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.6rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 3px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+      }
 
-    .scan-form {
-      display: flex;
-      gap: 0.5rem;
-      width: 100%;
-    }
+      .mission-tracks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+      }
 
-    .scan-input {
-      flex: 1;
-      width: 100%;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.6rem 0.75rem;
-      color: var(--text);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      outline: none;
-    }
+      .mission-track-tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.6rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        background: rgba(201, 160, 115, 0.1);
+        border: 1px solid rgba(201, 160, 115, 0.3);
+        color: var(--accent);
+      }
 
-    .scan-btn {
-      padding: 0.6rem 1.25rem;
-      background: var(--accent);
-      border: none;
-      border-radius: 4px;
-      color: #042b1c;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
+      /* empty-state when no events registered */
+      .no-missions-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3.5rem 1rem;
+      }
 
-    .radar-status {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        background: rgba(16, 185, 129, 0.12);
+        border-radius: 4px;
+        padding: 0.2rem 0.6rem;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--accent);
+      }
 
-    #profileCard {
-      width: 100%;
-      display: none;
-    }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+      }
 
-    .profile-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
+      .radar-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25rem;
+      }
 
-    .match-score {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
+      .radar-wrap {
+        position: relative;
+        width: 340px;
+        height: 340px;
+      }
 
-    .match-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+      #radarCanvas {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: block;
+      }
 
-    .progress-bar-wrap {
-      height: 6px;
-      background: var(--bg2);
-      border-radius: 3px;
-      margin-top: 0.5rem;
-      overflow: hidden;
-    }
+      .radar-hud-corner {
+        position: absolute;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.55rem;
+        color: var(--accent);
+        opacity: 0.7;
+      }
 
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      width: 0%;
-      transition: width 0.5s ease;
-    }
+      .radar-hud-corner.tl {
+        top: 6px;
+        left: 12px;
+      }
 
-    .skills-section {
-      margin-top: 1rem;
-    }
+      .radar-hud-corner.tr {
+        top: 6px;
+        right: 12px;
+      }
 
-    .skills-heading {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+      .radar-hud-corner.bl {
+        bottom: 6px;
+        left: 12px;
+      }
 
-    .skill-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.25rem;
-    }
+      .radar-hud-corner.br {
+        bottom: 6px;
+        right: 12px;
+      }
 
-    .skill-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-    }
+      .scan-form {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+      }
 
-    .skill-tag.matched {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.5);
-      color: var(--accent2);
-    }
+      .scan-input {
+        flex: 1;
+        width: 100%;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0.6rem 0.75rem;
+        color: var(--text);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        outline: none;
+      }
 
-    .skill-tag.missing {
-      background: rgba(239, 68, 68, 0.08);
-      border-color: rgba(239, 68, 68, 0.35);
-      color: #f87171;
-    }
+      .scan-btn {
+        padding: 0.6rem 1.25rem;
+        background: var(--accent);
+        border: none;
+        border-radius: 4px;
+        color: #042b1c;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
 
-    .skill-tag.all-skill {
-      background: var(--bg2);
-      cursor: pointer;
-    }
+      .radar-status {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-align: center;
+      }
 
-    .skill-tag.all-skill.matched {
-      background: var(--accent);
-      color: #042b1c;
-    }
+      .radar-hint {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.72rem;
+        color: rgba(156, 163, 175, 0.95);
+        text-align: center;
+        margin-top: 0.35rem;
+        line-height: 1.35;
+      }
 
-    .left-col,
-    .right-col {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
+      .radar-hint.alert {
+        color: #f87171;
+      }
 
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border), transparent);
-      margin: 0.75rem 0;
-    }
+      #profileCard {
+        width: 100%;
+        display: none;
+      }
 
-    /* Modal Overlay Styles */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(5, 20, 14, 0.96);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(10px);
-      padding: 2rem 1rem;
-    }
+      .profile-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
 
-    /* ─── RADAR DOT TOOLTIP ─── */
-    .radar-tooltip {
-      position: absolute;
-      background: var(--bg2);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      padding: 0.35rem 0.65rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--accent);
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 50;
-      box-shadow: 0 0 12px var(--accent-glow);
-      transform: translate(-50%, -130%);
-      display: none;
-    }
+      .match-score {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
 
-    /* ─── CONNECT POPUP ─── */
-    .connect-popup {
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(10, 8, 6, 0.82);
-      backdrop-filter: blur(8px);
-    }
-    .connect-popup.active { display: flex; }
-    .connect-box {
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 10px;
-      padding: 2rem 2rem 1.75rem;
-      width: 100%;
-      max-width: 360px;
-      position: relative;
-      box-shadow: 0 0 40px var(--accent-glow);
-    }
-    .connect-box::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      border-radius: 10px 10px 0 0;
-    }
-    .connect-close {
-      position: absolute;
-      top: 0.85rem; right: 1rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-    .li-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      width: 100%;
-      padding: 0.75rem 1rem;
-      background: #0a66c2;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      margin-top: 1rem;
-      transition: background 0.2s;
-    }
-    .li-btn:hover { background: #004182; }
-    .li-logo {
-      width: 20px; height: 20px;
-      background: #fff;
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .li-logo svg { width: 14px; height: 14px; }
-    .invite-btn {
-      display: block;
-      width: 100%;
-      margin-top: 0.75rem;
-      padding: 0.75rem 1rem;
-      background: var(--accent);
-      border: none;
-      border-radius: 6px;
-      color: #042b1c;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .invite-btn:hover { opacity: 0.85; }
-    .invite-success {
-      display: none;
-      margin-top: 0.75rem;
-      text-align: center;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: #10b981;
-      background: rgba(16,185,129,0.1);
-      border: 1px solid rgba(16,185,129,0.3);
-      border-radius: 6px;
-      padding: 0.6rem 1rem;
-    }
-  </style>
-</head>
+      .match-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
 
-<body>
-  <div class="topo-bg"></div>
+      .progress-bar-wrap {
+        height: 6px;
+        background: var(--bg2);
+        border-radius: 3px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
 
-  <nav>
-    <div class="nav-inner">
-      <div class="logo">
-        <div class="logo-dot"></div>HACKMATE
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        width: 0%;
+        transition: width 0.5s ease;
+      }
+
+      .skills-section {
+        margin-top: 1rem;
+      }
+
+      .skills-heading {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+
+      .skill-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.25rem;
+      }
+
+      .skill-tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+      }
+
+      .skill-tag.matched {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.5);
+        color: var(--accent2);
+      }
+
+      .skill-tag.missing {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.35);
+        color: #f87171;
+      }
+
+      .skill-tag.all-skill {
+        background: var(--bg2);
+        cursor: pointer;
+      }
+
+      .skill-tag.all-skill.matched {
+        background: var(--accent);
+        color: #042b1c;
+      }
+
+      .left-col,
+      .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .divider {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--border),
+          transparent
+        );
+        margin: 0.75rem 0;
+      }
+
+      /* Modal Overlay Styles */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 20, 14, 0.96);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        padding: 2rem 1rem;
+      }
+
+      /* ─── RADAR DOT TOOLTIP ─── */
+      .radar-tooltip {
+        position: absolute;
+        background: var(--bg2);
+        border: 1px solid var(--border-hi);
+        border-radius: 6px;
+        padding: 0.35rem 0.65rem;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--accent);
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 50;
+        box-shadow: 0 0 12px var(--accent-glow);
+        transform: translate(-50%, -130%);
+        display: none;
+      }
+
+      /* ─── CONNECT POPUP ─── */
+      .connect-popup {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(10, 8, 6, 0.82);
+        backdrop-filter: blur(8px);
+      }
+      .connect-popup.active {
+        display: flex;
+      }
+      .connect-box {
+        background: var(--surface);
+        border: 1px solid var(--border-hi);
+        border-radius: 10px;
+        padding: 2rem 2rem 1.75rem;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        box-shadow: 0 0 40px var(--accent-glow);
+      }
+      .connect-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+        border-radius: 10px 10px 0 0;
+      }
+      .connect-close {
+        position: absolute;
+        top: 0.85rem;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        cursor: pointer;
+      }
+      .li-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #0a66c2;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: background 0.2s;
+      }
+      .li-btn:hover {
+        background: #004182;
+      }
+      .li-logo {
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .li-logo svg {
+        width: 14px;
+        height: 14px;
+      }
+      .invite-btn {
+        display: block;
+        width: 100%;
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--accent);
+        border: none;
+        border-radius: 6px;
+        color: #042b1c;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .invite-btn:hover {
+        opacity: 0.85;
+      }
+      .invite-success {
+        display: none;
+        margin-top: 0.75rem;
+        text-align: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.72rem;
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topo-bg"></div>
+
+    <nav>
+      <div class="nav-inner">
+        <div class="logo">
+          <div class="logo-dot"></div>
+          HACKMATE
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem">
+          <span
+            class="mono"
+            style="font-size: 0.65rem; color: var(--text-muted)"
+            >SYSTEM ONLINE</span
+          >
+
+          <button
+            class="theme-btn"
+            id="profileBtn"
+            onclick="openProfileModal()"
+          >
+            <span class="theme-icon">👤</span>
+            <span>MY PROFILE</span>
+          </button>
+
+          <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
+            <span class="theme-icon" id="themeIcon">☀️</span>
+            <span id="themeLabel">LIGHT MODE</span>
+          </button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <span class="mono"
-          style="font-size:0.65rem;color:var(--text-muted);">SYSTEM
-          ONLINE</span>
+    </nav>
 
-        <button class="theme-btn" id="profileBtn" onclick="openProfileModal()">
-          <span class="theme-icon">👤</span>
-          <span>MY PROFILE</span>
-        </button>
-
-        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
-          <span class="theme-icon" id="themeIcon">☀️</span>
-          <span id="themeLabel">LIGHT MODE</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <main>
-    <div class="card welcome-card" id="welcomeCard"
-      style="grid-column: 1 / -1; display: none; margin-bottom: 0.5rem; background: var(--bg2);">
+    <main>
       <div
-        style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <div class="section-tag">// IDENTITY VERIFIED</div>
-          <h2 class="welcome-message" id="welcomeMessage"
-            style="font-size: 1.4rem; font-weight: 900; color: var(--accent2);"></h2>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <button onclick="window.location.href='/events.html'" class="scan-btn"
-            style="background: var(--accent); color: #042b1c;">🔍 FIND HACKATHONS</button>
-          <button onclick="handleLogout()" class="scan-btn"
-            style="background: transparent; color: var(--text-muted); border: 1px solid var(--border);">⎋
-            LOGOUT</button>
+        class="card welcome-card"
+        id="welcomeCard"
+        style="
+          grid-column: 1 / -1;
+          display: none;
+          margin-bottom: 0.5rem;
+          background: var(--bg2);
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 1rem;
+          "
+        >
+          <div>
+            <div class="section-tag">// IDENTITY VERIFIED</div>
+            <h2
+              class="welcome-message"
+              id="welcomeMessage"
+              style="font-size: 1.4rem; font-weight: 900; color: var(--accent2)"
+            ></h2>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem">
+            <button
+              onclick="window.location.href = '/events.html'"
+              class="scan-btn"
+              style="background: var(--accent); color: #042b1c"
+            >
+              🔍 FIND HACKATHONS
+            </button>
+            <button
+              onclick="handleLogout()"
+              class="scan-btn"
+              style="
+                background: transparent;
+                color: var(--text-muted);
+                border: 1px solid var(--border);
+              "
+            >
+              ⎋ LOGOUT
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ─── MY MISSIONS DASHBOARD PANEL ─── -->
-    <div class="card hackathon-card" id="missionsPanel" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-        <div>
-          <div class="section-tag">// MY REGISTERED MISSIONS</div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.1rem;">
-            All hackathons you're locked into — your active mission log.
+      <!-- ─── MY MISSIONS DASHBOARD PANEL ─── -->
+      <div class="card hackathon-card" id="missionsPanel" style="display: none">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+          "
+        >
+          <div>
+            <div class="section-tag">// MY REGISTERED MISSIONS</div>
+            <p
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-top: 0.1rem;
+              "
+            >
+              All hackathons you're locked into — your active mission log.
+            </p>
+          </div>
+          <button
+            onclick="window.location.href = '/events.html'"
+            class="scan-btn"
+            style="white-space: nowrap"
+          >
+            + ENGAGE NEW MISSION
+          </button>
+        </div>
+        <div class="divider"></div>
+        <div class="missions-grid" id="missionsGrid">
+          <!-- Mission cards injected here by JS -->
+        </div>
+      </div>
+
+      <!-- ─── EMPTY STATE (no registrations) ─── -->
+      <div
+        class="card hackathon-card"
+        id="dashboardStateUnregistered"
+        style="display: none; text-align: center; padding: 3.5rem 1rem"
+      >
+        <div class="mono" style="font-size: 2rem; margin-bottom: 0.75rem">
+          📡
+        </div>
+        <div
+          class="mono"
+          style="font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem"
+        >
+          NO MISSIONS DETECTED
+        </div>
+        <p
+          style="
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+          "
+        >
+          Your mission log is empty. Explore live hackathon deployments, find
+          your squad, and lock in.
+        </p>
+        <button
+          onclick="window.location.href = '/events.html'"
+          class="scan-btn"
+          style="display: inline-block"
+        >
+          🔍 BROWSE EVENTS
+        </button>
+      </div>
+
+      <div class="left-col">
+        <div class="card">
+          <div class="section-tag">// TALENT SCANNER v2.4</div>
+          <p class="card-title" style="font-weight: 700">
+            Find Your Perfect Teammate
+          </p>
+          <p
+            style="
+              font-size: 0.85rem;
+              color: var(--text-muted);
+              line-height: 1.7;
+              margin-top: 0.25rem;
+            "
+          >
+            Enter the structural skills your team requires. The tracking radar
+            will automatically execute a multi-directional spatial map plot.
           </p>
         </div>
-        <button onclick="window.location.href='/events.html'" class="scan-btn" style="white-space:nowrap;">
-          + ENGAGE NEW MISSION
+        <!-- Notifications area for team events (invites accepted/rejected) -->
+        <div class="card" id="notificationsCard" style="margin-top: 0.75rem">
+          <div class="section-tag">// NOTIFICATIONS</div>
+          <p class="card-title" style="font-weight: 700">Notifications</p>
+          <div
+            id="teamNotifications"
+            style="max-height: 220px; overflow: auto; margin-top: 0.6rem"
+          >
+            <div
+              id="noNotifications"
+              style="font-size: 0.85rem; color: var(--text-muted)"
+            >
+              No notifications yet.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="card">
+          <div class="section-tag">// RADAR DISPLAY</div>
+          <div class="radar-panel">
+            <div class="radar-wrap" id="radarWrap">
+              <canvas id="radarCanvas" width="340" height="340"></canvas>
+              <div class="radar-hud-corner tl">RNG: 50KM</div>
+              <div class="radar-hud-corner tr" id="hudTargets">TGTS: 0</div>
+              <div class="radar-hud-corner bl">MODE: RADAR</div>
+              <div class="radar-hud-corner br" id="hudTime"></div>
+            </div>
+            <div class="radar-status mono" id="radarStatus">
+              AWAITING TARGET PARAMETERS
+            </div>
+            <div class="radar-hint" id="radarHint">
+              Search by skills to reveal registered teammates.
+            </div>
+            <div class="scan-form">
+              <input
+                class="scan-input"
+                id="skillsInput"
+                type="text"
+                placeholder="e.g. Python, React..."
+                onkeydown="if (event.key === 'Enter') startScan();"
+              />
+              <button class="scan-btn" id="scanBtn" onclick="startScan()">
+                ▶ SCAN
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="profileCard">
+          <div class="section-tag">// TARGET ACQUIRED</div>
+          <div
+            style="
+              display: flex;
+              align-items: flex-start;
+              justify-content: space-between;
+              gap: 1rem;
+            "
+          >
+            <div>
+              <div class="profile-name" id="profileName">—</div>
+              <div class="match-label">COMPATIBILITY SCORE</div>
+            </div>
+            <div style="text-align: right">
+              <div class="match-score" id="profileScore">0%</div>
+              <div class="match-label">MATCH</div>
+            </div>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressBar"></div>
+          </div>
+          <div class="skills-section">
+            <div class="skills-heading">✓ Skills Matched</div>
+            <div class="skill-tags" id="matchedSkills"></div>
+          </div>
+          <div class="skills-section" style="margin-top: 0.75rem">
+            <div class="skills-heading">✗ Skills Missing</div>
+            <div class="skill-tags" id="missingSkills"></div>
+          </div>
+          <button
+            class="scan-btn"
+            id="mainInviteBtn"
+            onclick="openConnectPopup()"
+            style="width: 100%; margin-top: 1rem"
+          >
+            ✉ SEND TEAM INVITATION
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ─── CONNECT POPUP ─── -->
+    <div class="connect-popup" id="connectPopup">
+      <div class="connect-box">
+        <button class="connect-close" onclick="closeConnectPopup()">✕</button>
+        <div class="section-tag">// ESTABLISH LINK</div>
+        <div
+          style="
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent2);
+            margin: 0.35rem 0 0.1rem;
+          "
+          id="popupName"
+        >
+          —
+        </div>
+        <div
+          style="
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: &quot;Share Tech Mono&quot;, monospace;
+          "
+          id="popupScore"
+        >
+          COMPATIBILITY: —
+        </div>
+        <div
+          style="
+            height: 1px;
+            background: linear-gradient(
+              90deg,
+              transparent,
+              var(--border),
+              transparent
+            );
+            margin: 1rem 0 0;
+          "
+        ></div>
+        <a
+          class="li-btn"
+          id="popupLinkedin"
+          href="#"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="li-logo">
+            <svg
+              viewBox="0 0 24 24"
+              fill="#0a66c2"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+              />
+            </svg>
+          </span>
+          VIEW LINKEDIN PROFILE
+        </a>
+        <button
+          class="invite-btn"
+          id="popupInviteBtn"
+          onclick="sendInvitation()"
+        >
+          ✉ SEND TEAM INVITATION
         </button>
-      </div>
-      <div class="divider"></div>
-      <div class="missions-grid" id="missionsGrid">
-        <!-- Mission cards injected here by JS -->
-      </div>
-    </div>
-
-    <!-- ─── EMPTY STATE (no registrations) ─── -->
-    <div class="card hackathon-card" id="dashboardStateUnregistered"
-      style="display: none; text-align: center; padding: 3.5rem 1rem;">
-      <div class="mono" style="font-size: 2rem; margin-bottom: 0.75rem;">📡</div>
-      <div class="mono" style="font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem;">NO MISSIONS DETECTED</div>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.75rem; max-width: 420px; margin-left:auto; margin-right:auto; line-height:1.7;">
-        Your mission log is empty. Explore live hackathon deployments, find your squad, and lock in.
-      </p>
-      <button onclick="window.location.href='/events.html'" class="scan-btn" style="display: inline-block;">
-        🔍 BROWSE EVENTS
-      </button>
-    </div>
-
-    <div class="left-col">
-      <div class="card">
-        <div class="section-tag">// TALENT SCANNER v2.4</div>
-        <p class="card-title" style="font-weight: 700;">Find Your Perfect Teammate</p>
-        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7; margin-top:0.25rem;">Enter the structural
-          skills your team
-          requires. The tracking radar will automatically execute a multi-directional spatial map plot.</p>
-      </div>
-    </div>
-
-    <div class="right-col">
-      <div class="card">
-        <div class="section-tag">// RADAR DISPLAY</div>
-        <div class="radar-panel">
-          <div class="radar-wrap" id="radarWrap">
-            <canvas id="radarCanvas" width="340" height="340"></canvas>
-            <div class="radar-hud-corner tl">RNG: 50KM</div>
-            <div class="radar-hud-corner tr" id="hudTargets">TGTS: 0</div>
-            <div class="radar-hud-corner bl">MODE: RADAR</div>
-            <div class="radar-hud-corner br" id="hudTime"></div>
-          </div>
-          <div class="radar-status mono" id="radarStatus">AWAITING TARGET PARAMETERS</div>
-          <div class="scan-form">
-            <input class="scan-input" id="skillsInput" type="text" placeholder="e.g. Python, React..."
-              onkeydown="if(event.key==='Enter') startScan()" />
-            <button class="scan-btn" id="scanBtn" onclick="startScan()">▶ SCAN</button>
-          </div>
+        <div class="invite-success" id="inviteSuccess">
+          ✅ INVITATION SUCCESSFULLY SENT
         </div>
       </div>
-
-      <div class="card" id="profileCard">
-        <div class="section-tag">// TARGET ACQUIRED</div>
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
-          <div>
-            <div class="profile-name" id="profileName">—</div>
-            <div class="match-label">COMPATIBILITY SCORE</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="match-score" id="profileScore">0%</div>
-            <div class="match-label">MATCH</div>
-          </div>
-        </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-fill" id="progressBar"></div>
-        </div>
-        <div class="skills-section">
-          <div class="skills-heading">✓ Skills Matched</div>
-          <div class="skill-tags" id="matchedSkills"></div>
-        </div>
-        <div class="skills-section" style="margin-top:0.75rem;">
-          <div class="skills-heading">✗ Skills Missing</div>
-          <div class="skill-tags" id="missingSkills"></div>
-        </div>
-        <button class="scan-btn" id="mainInviteBtn" onclick="openConnectPopup()" style="width:100%;margin-top:1rem;">✉ SEND TEAM INVITATION</button>
-      </div>
     </div>
-  </main>
 
-  <!-- ─── CONNECT POPUP ─── -->
-  <div class="connect-popup" id="connectPopup">
-    <div class="connect-box">
-      <button class="connect-close" onclick="closeConnectPopup()">✕</button>
-      <div class="section-tag">// ESTABLISH LINK</div>
-      <div style="font-size:1rem;font-weight:800;color:var(--accent2);margin:0.35rem 0 0.1rem;" id="popupName">—</div>
-      <div style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;" id="popupScore">COMPATIBILITY: —</div>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1rem 0 0;"></div>
-      <a class="li-btn" id="popupLinkedin" href="#" target="_blank" rel="noopener">
-        <span class="li-logo">
-          <svg viewBox="0 0 24 24" fill="#0a66c2" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-          </svg>
-        </span>
-        VIEW LINKEDIN PROFILE
-      </a>
-      <button class="invite-btn" id="popupInviteBtn" onclick="sendInvitation()">✉ SEND TEAM INVITATION</button>
-      <div class="invite-success" id="inviteSuccess">✅ INVITATION SUCCESSFULLY SENT</div>
-    </div>
-  </div>
-
-
-  <div id="onboardingOverlay" class="modal-overlay">
-    <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem;">
-      <div class="section-tag">// CORE ONBOARDING PORTAL</div>
-      <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem;">INITIALIZE PROFILE
-      </h2>
-      <div class="divider"></div>
-      <form id="onboardingForm" onsubmit="submitOnboarding(event)">
-        <div class="mb-4">
-          <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">* City Location</label>
-          <input type="text" id="onboardLocation" class="scan-input" placeholder="e.g. Hyderabad" required />
+    <div class="connect-popup" id="inviteNotificationPopup">
+      <div class="connect-box">
+        <button class="connect-close" onclick="closeInviteNotification()">
+          ✕
+        </button>
+        <div class="section-tag">// TEAM INVITE NOTIFICATION</div>
+        <div
+          style="
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 0.35rem 0 0.25rem;
+          "
+          id="notificationTitle"
+        >
+          —
         </div>
-        <div class="mb-4">
-          <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">* Achievements Log</label>
-          <textarea id="onboardAchievements" class="scan-input h-16 resize-none" placeholder="Past hackathons/builds..."
-            required></textarea>
+        <div
+          style="
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+          "
+          id="notificationSubtitle"
+        >
+          —
         </div>
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">* GitHub Profile URL</label>
-            <input type="url" id="onboardGithub" class="scan-input" placeholder="https://github.com/..." required />
-          </div>
-          <div>
-            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">LinkedIn URL</label>
-            <input type="url" id="onboardLinkedin" class="scan-input" placeholder="https://linkedin.com/in/..." />
-          </div>
-        </div>
-        <div class="mb-6 p-3 border border-dashed border-[var(--border)] rounded">
-          <label class="mono text-[0.65rem] block mb-2" style="color:var(--text-muted)">⚡ Select Skills (Minimum 3
-            Required)</label>
-          <div id="quickSkillsWrapper" class="flex flex-wrap gap-2 mb-2"></div>
-          <div id="skillsPillCountAlert" class="mono text-xs text-red-400">❌ 0 Badges Collected</div>
-        </div>
-        <button type="submit" class="scan-btn w-full" id="onboardSubmitBtn" disabled
-          style="opacity: 0.5; cursor: not-allowed;">▶ INITIALIZE PROFILE CORE</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="profileModalOverlay" class="modal-overlay">
-    <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem; position: relative;">
-      <button type="button" onclick="closeProfileModal()"
-        style="position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
-        ✕
-      </button>
-
-      <div id="profileViewPanel">
-        <div class="section-tag">// HACKER ACCOUNT DEPLOYMENT</div>
-        <h2 id="viewIdentityTitle"
-          style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.25rem;">---</h2>
-        <div class="mono text-xs text-[var(--text-muted)] mb-4">SYSTEM HANDLE: @<span id="viewHandle">---</span></div>
         <div class="divider"></div>
-
-        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
-          <div>
-            <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-0.5">CURRENT SECTOR</span>
-            <span id="viewLocationText" class="font-semibold">---</span>
+        <div style="margin: 0.75rem 0" id="inviterProfileBlock">
+          <div class="section-tag">// INVITE FROM</div>
+          <div
+            style="font-size: 0.95rem; font-weight: 700; margin-top: 0.5rem"
+            id="inviterName"
+          >
+            —
           </div>
-          <div>
-            <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1">SKILLS MATRIX</span>
-            <div id="viewSkillsContainer" class="flex flex-wrap gap-1"></div>
+          <div
+            style="font-size: 0.75rem; color: var(--text-muted)"
+            id="inviterHandle"
+          >
+            —
           </div>
+          <div
+            style="
+              font-size: 0.75rem;
+              color: var(--text-muted);
+              margin-top: 0.25rem;
+            "
+            id="inviterLocation"
+          >
+            —
+          </div>
+          <div style="margin-top: 0.85rem" id="inviterSkills">—</div>
         </div>
-
-        <div class="mb-4 text-sm">
-          <span class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1">ACHIEVEMENTS FIELD LOG</span>
-          <p id="viewAchievementsText"
-            class="p-3 bg-[var(--bg2)] rounded border border-[var(--border)] text-xs text-[var(--text-muted)] whitespace-pre-wrap max-h-24 overflow-y-auto">
-            ---</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 mb-6 text-xs mono">
-          <div>
-            <span class="text-[var(--text-muted)]">GITHUB NODE:</span>
-            <a id="viewGithubAnchor" href="#" target="_blank"
-              class="text-[var(--accent)] hover:underline block truncate">---</a>
-          </div>
-          <div>
-            <span class="text-[var(--text-muted)]">LINKEDIN LINK:</span>
-            <a id="viewLinkedinAnchor" href="#" target="_blank"
-              class="text-[var(--accent)] hover:underline block truncate">---</a>
-          </div>
-        </div>
-
-        <button type="button" class="scan-btn w-full text-center" onclick="switchToEditMode()">[ 📝 EDIT IDENTITY LOGS
-          ]</button>
+        <button
+          class="invite-btn"
+          id="acceptInviteBtn"
+          onclick="acceptInvitation()"
+        >
+          ✅ ACCEPT INVITATION
+        </button>
+        <button
+          class="invite-btn"
+          id="rejectInviteBtn"
+          onclick="rejectInvitation()"
+          style="background: #ef4444; color: #fff"
+        >
+          ✖ REJECT INVITATION
+        </button>
+        <div class="invite-success" id="notificationResult"></div>
       </div>
+    </div>
 
-      <div id="profileEditPanel" style="display: none;">
-        <div class="section-tag">// MODIFY REGISTERED CREDENTIALS</div>
-        <h2 style="font-size: 1.25rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem;">UPDATE PROTOCOLS
+    <div id="onboardingOverlay" class="modal-overlay">
+      <div class="card" style="width: 100%; max-width: 550px; padding: 2.5rem">
+        <div class="section-tag">// CORE ONBOARDING PORTAL</div>
+        <h2
+          style="
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+          "
+        >
+          INITIALIZE PROFILE
         </h2>
         <div class="divider"></div>
-
-        <form id="editProfileForm" onsubmit="submitProfileUpdate(event)">
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">First Name</label>
-              <input type="text" id="editFirstName" class="scan-input" required />
-            </div>
-            <div>
-              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">Last Name</label>
-              <input type="text" id="editLastName" class="scan-input" required />
-            </div>
+        <form id="onboardingForm" onsubmit="submitOnboarding(event)">
+          <div class="mb-4">
+            <label
+              class="mono text-[0.65rem] block mb-1"
+              style="color: var(--text-muted)"
+              >* City Location</label
+            >
+            <input
+              type="text"
+              id="onboardLocation"
+              class="scan-input"
+              placeholder="e.g. Hyderabad"
+              required
+            />
           </div>
           <div class="mb-4">
-            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">City Location</label>
-            <input type="text" id="editLocation" class="scan-input" required />
-          </div>
-          <div class="mb-4">
-            <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">Achievements Log</label>
-            <textarea id="editAchievements" class="scan-input h-16 resize-none" required></textarea>
+            <label
+              class="mono text-[0.65rem] block mb-1"
+              style="color: var(--text-muted)"
+              >* Achievements Log</label
+            >
+            <textarea
+              id="onboardAchievements"
+              class="scan-input h-16 resize-none"
+              placeholder="Past hackathons/builds..."
+              required
+            ></textarea>
           </div>
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">GitHub URL</label>
-              <input type="url" id="editGithub" class="scan-input" required />
+              <label
+                class="mono text-[0.65rem] block mb-1"
+                style="color: var(--text-muted)"
+                >* GitHub Profile URL</label
+              >
+              <input
+                type="url"
+                id="onboardGithub"
+                class="scan-input"
+                placeholder="https://github.com/..."
+                required
+              />
             </div>
             <div>
-              <label class="mono text-[0.65rem] block mb-1" style="color:var(--text-muted)">LinkedIn URL</label>
-              <input type="url" id="editLinkedin" class="scan-input" />
+              <label
+                class="mono text-[0.65rem] block mb-1"
+                style="color: var(--text-muted)"
+                >LinkedIn URL</label
+              >
+              <input
+                type="url"
+                id="onboardLinkedin"
+                class="scan-input"
+                placeholder="https://linkedin.com/in/..."
+              />
             </div>
           </div>
-
-          <div class="mb-6 p-3 border border-dashed border-[var(--border)] rounded">
-            <label class="mono text-[0.65rem] block mb-2" style="color:var(--text-muted)">⚡ Modify Skill Badges (Min
-              3)</label>
-            <div id="editSkillsWrapper" class="flex flex-wrap gap-2 mb-2"></div>
-            <div id="editSkillsCountAlert" class="mono text-xs text-emerald-400">✅ 0 Badges Active</div>
+          <div
+            class="mb-6 p-3 border border-dashed border-[var(--border)] rounded"
+          >
+            <label
+              class="mono text-[0.65rem] block mb-2"
+              style="color: var(--text-muted)"
+              >⚡ Select Skills (Minimum 3 Required)</label
+            >
+            <div
+              id="quickSkillsWrapper"
+              class="flex flex-wrap gap-2 mb-2"
+            ></div>
+            <div id="skillsPillCountAlert" class="mono text-xs text-red-400">
+              ❌ 0 Badges Collected
+            </div>
           </div>
-
-          <div class="flex gap-3">
-            <button type="submit" class="scan-btn flex-1" id="editSubmitBtn">▶ COMMIT CHANGES</button>
-            <button type="button"
-              class="scan-btn !bg-transparent border border-[var(--border)] text-[var(--text-muted)] px-4"
-              onclick="switchToViewMode()">CANCEL</button>
-          </div>
+          <button
+            type="submit"
+            class="scan-btn w-full"
+            id="onboardSubmitBtn"
+            disabled
+            style="opacity: 0.5; cursor: not-allowed"
+          >
+            ▶ INITIALIZE PROFILE CORE
+          </button>
         </form>
       </div>
     </div>
-  </div>
 
-  <script>
-    const DEFAULT_SUGGESTED_SKILLS = ["Python", "React", "TypeScript", "Solidity", "UI Design", "Figma", "Node.js", "Go"];
-    let INTERACTIVE_SKILLS_POOL = new Set();
-    let EDIT_SKILLS_POOL = new Set();
-    let currentUser = null;
+    <div id="profileModalOverlay" class="modal-overlay">
+      <div
+        class="card"
+        style="
+          width: 100%;
+          max-width: 550px;
+          padding: 2.5rem;
+          position: relative;
+        "
+      >
+        <button
+          type="button"
+          onclick="closeProfileModal()"
+          style="
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+          "
+        >
+          ✕
+        </button>
 
-    window.onload = function () {
-      const userCached = localStorage.getItem('currentUser');
-      if (!userCached) {
-        window.location.href = '/landing.html';
-        return;
-      }
-      currentUser = JSON.parse(userCached);
-      updateWelcomeMessage();
-      document.getElementById('welcomeCard').style.display = 'block';
+        <div id="profileViewPanel">
+          <div class="section-tag">// HACKER ACCOUNT DEPLOYMENT</div>
+          <h2
+            id="viewIdentityTitle"
+            style="
+              font-size: 1.5rem;
+              font-weight: 900;
+              color: var(--accent);
+              margin-bottom: 0.25rem;
+            "
+          >
+            ---
+          </h2>
+          <div class="mono text-xs text-[var(--text-muted)] mb-4">
+            SYSTEM HANDLE: @<span id="viewHandle">---</span>
+          </div>
+          <div class="divider"></div>
 
-      if (!currentUser.has_onboarded) {
-        document.getElementById('onboardingOverlay').style.display = 'flex';
-        initOnboardingUI();
-      } else {
-        loadHackathonEngine();
-      }
-      runRadarSystem();
-    };
+          <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div>
+              <span
+                class="mono text-[0.65rem] block text-[var(--text-muted)] mb-0.5"
+                >CURRENT SECTOR</span
+              >
+              <span id="viewLocationText" class="font-semibold">---</span>
+            </div>
+            <div>
+              <span
+                class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1"
+                >SKILLS MATRIX</span
+              >
+              <div id="viewSkillsContainer" class="flex flex-wrap gap-1"></div>
+            </div>
+          </div>
 
-    function updateWelcomeMessage() {
-      document.getElementById('welcomeMessage').textContent = `WELCOME TO THE GRID, ${(currentUser.first_name || '').toUpperCase()}`;
-    }
+          <div class="mb-4 text-sm">
+            <span
+              class="mono text-[0.65rem] block text-[var(--text-muted)] mb-1"
+              >ACHIEVEMENTS FIELD LOG</span
+            >
+            <p
+              id="viewAchievementsText"
+              class="p-3 bg-[var(--bg2)] rounded border border-[var(--border)] text-xs text-[var(--text-muted)] whitespace-pre-wrap max-h-24 overflow-y-auto"
+            >
+              ---
+            </p>
+          </div>
 
-    /* ─── ONBOARDING SYSTEM ─── */
-    function initOnboardingUI() {
-      const wrapper = document.getElementById('quickSkillsWrapper');
-      DEFAULT_SUGGESTED_SKILLS.forEach(skill => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag all-skill mono text-xs';
-        span.textContent = `[ ${skill} ]`;
-        span.onclick = () => {
-          if (INTERACTIVE_SKILLS_POOL.has(skill)) {
-            INTERACTIVE_SKILLS_POOL.delete(skill);
-            span.classList.remove('matched');
-          } else {
-            INTERACTIVE_SKILLS_POOL.add(skill);
-            span.classList.add('matched');
-          }
+          <div class="grid grid-cols-2 gap-4 mb-6 text-xs mono">
+            <div>
+              <span class="text-[var(--text-muted)]">GITHUB NODE:</span>
+              <a
+                id="viewGithubAnchor"
+                href="#"
+                target="_blank"
+                class="text-[var(--accent)] hover:underline block truncate"
+                >---</a
+              >
+            </div>
+            <div>
+              <span class="text-[var(--text-muted)]">LINKEDIN LINK:</span>
+              <a
+                id="viewLinkedinAnchor"
+                href="#"
+                target="_blank"
+                class="text-[var(--accent)] hover:underline block truncate"
+                >---</a
+              >
+            </div>
+          </div>
 
-          const count = INTERACTIVE_SKILLS_POOL.size;
-          const alertBox = document.getElementById('skillsPillCountAlert');
-          const submitBtn = document.getElementById('onboardSubmitBtn');
+          <button
+            type="button"
+            class="scan-btn w-full text-center"
+            onclick="switchToEditMode()"
+          >
+            [ 📝 EDIT IDENTITY LOGS ]
+          </button>
+        </div>
 
-          if (count >= 3) {
-            alertBox.textContent = `✅ ${count} Skills Selected`;
-            alertBox.className = "mono text-xs text-emerald-400";
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            submitBtn.style.cursor = 'pointer';
-          } else {
-            alertBox.textContent = `❌ ${count} Badges Collected (3 Required)`;
-            alertBox.className = "mono text-xs text-red-400";
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.5';
-            submitBtn.style.cursor = 'not-allowed';
-          }
-        };
-        wrapper.appendChild(span);
-      });
-    }
+        <div id="profileEditPanel" style="display: none">
+          <div class="section-tag">// MODIFY REGISTERED CREDENTIALS</div>
+          <h2
+            style="
+              font-size: 1.25rem;
+              font-weight: 900;
+              color: var(--accent);
+              margin-bottom: 0.5rem;
+            "
+          >
+            UPDATE PROTOCOLS
+          </h2>
+          <div class="divider"></div>
 
-    async function submitOnboarding(e) {
-      e.preventDefault();
-      const payload = {
-        user_name: currentUser.user_name,
-        first_name: currentUser.first_name,
-        last_name: currentUser.last_name,
-        location: document.getElementById('onboardLocation').value.trim(),
-        skills: Array.from(INTERACTIVE_SKILLS_POOL),
-        github: document.getElementById('onboardGithub').value.trim(),
-        linkedin: document.getElementById('onboardLinkedin').value.trim(),
-        achievements: document.getElementById('onboardAchievements').value.trim()
-      };
+          <form id="editProfileForm" onsubmit="submitProfileUpdate(event)">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label
+                  class="mono text-[0.65rem] block mb-1"
+                  style="color: var(--text-muted)"
+                  >First Name</label
+                >
+                <input
+                  type="text"
+                  id="editFirstName"
+                  class="scan-input"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  class="mono text-[0.65rem] block mb-1"
+                  style="color: var(--text-muted)"
+                  >Last Name</label
+                >
+                <input
+                  type="text"
+                  id="editLastName"
+                  class="scan-input"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-4">
+              <label
+                class="mono text-[0.65rem] block mb-1"
+                style="color: var(--text-muted)"
+                >City Location</label
+              >
+              <input
+                type="text"
+                id="editLocation"
+                class="scan-input"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                class="mono text-[0.65rem] block mb-1"
+                style="color: var(--text-muted)"
+                >Achievements Log</label
+              >
+              <textarea
+                id="editAchievements"
+                class="scan-input h-16 resize-none"
+                required
+              ></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label
+                  class="mono text-[0.65rem] block mb-1"
+                  style="color: var(--text-muted)"
+                  >GitHub URL</label
+                >
+                <input type="url" id="editGithub" class="scan-input" required />
+              </div>
+              <div>
+                <label
+                  class="mono text-[0.65rem] block mb-1"
+                  style="color: var(--text-muted)"
+                  >LinkedIn URL</label
+                >
+                <input type="url" id="editLinkedin" class="scan-input" />
+              </div>
+            </div>
 
-      try {
-        const res = await fetch('/api/profile/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          // Sync with the authoritative server response
-          Object.assign(currentUser, data.user);
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            <div
+              class="mb-6 p-3 border border-dashed border-[var(--border)] rounded"
+            >
+              <label
+                class="mono text-[0.65rem] block mb-2"
+                style="color: var(--text-muted)"
+                >⚡ Modify Skill Badges (Min 3)</label
+              >
+              <div
+                id="editSkillsWrapper"
+                class="flex flex-wrap gap-2 mb-2"
+              ></div>
+              <div
+                id="editSkillsCountAlert"
+                class="mono text-xs text-emerald-400"
+              >
+                ✅ 0 Badges Active
+              </div>
+            </div>
 
-          document.getElementById('onboardingOverlay').style.display = 'none';
-          loadHackathonEngine();
+            <div class="flex gap-3">
+              <button type="submit" class="scan-btn flex-1" id="editSubmitBtn">
+                ▶ COMMIT CHANGES
+              </button>
+              <button
+                type="button"
+                class="scan-btn !bg-transparent border border-[var(--border)] text-[var(--text-muted)] px-4"
+                onclick="switchToViewMode()"
+              >
+                CANCEL
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const DEFAULT_SUGGESTED_SKILLS = [
+        "Python",
+        "React",
+        "TypeScript",
+        "Solidity",
+        "UI Design",
+        "Figma",
+        "Node.js",
+        "Go",
+      ];
+      let INTERACTIVE_SKILLS_POOL = new Set();
+      let EDIT_SKILLS_POOL = new Set();
+      let currentUser = null;
+
+      window.onload = function () {
+        const userCached = localStorage.getItem("currentUser");
+        if (!userCached) {
+          window.location.href = "/landing.html";
+          return;
+        }
+        currentUser = JSON.parse(userCached);
+        updateWelcomeMessage();
+        document.getElementById("welcomeCard").style.display = "block";
+
+        if (!currentUser.has_onboarded) {
+          document.getElementById("onboardingOverlay").style.display = "flex";
+          initOnboardingUI();
         } else {
-          alert('Onboarding failed: ' + (data.detail || 'Unknown error'));
+          loadHackathonEngine();
         }
-      } catch (err) { alert('Failed updating core synchronization.'); }
-    }
-
-    /* ─── DUAL-MODE PROFILE WINDOW LOGIC ─── */
-    async function openProfileModal() {
-      // Show the modal immediately with cached data while we fetch fresh data
-      document.getElementById('profileViewPanel').style.display = 'block';
-      document.getElementById('profileEditPanel').style.display = 'none';
-      document.getElementById('profileModalOverlay').style.display = 'flex';
-      renderProfileViewData();
-
-      // Fetch live data from DB and re-render
-      try {
-        const res = await fetch(`/api/profile/me?user_name=${encodeURIComponent(currentUser.user_name)}`);
-        if (res.ok) {
-          const freshData = await res.json();
-          Object.assign(currentUser, freshData);
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          updateWelcomeMessage();
-          renderProfileViewData();
+        runRadarSystem();
+        // Load persisted team notifications into the UI
+        try {
+          loadPersistentNotifications();
+        } catch (e) {
+          /* ignore */
         }
-      } catch (err) {
-        console.warn('Could not refresh profile from server, showing cached data.');
-      }
-    }
-
-    function closeProfileModal() {
-      document.getElementById('profileModalOverlay').style.display = 'none';
-    }
-
-    function renderProfileViewData() {
-      // Hydrate text nodes from our synchronized memory cache
-      document.getElementById('viewIdentityTitle').textContent = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.toUpperCase();
-      document.getElementById('viewHandle').textContent = currentUser.user_name || 'unknown';
-      document.getElementById('viewLocationText').textContent = currentUser.location || 'Not Specified';
-      document.getElementById('viewAchievementsText').textContent = currentUser.achievements || 'No logged field deployments.';
-
-      // Update interactive hyperlink networks
-      const ghAnchor = document.getElementById('viewGithubAnchor');
-      ghAnchor.textContent = currentUser.github || 'No Link Connected';
-      ghAnchor.href = currentUser.github || '#';
-
-      const liAnchor = document.getElementById('viewLinkedinAnchor');
-      liAnchor.textContent = currentUser.linkedin || 'No Link Connected';
-      liAnchor.href = currentUser.linkedin || '#';
-
-      // Render Active Skill Badges
-      const container = document.getElementById('viewSkillsContainer');
-      container.innerHTML = '';
-      const skillsArray = currentUser.skills || [];
-      if (skillsArray.length === 0) {
-        container.innerHTML = '<span class="text-xs text-[var(--text-muted)] italic">None selected</span>';
-      } else {
-        skillsArray.forEach(skill => {
-          const badge = document.createElement('span');
-          badge.className = 'skill-tag matched mono text-[10px]';
-          badge.textContent = skill;
-          container.appendChild(badge);
-        });
-      }
-    }
-
-    function switchToEditMode() {
-      // Prepare form content fields
-      document.getElementById('editFirstName').value = currentUser.first_name || '';
-      document.getElementById('editLastName').value = currentUser.last_name || '';
-      document.getElementById('editLocation').value = currentUser.location || '';
-      document.getElementById('editGithub').value = currentUser.github || '';
-      document.getElementById('editLinkedin').value = currentUser.linkedin || '';
-      document.getElementById('editAchievements').value = currentUser.achievements || '';
-
-      // Mirror active skills into the modifier working stack
-      EDIT_SKILLS_POOL = new Set(currentUser.skills || []);
-      buildEditSkillsPickerUI();
-
-      document.getElementById('profileViewPanel').style.display = 'none';
-      document.getElementById('profileEditPanel').style.display = 'block';
-    }
-
-    function switchToViewMode() {
-      document.getElementById('profileEditPanel').style.display = 'none';
-      document.getElementById('profileViewPanel').style.display = 'block';
-    }
-
-    function buildEditSkillsPickerUI() {
-      const wrapper = document.getElementById('editSkillsWrapper');
-      wrapper.innerHTML = '';
-
-      DEFAULT_SUGGESTED_SKILLS.forEach(skill => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag all-skill mono text-xs';
-        span.textContent = `[ ${skill} ]`;
-
-        if (EDIT_SKILLS_POOL.has(skill)) {
-          span.classList.add('matched');
-        }
-
-        span.onclick = () => {
-          if (EDIT_SKILLS_POOL.has(skill)) {
-            EDIT_SKILLS_POOL.delete(skill);
-            span.classList.remove('matched');
-          } else {
-            EDIT_SKILLS_POOL.add(skill);
-            span.classList.add('matched');
-          }
-          validateEditSkillsCount();
-        };
-        wrapper.appendChild(span);
-      });
-      validateEditSkillsCount();
-    }
-
-    function validateEditSkillsCount() {
-      const count = EDIT_SKILLS_POOL.size;
-      const alertBox = document.getElementById('editSkillsCountAlert');
-      const submitBtn = document.getElementById('editSubmitBtn');
-
-      if (count >= 3) {
-        alertBox.textContent = `✅ ${count} Skills Verified`;
-        alertBox.className = "mono text-xs text-emerald-400";
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        submitBtn.style.cursor = 'pointer';
-      } else {
-        alertBox.textContent = `❌ ${count} Active Badges (Minimum 3 Required)`;
-        alertBox.className = "mono text-xs text-red-400";
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-        submitBtn.style.cursor = 'not-allowed';
-      }
-    }
-
-    async function submitProfileUpdate(e) {
-      e.preventDefault();
-
-      const payload = {
-        user_name: currentUser.user_name,
-        first_name: document.getElementById('editFirstName').value.trim(),
-        last_name: document.getElementById('editLastName').value.trim(),
-        location: document.getElementById('editLocation').value.trim(),
-        github: document.getElementById('editGithub').value.trim(),
-        linkedin: document.getElementById('editLinkedin').value.trim(),
-        achievements: document.getElementById('editAchievements').value.trim(),
-        skills: Array.from(EDIT_SKILLS_POOL)
       };
 
-      const btn = document.getElementById('editSubmitBtn');
-      btn.textContent = "SYNCHRONIZING RECON...";
-      btn.disabled = true;
+      function updateWelcomeMessage() {
+        document.getElementById("welcomeMessage").textContent =
+          `WELCOME TO THE GRID, ${(currentUser.first_name || "").toUpperCase()}`;
+      }
 
-      try {
-        const res = await fetch('/api/profile/update', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
+      /* ─── ONBOARDING SYSTEM ─── */
+      function initOnboardingUI() {
+        const wrapper = document.getElementById("quickSkillsWrapper");
+        DEFAULT_SUGGESTED_SKILLS.forEach((skill) => {
+          const span = document.createElement("span");
+          span.className = "skill-tag all-skill mono text-xs";
+          span.textContent = `[ ${skill} ]`;
+          span.onclick = () => {
+            if (INTERACTIVE_SKILLS_POOL.has(skill)) {
+              INTERACTIVE_SKILLS_POOL.delete(skill);
+              span.classList.remove("matched");
+            } else {
+              INTERACTIVE_SKILLS_POOL.add(skill);
+              span.classList.add("matched");
+            }
+
+            const count = INTERACTIVE_SKILLS_POOL.size;
+            const alertBox = document.getElementById("skillsPillCountAlert");
+            const submitBtn = document.getElementById("onboardSubmitBtn");
+
+            if (count >= 3) {
+              alertBox.textContent = `✅ ${count} Skills Selected`;
+              alertBox.className = "mono text-xs text-emerald-400";
+              submitBtn.disabled = false;
+              submitBtn.style.opacity = "1";
+              submitBtn.style.cursor = "pointer";
+            } else {
+              alertBox.textContent = `❌ ${count} Badges Collected (3 Required)`;
+              alertBox.className = "mono text-xs text-red-400";
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = "0.5";
+              submitBtn.style.cursor = "not-allowed";
+            }
+          };
+          wrapper.appendChild(span);
         });
+      }
 
-        let data = {};
+      async function submitOnboarding(e) {
+        e.preventDefault();
+        const payload = {
+          user_name: currentUser.user_name,
+          first_name: currentUser.first_name,
+          last_name: currentUser.last_name,
+          location: document.getElementById("onboardLocation").value.trim(),
+          skills: Array.from(INTERACTIVE_SKILLS_POOL),
+          github: document.getElementById("onboardGithub").value.trim(),
+          linkedin: document.getElementById("onboardLinkedin").value.trim(),
+          achievements: document
+            .getElementById("onboardAchievements")
+            .value.trim(),
+        };
 
         try {
-          data = await res.json();
-        } catch {
-          data = {};
+          const res = await fetch("/api/profile/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            // Sync with the authoritative server response
+            Object.assign(currentUser, data.user);
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+            document.getElementById("onboardingOverlay").style.display = "none";
+            loadHackathonEngine();
+          } else {
+            alert("Onboarding failed: " + (data.detail || "Unknown error"));
+          }
+        } catch (err) {
+          alert("Failed updating core synchronization.");
         }
-
-        if (res.ok && data.success) {
-          // Sync with the authoritative server response — not just what we sent
-          Object.assign(currentUser, data.user);
-
-          localStorage.setItem(
-            'currentUser',
-            JSON.stringify(currentUser)
-          );
-
-          updateWelcomeMessage();
-          renderProfileViewData();
-          switchToViewMode();
-
-          alert('✅ Profile updated successfully.');
-        } else {
-          alert(
-            `Update failed: ${data.detail || data.message || 'Server rejected the update.'}`
-          );
-
-          console.error(
-            'Profile update failed:',
-            data
-          );
-        }
-      } catch (err) {
-        console.error(
-          'Telemetry update drop fault:',
-          err
-        );
-
-        alert('Transmission link failure.');
-      } finally {
-        btn.textContent = "▶ COMMIT CHANGES";
-        btn.disabled = false;
       }
-    }
-    /* ─── HACKATHON DASHBOARD STATE ENGINE ─── */
-    async function loadHackathonEngine() {
-      try {
-        const res = await fetch(`/api/hacker/my-registrations?username=${currentUser.user_name}`);
-        if (res.ok) {
-          const registeredHackathons = await res.json();
-          if (Array.isArray(registeredHackathons) && registeredHackathons.length > 0) {
-            renderMissionsGrid(registeredHackathons);
+
+      /* ─── DUAL-MODE PROFILE WINDOW LOGIC ─── */
+      async function openProfileModal() {
+        // Show the modal immediately with cached data while we fetch fresh data
+        document.getElementById("profileViewPanel").style.display = "block";
+        document.getElementById("profileEditPanel").style.display = "none";
+        document.getElementById("profileModalOverlay").style.display = "flex";
+        renderProfileViewData();
+
+        // Fetch live data from DB and re-render
+        try {
+          const res = await fetch(
+            `/api/profile/me?user_name=${encodeURIComponent(currentUser.user_name)}`,
+          );
+          if (res.ok) {
+            const freshData = await res.json();
+            Object.assign(currentUser, freshData);
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            updateWelcomeMessage();
+            renderProfileViewData();
+          }
+        } catch (err) {
+          console.warn(
+            "Could not refresh profile from server, showing cached data.",
+          );
+        }
+      }
+
+      function closeProfileModal() {
+        document.getElementById("profileModalOverlay").style.display = "none";
+      }
+
+      function renderProfileViewData() {
+        // Hydrate text nodes from our synchronized memory cache
+        document.getElementById("viewIdentityTitle").textContent =
+          `${currentUser.first_name || ""} ${currentUser.last_name || ""}`.toUpperCase();
+        document.getElementById("viewHandle").textContent =
+          currentUser.user_name || "unknown";
+        document.getElementById("viewLocationText").textContent =
+          currentUser.location || "Not Specified";
+        document.getElementById("viewAchievementsText").textContent =
+          currentUser.achievements || "No logged field deployments.";
+
+        // Update interactive hyperlink networks
+        const ghAnchor = document.getElementById("viewGithubAnchor");
+        ghAnchor.textContent = currentUser.github || "No Link Connected";
+        ghAnchor.href = currentUser.github || "#";
+
+        const liAnchor = document.getElementById("viewLinkedinAnchor");
+        liAnchor.textContent = currentUser.linkedin || "No Link Connected";
+        liAnchor.href = currentUser.linkedin || "#";
+
+        // Render Active Skill Badges
+        const container = document.getElementById("viewSkillsContainer");
+        container.innerHTML = "";
+        const skillsArray = currentUser.skills || [];
+        if (skillsArray.length === 0) {
+          container.innerHTML =
+            '<span class="text-xs text-[var(--text-muted)] italic">None selected</span>';
+        } else {
+          skillsArray.forEach((skill) => {
+            const badge = document.createElement("span");
+            badge.className = "skill-tag matched mono text-[10px]";
+            badge.textContent = skill;
+            container.appendChild(badge);
+          });
+        }
+      }
+
+      function switchToEditMode() {
+        // Prepare form content fields
+        document.getElementById("editFirstName").value =
+          currentUser.first_name || "";
+        document.getElementById("editLastName").value =
+          currentUser.last_name || "";
+        document.getElementById("editLocation").value =
+          currentUser.location || "";
+        document.getElementById("editGithub").value = currentUser.github || "";
+        document.getElementById("editLinkedin").value =
+          currentUser.linkedin || "";
+        document.getElementById("editAchievements").value =
+          currentUser.achievements || "";
+
+        // Mirror active skills into the modifier working stack
+        EDIT_SKILLS_POOL = new Set(currentUser.skills || []);
+        buildEditSkillsPickerUI();
+
+        document.getElementById("profileViewPanel").style.display = "none";
+        document.getElementById("profileEditPanel").style.display = "block";
+      }
+
+      function switchToViewMode() {
+        document.getElementById("profileEditPanel").style.display = "none";
+        document.getElementById("profileViewPanel").style.display = "block";
+      }
+
+      function buildEditSkillsPickerUI() {
+        const wrapper = document.getElementById("editSkillsWrapper");
+        wrapper.innerHTML = "";
+
+        DEFAULT_SUGGESTED_SKILLS.forEach((skill) => {
+          const span = document.createElement("span");
+          span.className = "skill-tag all-skill mono text-xs";
+          span.textContent = `[ ${skill} ]`;
+
+          if (EDIT_SKILLS_POOL.has(skill)) {
+            span.classList.add("matched");
+          }
+
+          span.onclick = () => {
+            if (EDIT_SKILLS_POOL.has(skill)) {
+              EDIT_SKILLS_POOL.delete(skill);
+              span.classList.remove("matched");
+            } else {
+              EDIT_SKILLS_POOL.add(skill);
+              span.classList.add("matched");
+            }
+            validateEditSkillsCount();
+          };
+          wrapper.appendChild(span);
+        });
+        validateEditSkillsCount();
+      }
+
+      function validateEditSkillsCount() {
+        const count = EDIT_SKILLS_POOL.size;
+        const alertBox = document.getElementById("editSkillsCountAlert");
+        const submitBtn = document.getElementById("editSubmitBtn");
+
+        if (count >= 3) {
+          alertBox.textContent = `✅ ${count} Skills Verified`;
+          alertBox.className = "mono text-xs text-emerald-400";
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+          submitBtn.style.cursor = "pointer";
+        } else {
+          alertBox.textContent = `❌ ${count} Active Badges (Minimum 3 Required)`;
+          alertBox.className = "mono text-xs text-red-400";
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = "0.5";
+          submitBtn.style.cursor = "not-allowed";
+        }
+      }
+
+      async function submitProfileUpdate(e) {
+        e.preventDefault();
+
+        const payload = {
+          user_name: currentUser.user_name,
+          first_name: document.getElementById("editFirstName").value.trim(),
+          last_name: document.getElementById("editLastName").value.trim(),
+          location: document.getElementById("editLocation").value.trim(),
+          github: document.getElementById("editGithub").value.trim(),
+          linkedin: document.getElementById("editLinkedin").value.trim(),
+          achievements: document
+            .getElementById("editAchievements")
+            .value.trim(),
+          skills: Array.from(EDIT_SKILLS_POOL),
+        };
+
+        const btn = document.getElementById("editSubmitBtn");
+        btn.textContent = "SYNCHRONIZING RECON...";
+        btn.disabled = true;
+
+        try {
+          const res = await fetch("/api/profile/update", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          let data = {};
+
+          try {
+            data = await res.json();
+          } catch {
+            data = {};
+          }
+
+          if (res.ok && data.success) {
+            // Sync with the authoritative server response — not just what we sent
+            Object.assign(currentUser, data.user);
+
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+            updateWelcomeMessage();
+            renderProfileViewData();
+            switchToViewMode();
+
+            alert("✅ Profile updated successfully.");
+          } else {
+            alert(
+              `Update failed: ${data.detail || data.message || "Server rejected the update."}`,
+            );
+
+            console.error("Profile update failed:", data);
+          }
+        } catch (err) {
+          console.error("Telemetry update drop fault:", err);
+
+          alert("Transmission link failure.");
+        } finally {
+          btn.textContent = "▶ COMMIT CHANGES";
+          btn.disabled = false;
+        }
+      }
+      /* ─── HACKATHON DASHBOARD STATE ENGINE ─── */
+      async function loadHackathonEngine() {
+        try {
+          const res = await fetch(
+            `/api/hacker/my-registrations?username=${currentUser.user_name}`,
+          );
+          if (res.ok) {
+            const registeredHackathons = await res.json();
+            if (
+              Array.isArray(registeredHackathons) &&
+              registeredHackathons.length > 0
+            ) {
+              renderMissionsGrid(registeredHackathons);
+            } else {
+              showEmptyState();
+            }
           } else {
             showEmptyState();
           }
-        } else {
+        } catch (e) {
+          console.error("Telemetry link dropout:", e);
           showEmptyState();
         }
-      } catch (e) {
-        console.error('Telemetry link dropout:', e);
-        showEmptyState();
       }
-    }
 
-    function showEmptyState() {
-      document.getElementById('missionsPanel').style.display = 'none';
-      document.getElementById('dashboardStateUnregistered').style.display = 'block';
-    }
+      function showEmptyState() {
+        document.getElementById("missionsPanel").style.display = "none";
+        document.getElementById("dashboardStateUnregistered").style.display =
+          "block";
+      }
 
-    function renderMissionsGrid(hackathons) {
-      document.getElementById('dashboardStateUnregistered').style.display = 'none';
-      const panel = document.getElementById('missionsPanel');
-      panel.style.display = 'block';
+      function renderMissionsGrid(hackathons) {
+        document.getElementById("dashboardStateUnregistered").style.display =
+          "none";
+        const panel = document.getElementById("missionsPanel");
+        panel.style.display = "block";
 
-      const grid = document.getElementById('missionsGrid');
-      grid.innerHTML = '';
+        const grid = document.getElementById("missionsGrid");
+        grid.innerHTML = "";
 
-      hackathons.forEach((h, idx) => {
-        const card = document.createElement('div');
-        card.className = 'mission-card';
+        hackathons.forEach((h, idx) => {
+          const card = document.createElement("div");
+          card.className = "mission-card";
 
-        // Format date nicely
-        const dateLabel = h.target_date
-          ? new Date(h.target_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-          : 'TBD';
+          // Format date nicely
+          const dateLabel = h.target_date
+            ? new Date(h.target_date + "T00:00:00").toLocaleDateString(
+                "en-IN",
+                { day: "numeric", month: "short", year: "numeric" },
+              )
+            : "TBD";
 
-        // Build tracks HTML
-        const tracksHTML = (h.tracks && h.tracks.length)
-          ? h.tracks.map(t => `<span class="mission-track-tag">${t}</span>`).join('')
-          : '<span class="mission-track-tag">Open Track</span>';
+          // Build tracks HTML
+          const tracksHTML =
+            h.tracks && h.tracks.length
+              ? h.tracks
+                  .map((t) => `<span class="mission-track-tag">${t}</span>`)
+                  .join("")
+              : '<span class="mission-track-tag">Open Track</span>';
 
-        // Unique countdown IDs per card
-        const cdId = `cd_${idx}`;
+          // Unique countdown IDs per card
+          const cdId = `cd_${idx}`;
 
-        const posterHTML = h.poster ? `<img src="${h.poster}" class="w-full h-32 object-cover rounded mb-3 border border-[var(--border)]" alt="Event Poster" />` : '';
+          const posterHTML = h.poster
+            ? `<img src="${h.poster}" class="w-full h-32 object-cover rounded mb-3 border border-[var(--border)]" alt="Event Poster" />`
+            : "";
 
-        card.innerHTML = `
+          card.innerHTML = `
           ${posterHTML}
-          <div class="section-tag" style="margin-bottom:0.35rem;">// MISSION ${String(idx + 1).padStart(2, '0')}</div>
+          <div class="section-tag" style="margin-bottom:0.35rem;">// MISSION ${String(idx + 1).padStart(2, "0")}</div>
           <div class="mission-title">${h.title}</div>
-          <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.5rem;">${h.description || ''}</p>
+          <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.5rem;">${h.description || ""}</p>
 
           <div class="mission-meta">
             <span class="mission-meta-chip">📅 ${dateLabel}</span>
-            <span class="mission-meta-chip">📍 ${h.location_name || 'Remote'}</span>
+            <span class="mission-meta-chip">📍 ${h.location_name || "Remote"}</span>
             ${h.is_paid ? `<span class="mission-meta-chip">💳 ₹${h.entry_fee}</span>` : '<span class="mission-meta-chip">🆓 FREE</span>'}
           </div>
 
@@ -1324,237 +1873,475 @@
           </div>
         `;
 
-        grid.appendChild(card);
+          grid.appendChild(card);
 
-        // Start per-card countdown
-        if (h.target_date) startCountdown(h.target_date, cdId);
-      });
-    }
-
-    function startCountdown(dateStr, cdId) {
-      const target = new Date(dateStr + 'T23:59:59');
-      function tick() {
-        const diff = target - new Date();
-        if (diff <= 0) {
-          ['_d','_h','_m','_s'].forEach(s => {
-            const el = document.getElementById(cdId + s);
-            if (el) el.textContent = '00';
-          });
-          return;
-        }
-        const d = document.getElementById(cdId + '_d');
-        const h = document.getElementById(cdId + '_h');
-        const m = document.getElementById(cdId + '_m');
-        const s = document.getElementById(cdId + '_s');
-        if (d) d.textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
-        if (h) h.textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
-        if (m) m.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-        if (s) s.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+          // Start per-card countdown
+          if (h.target_date) startCountdown(h.target_date, cdId);
+        });
       }
-      tick();
-      setInterval(tick, 1000);
-    }
 
-    /* ─── RADAR UI LOGIC ─── */
-    let sweepAngle = 0;
-    let radarTargets = [];
-    let activeDotTarget = null;
+      function startCountdown(dateStr, cdId) {
+        const target = new Date(dateStr + "T23:59:59");
+        function tick() {
+          const diff = target - new Date();
+          if (diff <= 0) {
+            ["_d", "_h", "_m", "_s"].forEach((s) => {
+              const el = document.getElementById(cdId + s);
+              if (el) el.textContent = "00";
+            });
+            return;
+          }
+          const d = document.getElementById(cdId + "_d");
+          const h = document.getElementById(cdId + "_h");
+          const m = document.getElementById(cdId + "_m");
+          const s = document.getElementById(cdId + "_s");
+          if (d)
+            d.textContent = String(Math.floor(diff / 86400000)).padStart(
+              2,
+              "0",
+            );
+          if (h)
+            h.textContent = String(
+              Math.floor((diff % 86400000) / 3600000),
+            ).padStart(2, "0");
+          if (m)
+            m.textContent = String(
+              Math.floor((diff % 3600000) / 60000),
+            ).padStart(2, "0");
+          if (s)
+            s.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(
+              2,
+              "0",
+            );
+        }
+        tick();
+        setInterval(tick, 1000);
+      }
 
-    // Mock users pool — replaced by real API data when available
-    const MOCK_USERS = [
-      { name: 'Nikhil R.', score: 95, matched: ['React','Node.js','TypeScript'], missing: ['Python'], linkedin: 'https://linkedin.com/in/example1' },
-      { name: 'Priya S.', score: 82, matched: ['Python','Figma'], missing: ['React','Solidity'], linkedin: 'https://linkedin.com/in/example2' },
-      { name: 'Arjun M.', score: 68, matched: ['Go','Node.js'], missing: ['UI Design'], linkedin: 'https://linkedin.com/in/example3' },
-      { name: 'Sara K.', score: 54, matched: ['Figma','UI Design'], missing: ['Python','React'], linkedin: 'https://linkedin.com/in/example4' },
-      { name: 'Dev P.', score: 40, matched: ['Solidity'], missing: ['React','Node.js','Python'], linkedin: 'https://linkedin.com/in/example5' },
-      { name: 'Meera T.', score: 76, matched: ['TypeScript','React'], missing: ['Go'], linkedin: 'https://linkedin.com/in/example6' },
-    ];
+      /* ─── RADAR UI LOGIC ─── */
+      let sweepAngle = 0;
+      let radarTargets = [];
+      let activeDotTarget = null;
 
-    function scoreToDist(score) {
-      // Higher score = closer to center. Score 100 → dist ~20, Score 0 → dist ~145
-      return 20 + (1 - score / 100) * 125;
-    }
+      // Mock users pool — replaced by real API data when available
+      const MOCK_USERS = [
+        {
+          name: "Nikhil R.",
+          score: 95,
+          matched: ["React", "Node.js", "TypeScript"],
+          missing: ["Python"],
+          linkedin: "https://linkedin.com/in/example1",
+        },
+        {
+          name: "Priya S.",
+          score: 82,
+          matched: ["Python", "Figma"],
+          missing: ["React", "Solidity"],
+          linkedin: "https://linkedin.com/in/example2",
+        },
+        {
+          name: "Arjun M.",
+          score: 68,
+          matched: ["Go", "Node.js"],
+          missing: ["UI Design"],
+          linkedin: "https://linkedin.com/in/example3",
+        },
+        {
+          name: "Sara K.",
+          score: 54,
+          matched: ["Figma", "UI Design"],
+          missing: ["Python", "React"],
+          linkedin: "https://linkedin.com/in/example4",
+        },
+        {
+          name: "Dev P.",
+          score: 40,
+          matched: ["Solidity"],
+          missing: ["React", "Node.js", "Python"],
+          linkedin: "https://linkedin.com/in/example5",
+        },
+        {
+          name: "Meera T.",
+          score: 76,
+          matched: ["TypeScript", "React"],
+          missing: ["Go"],
+          linkedin: "https://linkedin.com/in/example6",
+        },
+      ];
 
-    function placeDots(users) {
-      // Assign each user a fixed angle + distance based on score
-      const wrap = document.getElementById('radarWrap');
-      // Remove old dots
-      wrap.querySelectorAll('.rdot-wrap').forEach(e => e.remove());
-      radarTargets = [];
+      function scoreToDist(score) {
+        // Higher score = closer to center. Score 100 → dist ~20, Score 0 → dist ~145
+        return 20 + (1 - score / 100) * 125;
+      }
 
-      users.forEach((u, i) => {
-        const angle = (i / users.length) * Math.PI * 2 - Math.PI / 2;
-        const dist = scoreToDist(u.score);
-        const cx = 170 + dist * Math.cos(angle); // canvas coords (340×340)
-        const cy = 170 + dist * Math.sin(angle);
-        // Convert to % of wrapper
-        const pctX = (cx / 340) * 100;
-        const pctY = (cy / 340) * 100;
+      function placeDots(users) {
+        // Assign each user a fixed angle + distance based on score
+        const wrap = document.getElementById("radarWrap");
+        // Remove old dots
+        wrap.querySelectorAll(".rdot-wrap").forEach((e) => e.remove());
+        radarTargets = [];
 
-        const dotWrap = document.createElement('div');
-        dotWrap.className = 'rdot-wrap';
-        dotWrap.style.cssText = `position:absolute;left:${pctX}%;top:${pctY}%;transform:translate(-50%,-50%);z-index:20;cursor:pointer;`;
+        users.forEach((u, i) => {
+          const angle = (i / users.length) * Math.PI * 2 - Math.PI / 2;
+          const dist = scoreToDist(u.score);
+          const cx = 170 + dist * Math.cos(angle); // canvas coords (340×340)
+          const cy = 170 + dist * Math.sin(angle);
+          // Convert to % of wrapper
+          const pctX = (cx / 340) * 100;
+          const pctY = (cy / 340) * 100;
 
-        // Dot color: green for high, amber for mid, red for low
-        const col = u.score >= 75 ? '#10b981' : u.score >= 50 ? '#c9a073' : '#f87171';
-        dotWrap.innerHTML = `
+          const dotWrap = document.createElement("div");
+          dotWrap.className = "rdot-wrap";
+          dotWrap.style.cssText = `position:absolute;left:${pctX}%;top:${pctY}%;transform:translate(-50%,-50%);z-index:20;cursor:pointer;`;
+
+          // Dot color: green for high, amber for mid, red for low
+          const col =
+            u.score >= 75 ? "#10b981" : u.score >= 50 ? "#c9a073" : "#f87171";
+          dotWrap.innerHTML = `
           <div class="rdot" style="width:10px;height:10px;border-radius:50%;background:${col};box-shadow:0 0 8px ${col};animation:dotPulse 1.6s ease-in-out infinite;"></div>
           <div class="radar-tooltip" id="tip_${i}">${u.name} · ${u.score}%</div>
         `;
 
-        dotWrap.addEventListener('mouseenter', () => {
-          document.getElementById(`tip_${i}`).style.display = 'block';
+          dotWrap.addEventListener("mouseenter", () => {
+            document.getElementById(`tip_${i}`).style.display = "block";
+          });
+          dotWrap.addEventListener("mouseleave", () => {
+            document.getElementById(`tip_${i}`).style.display = "none";
+          });
+          dotWrap.addEventListener("click", () => {
+            selectTarget(u, i);
+            openConnectPopup(u);
+          });
+
+          wrap.appendChild(dotWrap);
+          radarTargets.push({ u, angle, dist, dotWrap });
         });
-        dotWrap.addEventListener('mouseleave', () => {
-          document.getElementById(`tip_${i}`).style.display = 'none';
-        });
-        dotWrap.addEventListener('click', () => {
-          selectTarget(u, i);
-          openConnectPopup(u);
-        });
-
-        wrap.appendChild(dotWrap);
-        radarTargets.push({ u, angle, dist, dotWrap });
-      });
-    }
-
-    function selectTarget(u, idx) {
-      activeDotTarget = u;
-      document.getElementById('hudTargets').textContent = `TGTS: ${radarTargets.length}`;
-      document.getElementById('radarStatus').textContent = 'TARGET VECTOR LOCKED';
-      document.getElementById('profileCard').style.display = 'block';
-      document.getElementById('profileName').textContent = u.name;
-      document.getElementById('profileScore').textContent = u.score + '%';
-      document.getElementById('progressBar').style.width = u.score + '%';
-      document.getElementById('matchedSkills').innerHTML = u.matched.map(s => `<span class="skill-tag matched">[${s}]</span>`).join('');
-      document.getElementById('missingSkills').innerHTML = u.missing.map(s => `<span class="skill-tag missing">[${s}]</span>`).join('');
-    }
-
-    function runRadarSystem() {
-      const canvas = document.getElementById('radarCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      // Inject pulse keyframe once
-      if (!document.getElementById('rdotStyle')) {
-        const st = document.createElement('style');
-        st.id = 'rdotStyle';
-        st.textContent = `@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(1.45);}}`;
-        document.head.appendChild(st);
       }
 
-      setInterval(() => {
-        ctx.clearRect(0, 0, 340, 340);
-        const gridCol = getComputedStyle(document.documentElement).getPropertyValue('--grid-line').trim() || 'rgba(201,160,115,0.12)';
-        const sweepCol = getComputedStyle(document.documentElement).getPropertyValue('--sweep-color').trim() || '#c9a073';
+      function selectTarget(u, idx) {
+        activeDotTarget = u;
+        document.getElementById("hudTargets").textContent =
+          `TGTS: ${radarTargets.length}`;
+        document.getElementById("radarStatus").textContent =
+          "TARGET VECTOR LOCKED";
+        document.getElementById("profileCard").style.display = "block";
+        document.getElementById("profileName").textContent = u.name;
+        document.getElementById("profileScore").textContent = u.score + "%";
+        document.getElementById("progressBar").style.width = u.score + "%";
+        document.getElementById("matchedSkills").innerHTML = u.matched
+          .map((s) => `<span class="skill-tag matched">[${s}]</span>`)
+          .join("");
+        document.getElementById("missingSkills").innerHTML = u.missing
+          .map((s) => `<span class="skill-tag missing">[${s}]</span>`)
+          .join("");
+      }
 
-        ctx.strokeStyle = gridCol;
-        ctx.lineWidth = 1;
-        [160, 100, 40].forEach(r => { ctx.beginPath(); ctx.arc(170, 170, r, 0, Math.PI * 2); ctx.stroke(); });
-        ctx.beginPath(); ctx.moveTo(170, 10); ctx.lineTo(170, 330); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(10, 170); ctx.lineTo(330, 170); ctx.stroke();
+      function runRadarSystem() {
+        const canvas = document.getElementById("radarCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
 
-        // Sweep gradient
-        const grad = ctx.createConicalGradient ? null : null; // fallback: solid line
-        ctx.strokeStyle = sweepCol + 'cc';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(170, 170);
-        ctx.lineTo(170 + 160 * Math.cos(sweepAngle), 170 + 160 * Math.sin(sweepAngle));
-        ctx.stroke();
-
-        // Fading sweep trail
-        for (let t = 1; t <= 18; t++) {
-          const a = sweepAngle - t * 0.045;
-          ctx.strokeStyle = `rgba(201,160,115,${0.22 - t * 0.012})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(170, 170);
-          ctx.lineTo(170 + 160 * Math.cos(a), 170 + 160 * Math.sin(a));
-          ctx.stroke();
+        // Inject pulse keyframe once
+        if (!document.getElementById("rdotStyle")) {
+          const st = document.createElement("style");
+          st.id = "rdotStyle";
+          st.textContent = `@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(1.45);}}`;
+          document.head.appendChild(st);
         }
 
-        // Center dot (user)
-        ctx.fillStyle = '#10b981';
-        ctx.beginPath(); ctx.arc(170, 170, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = 'rgba(16,185,129,0.4)';
-        ctx.lineWidth = 8;
-        ctx.beginPath(); ctx.arc(170, 170, 8, 0, Math.PI * 2); ctx.stroke();
+        setInterval(() => {
+          ctx.clearRect(0, 0, 340, 340);
+          const gridCol =
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--grid-line")
+              .trim() || "rgba(201,160,115,0.12)";
+          const sweepCol =
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--sweep-color")
+              .trim() || "#c9a073";
 
-        sweepAngle += 0.03;
-      }, 30);
-    }
+          ctx.strokeStyle = gridCol;
+          ctx.lineWidth = 1;
+          [160, 100, 40].forEach((r) => {
+            ctx.beginPath();
+            ctx.arc(170, 170, r, 0, Math.PI * 2);
+            ctx.stroke();
+          });
+          ctx.beginPath();
+          ctx.moveTo(170, 10);
+          ctx.lineTo(170, 330);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(10, 170);
+          ctx.lineTo(330, 170);
+          ctx.stroke();
 
-    async function startScan() {
-      const input = document.getElementById('skillsInput').value.trim();
-      if (!input) return;
-      document.getElementById('radarStatus').textContent = 'SCANNING SYSTEM CHANNELS...';
-      document.getElementById('scanBtn').disabled = true;
+          // Sweep gradient
+          const grad = ctx.createConicalGradient ? null : null; // fallback: solid line
+          ctx.strokeStyle = sweepCol + "cc";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(170, 170);
+          ctx.lineTo(
+            170 + 160 * Math.cos(sweepAngle),
+            170 + 160 * Math.sin(sweepAngle),
+          );
+          ctx.stroke();
 
-      let users = [];
-      try {
-        const res = await fetch(`/api/profile/scan?skills=${encodeURIComponent(input)}`);
-        if (res.ok) { const d = await res.json(); users = d.users || d; }
-      } catch (_) {}
+          // Fading sweep trail
+          for (let t = 1; t <= 18; t++) {
+            const a = sweepAngle - t * 0.045;
+            ctx.strokeStyle = `rgba(201,160,115,${0.22 - t * 0.012})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(170, 170);
+            ctx.lineTo(170 + 160 * Math.cos(a), 170 + 160 * Math.sin(a));
+            ctx.stroke();
+          }
 
-      // Fall back to filtered mock data
-      if (!users.length) {
-        const reqSkills = input.split(',').map(s => s.trim().toLowerCase());
-        users = MOCK_USERS.map(u => {
-          const m = u.matched.filter(s => reqSkills.some(r => s.toLowerCase().includes(r)));
-          const miss = u.missing.concat(u.matched.filter(s => !reqSkills.some(r => s.toLowerCase().includes(r))));
-          const sc = Math.round((m.length / Math.max(reqSkills.length, 1)) * 100);
-          return { ...u, score: Math.min(95, Math.max(15, u.score)), matched: u.matched, missing: u.missing };
+          // Center dot (user)
+          ctx.fillStyle = "#10b981";
+          ctx.beginPath();
+          ctx.arc(170, 170, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(16,185,129,0.4)";
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.arc(170, 170, 8, 0, Math.PI * 2);
+          ctx.stroke();
+
+          sweepAngle += 0.03;
+        }, 30);
+      }
+
+      async function startScan() {
+        const input = document.getElementById("skillsInput").value.trim();
+        if (!input) return;
+        document.getElementById("radarStatus").textContent =
+          "SCANNING SYSTEM CHANNELS...";
+        document.getElementById("scanBtn").disabled = true;
+
+        let users = [];
+        try {
+          const res = await fetch(
+            `/api/profile/scan?skills=${encodeURIComponent(input)}`,
+          );
+          if (res.ok) {
+            const d = await res.json();
+            users = d.users || d;
+          } else {
+            const errorData = await res.json().catch(() => ({}));
+            console.warn(
+              "Radar scan request failed:",
+              errorData.detail || res.statusText,
+            );
+          }
+        } catch (error) {
+          console.warn("Radar scan error:", error);
+        }
+
+        if (!users.length) {
+          document
+            .getElementById("radarWrap")
+            .querySelectorAll(".rdot-wrap")
+            .forEach((e) => e.remove());
+          document.getElementById("profileCard").style.display = "none";
+          document.getElementById("hudTargets").textContent = "TGTS: 0";
+          document.getElementById("radarStatus").textContent =
+            "NO REGISTERED USERS FOUND FOR THESE SKILLS";
+          document.getElementById("radarHint").textContent =
+            "Try broader or alternative skill keywords, or complete your profile to improve matching.";
+          document.getElementById("radarHint").classList.add("alert");
+          document.getElementById("scanBtn").disabled = false;
+          return;
+        }
+
+        setTimeout(() => {
+          placeDots(users);
+          document.getElementById("hudTargets").textContent =
+            `TGTS: ${users.length}`;
+          document.getElementById("radarStatus").textContent =
+            `${users.length} TARGETS DETECTED — CLICK A DOT TO INSPECT`;
+          document.getElementById("radarHint").textContent = "";
+          document.getElementById("radarHint").classList.remove("alert");
+          document.getElementById("scanBtn").disabled = false;
+          // Auto-select best match
+          if (users.length) selectTarget(users[0], 0);
+        }, 1400);
+      }
+
+      /* ─── CONNECT POPUP ─── */
+      function openConnectPopup(u) {
+        const target = u || activeDotTarget;
+        if (!target) return;
+        document.getElementById("popupName").textContent = target.name;
+        document.getElementById("popupScore").textContent =
+          `COMPATIBILITY: ${target.score}%`;
+        const liBtn = document.getElementById("popupLinkedin");
+        liBtn.href = target.linkedin || "#";
+        liBtn.style.pointerEvents = target.linkedin ? "auto" : "none";
+        liBtn.style.opacity = target.linkedin ? "1" : "0.4";
+        document.getElementById("inviteSuccess").style.display = "none";
+        document.getElementById("popupInviteBtn").style.display = "block";
+        document.getElementById("connectPopup").classList.add("active");
+      }
+
+      function closeConnectPopup() {
+        document.getElementById("connectPopup").classList.remove("active");
+      }
+
+      function populateInviteNotification() {
+        if (!activeDotTarget || !currentUser) return;
+
+        const senderName =
+          `${currentUser.first_name || ""} ${currentUser.last_name || ""}`.trim() ||
+          currentUser.user_name ||
+          "Unknown Sender";
+        const handle = currentUser.user_name
+          ? `@${currentUser.user_name}`
+          : "@unknown";
+        const locationText = currentUser.location
+          ? `📍 ${currentUser.location}`
+          : "";
+        const skillsArray = currentUser.skills || [];
+        const skillsHtml = skillsArray.length
+          ? skillsArray
+              .map(
+                (skill) =>
+                  `<span class="skill-tag matched" style="font-size:0.7rem;margin:0.12rem;">[${skill}]</span>`,
+              )
+              .join("")
+          : '<span class="text-xs text-[var(--text-muted)] italic">No skills listed</span>';
+
+        document.getElementById("notificationTitle").textContent =
+          `INVITE REQUEST FOR ${activeDotTarget.name.toUpperCase()}`;
+        document.getElementById("notificationSubtitle").textContent =
+          `${senderName} has requested to join your team. Review the sender profile below and choose whether to accept or reject the invitation.`;
+        document.getElementById("inviterName").textContent = senderName;
+        document.getElementById("inviterHandle").textContent = handle;
+        document.getElementById("inviterLocation").textContent = locationText;
+        document.getElementById("inviterSkills").innerHTML =
+          `<div class="skills-heading" style="margin-bottom:0.5rem; font-size:0.75rem; color:var(--accent);">SENDER PROFILE</div>${skillsHtml}`;
+        document.getElementById("notificationResult").style.display = "none";
+        document.getElementById("acceptInviteBtn").style.display = "block";
+        document.getElementById("rejectInviteBtn").style.display = "block";
+      }
+
+      function sendInvitation() {
+        document.getElementById("popupInviteBtn").style.display = "none";
+        document.getElementById("inviteSuccess").style.display = "block";
+        closeConnectPopup();
+        populateInviteNotification();
+        document
+          .getElementById("inviteNotificationPopup")
+          .classList.add("active");
+      }
+
+      function closeInviteNotification() {
+        document
+          .getElementById("inviteNotificationPopup")
+          .classList.remove("active");
+      }
+
+      function acceptInvitation() {
+        const result = document.getElementById("notificationResult");
+        result.textContent =
+          "✅ Invitation accepted. The team request has been approved and the sender will be notified.";
+        result.style.display = "block";
+        result.style.color = "#10b981";
+        result.style.background = "rgba(16,185,129,0.12)";
+        result.style.border = "1px solid rgba(16,185,129,0.3)";
+        document.getElementById("acceptInviteBtn").style.display = "none";
+        document.getElementById("rejectInviteBtn").style.display = "none";
+        try {
+          const sender =
+            document.getElementById("inviterName")?.textContent || "A user";
+          const target = activeDotTarget?.name || "your team";
+          addPersistentNotification(
+            `${sender} accepted an invitation to join ${target}.`,
+            "success",
+          );
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      function rejectInvitation() {
+        const result = document.getElementById("notificationResult");
+        result.textContent =
+          "✖ Invitation rejected. The sender has been notified and the request has been declined.";
+        result.style.display = "block";
+        result.style.color = "#ef4444";
+        result.style.background = "rgba(239,68,68,0.12)";
+        result.style.border = "1px solid rgba(239,68,68,0.25)";
+        document.getElementById("acceptInviteBtn").style.display = "none";
+        document.getElementById("rejectInviteBtn").style.display = "none";
+        try {
+          const sender =
+            document.getElementById("inviterName")?.textContent || "A user";
+          const target = activeDotTarget?.name || "your team";
+          addPersistentNotification(
+            `${sender} declined an invitation to join ${target}.`,
+            "error",
+          );
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      // Persistent notification helpers (stored in localStorage for demo)
+      function loadPersistentNotifications() {
+        const container = document.getElementById("teamNotifications");
+        if (!container) return;
+        const list = JSON.parse(
+          localStorage.getItem("teamNotifications") || "[]",
+        );
+        container.innerHTML = "";
+        if (!list.length) {
+          container.innerHTML =
+            '<div id="noNotifications" style="font-size:0.85rem; color:var(--text-muted);">No notifications yet.</div>';
+          return;
+        }
+        list.forEach((n) => {
+          const item = document.createElement("div");
+          item.className = "notification-item";
+          item.style =
+            "padding:0.6rem 0.6rem; border-bottom:1px solid var(--border);";
+          item.innerHTML = `<div style=\"font-size:0.9rem; font-weight:700;\">${n.message}</div><div style=\"font-size:0.7rem; color:var(--text-muted); margin-top:0.25rem;\">${new Date(n.ts).toLocaleString()}</div>`;
+          container.appendChild(item);
         });
       }
 
-      setTimeout(() => {
-        placeDots(users);
-        document.getElementById('hudTargets').textContent = `TGTS: ${users.length}`;
-        document.getElementById('radarStatus').textContent = `${users.length} TARGETS DETECTED — CLICK A DOT TO INSPECT`;
-        document.getElementById('scanBtn').disabled = false;
-        // Auto-select best match
-        if (users.length) selectTarget(users[0], 0);
-      }, 1400);
-    }
+      function addPersistentNotification(message, type) {
+        try {
+          const list = JSON.parse(
+            localStorage.getItem("teamNotifications") || "[]",
+          );
+          list.unshift({ message, type, ts: Date.now() });
+          localStorage.setItem(
+            "teamNotifications",
+            JSON.stringify(list.slice(0, 50)),
+          );
+          loadPersistentNotifications();
+        } catch (e) {
+          console.warn("Could not persist notification", e);
+        }
+      }
 
-    /* ─── CONNECT POPUP ─── */
-    function openConnectPopup(u) {
-      const target = u || activeDotTarget;
-      if (!target) return;
-      document.getElementById('popupName').textContent = target.name;
-      document.getElementById('popupScore').textContent = `COMPATIBILITY: ${target.score}%`;
-      const liBtn = document.getElementById('popupLinkedin');
-      liBtn.href = target.linkedin || '#';
-      liBtn.style.pointerEvents = target.linkedin ? 'auto' : 'none';
-      liBtn.style.opacity = target.linkedin ? '1' : '0.4';
-      document.getElementById('inviteSuccess').style.display = 'none';
-      document.getElementById('popupInviteBtn').style.display = 'block';
-      document.getElementById('connectPopup').classList.add('active');
-    }
+      function toggleTheme() {
+        const current = document.documentElement.getAttribute("data-theme");
+        const target = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", target);
+        document.getElementById("themeIcon").textContent =
+          target === "dark" ? "☀️" : "🌙";
+        document.getElementById("themeLabel").textContent =
+          target === "dark" ? "LIGHT MODE" : "DARK MODE";
+      }
 
-    function closeConnectPopup() {
-      document.getElementById('connectPopup').classList.remove('active');
-    }
-
-    function sendInvitation() {
-      document.getElementById('popupInviteBtn').style.display = 'none';
-      document.getElementById('inviteSuccess').style.display = 'block';
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const target = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', target);
-      document.getElementById('themeIcon').textContent = target === 'dark' ? '☀️' : '🌙';
-      document.getElementById('themeLabel').textContent = target === 'dark' ? 'LIGHT MODE' : 'DARK MODE';
-    }
-
-    function handleLogout() {
-      localStorage.removeItem('currentUser');
-      window.location.href = '/landing.html';
-    }
-  </script>
-</body>
-
+      function handleLogout() {
+        localStorage.removeItem("currentUser");
+        window.location.href = "/landing.html";
+      }
+    </script>
+  </body>
 </html>
